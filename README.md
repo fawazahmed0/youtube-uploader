@@ -1,2 +1,2 @@
 # youtube-uploader
-Free youtube uploader with no limits
+Free youtube video uploader with no limits
