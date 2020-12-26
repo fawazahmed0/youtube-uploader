@@ -10,7 +10,7 @@ npm i youtube-videos-uploader
 ```js
 const { upload } = require('youtube-videos-uploader');
 
-// recoveryemail is optional, only required to bypass login with recoveryemail when prompted
+// recoveryemail is optional, only required to bypass login with recovery email if prompted for confirmation
 const credentials = { email: 'email', pass: 'pass', recoveryemail: 'recoveryemail' }
 
 // minimum required options to upload video
