@@ -43,3 +43,6 @@ upload (credentials, [video1, video2]).then(console.log)
 
 ### Donate:
 https://fawazahmed0.github.io/donate.html
+
+Please Star this repo by clicking on [:star: button](#) above [:arrow_upper_right:](#)
+
