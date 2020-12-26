@@ -25,7 +25,7 @@ upload (credentials, [video1, video2]).then(console.log)
 
 ### Output:
 ```js
-[ 'https://youtu.be/fh2Kreex5Eg', https://youtu.be/fh2Krefx5Eg ]
+[ 'https://youtu.be/fh2Kreex5Eg', 'https://youtu.be/fh2Krefx5Eg' ]
 ```
 
 ### Donate:
