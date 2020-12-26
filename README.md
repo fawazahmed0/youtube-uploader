@@ -12,7 +12,7 @@
 
 Free youtube video uploader with no limits(100 videos/day)
 
-Please Star this repo by clicking on [:star: button](#) above [:arrow_upper_right:](#)
+Please star this repo by clicking on [:star: button](#) above [:arrow_upper_right:](#)
 
 ### Installation:
 ```js
