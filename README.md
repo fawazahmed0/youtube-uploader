@@ -2,7 +2,9 @@
 Free youtube video uploader with no limits(100 videos/day)
 
 ### Installation:
-`npm i youtube-videos-uploader`
+```js
+npm i youtube-videos-uploader
+```
 
 ### Usage:
 ```js
