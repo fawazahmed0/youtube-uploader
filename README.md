@@ -1,7 +1,5 @@
 # youtube-uploader
-Free youtube video uploader with no limits
-
-**Note:** Daily upload limit is 100 videos per day
+Free youtube video uploader with no limits(100 videos/day)
 
 ### Installation:
 `npm i youtube-videos-uploader`
