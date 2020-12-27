@@ -9,12 +9,11 @@
 
 **In the name of God, who have guided me to do this work**
 
+Please star this repo by clicking on [:star: button](#) above [:arrow_upper_right:](#)
 
 ### Features
 - No upload Limits (100 videos/day limit set by youtube for every channel)
 - Free & Easy to use
-
-Please star this repo by clicking on [:star: button](#) above [:arrow_upper_right:](#)
 
 ### Installation:
 ```js
