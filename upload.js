@@ -19,7 +19,6 @@ upload (credentials, [video1, video2]).then(console.log)
 
 */
 
-
 const puppeteer = require('puppeteer-extra')
 
 // Add stealth plugin and use defaults (all tricks to hide puppeteer usage)
@@ -40,7 +39,7 @@ const uploadURL = 'https://www.youtube.com/upload'
 // capitalizes all the first letters in a sentense
 const capitalize = words => words.split(' ').map(w => w[0].toUpperCase() + w.substring(1)).join(' ')
 
-module.exports.upload = upload;
+module.exports.upload = upload
 
 async function upload (credentials, videos) {
   await launchBrowser()
@@ -146,7 +145,7 @@ async function uploadVideo (videoJSON) {
   ])
   await fileChooser.accept([pathToFile])
   // Wait for upload to complete
-  await page.waitForXPath('//*[contains(text(),"Upload complete")]',{timeout:0})
+  await page.waitForXPath('//*[contains(text(),"Upload complete")]', { timeout: 0 })
   // Wait until title & description box pops up
   await page.waitForFunction('document.querySelectorAll(\'[id="textbox"]\').length > 1')
   const textBoxes = await page.$x('//*[@id="textbox"]')
