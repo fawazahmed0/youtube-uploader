@@ -102,17 +102,15 @@ async function login (localPage, credentials) {
 
 // Login bypass with recovery email
 async function securityBypass (localPage, recoveryemail) {
-  
-try {
-  const confirmRecoveryXPath = `//*[normalize-space(text())='Confirm your recovery email']`
-  await localPage.waitForXPath(confirmRecoveryXPath)
+  try {
+    const confirmRecoveryXPath = '//*[normalize-space(text())=\'Confirm your recovery email\']'
+    await localPage.waitForXPath(confirmRecoveryXPath)
 
-  const confirmRecoveryBtn = await localPage.$x(confirmRecoveryXPath)
-  await page.evaluate(el => el.click(), confirmRecoveryBtn[0])
-  
-} catch (error) {
-  console.error(error)
-}
+    const confirmRecoveryBtn = await localPage.$x(confirmRecoveryXPath)
+    await page.evaluate(el => el.click(), confirmRecoveryBtn[0])
+  } catch (error) {
+    console.error(error)
+  }
 
   try {
     const enterRecoveryXPath = '//*[normalize-space(text())=\'Enter recovery email address\']'
@@ -125,7 +123,7 @@ try {
     const selectBtnXPath = '//*[normalize-space(text())=\'Select files\']'
     await localPage.waitForXPath(selectBtnXPath)
   } catch (error) {
-    console.log("Login Failed")
+    console.log('Login Failed')
     console.error(error)
   }
 }
