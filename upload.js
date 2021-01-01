@@ -203,7 +203,10 @@ async function uploadVideo (videoJSON) {
     await page.evaluate(el => el.click(), createplaylistdone[0])
   }
   // Add tags
-  if (tags) { await page.type('[placeholder="Add tag"]', tags.join(', ').substring(0, 495) + ', ') }
+  if (tags) {
+    await page.focus('[placeholder="Add tag"]')
+    await page.type('[placeholder="Add tag"]', tags.join(', ').substring(0, 495) + ', ')
+  }
 
   // Selecting video language
   if (videoLang) {
