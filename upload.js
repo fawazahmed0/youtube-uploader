@@ -52,6 +52,7 @@ async function upload (credentials, videos) {
     await login(page, credentials)
   } catch (error) {
     console.error(error)
+    console.log("Login failed trying again to login")
     await login(page, credentials)
   }
 
@@ -112,9 +113,10 @@ async function securityBypass (localPage, recoveryemail) {
     console.error(error)
   }
 
-  try {
+ 
     const enterRecoveryXPath = '//*[normalize-space(text())=\'Enter recovery email address\']'
     await localPage.waitForXPath(enterRecoveryXPath)
+    await localPage.focus('input[type="email"]')
     await localPage.type('input[type="email"]', recoveryemail)
     await localPage.keyboard.press('Enter')
     await localPage.waitForNavigation({
@@ -122,10 +124,6 @@ async function securityBypass (localPage, recoveryemail) {
     })
     const selectBtnXPath = '//*[normalize-space(text())=\'Select files\']'
     await localPage.waitForXPath(selectBtnXPath)
-  } catch (error) {
-    console.log('Login Failed')
-    console.error(error)
-  }
 }
 
 async function uploadVideo (videoJSON) {
