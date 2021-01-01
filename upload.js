@@ -143,8 +143,19 @@ async function uploadVideo (videoJSON) {
 
   const closeBtnXPath = '//*[normalize-space(text())=\'Close\']'
   const selectBtnXPath = '//*[normalize-space(text())=\'Select files\']'
-  await page.waitForXPath(selectBtnXPath)
-  await page.waitForXPath(closeBtnXPath)
+  for (let i = 0; i < 2; i++) {
+    try {
+      await page.waitForXPath(selectBtnXPath)
+      await page.waitForXPath(closeBtnXPath)
+      break
+    } catch (error) {
+      const nextText = i === 0 ? ' trying again' : ' failed again'
+      console.log('failed to find the select files button for chapter ', chapter, nextText)
+      console.error(error)
+      await page.evaluate(() => { window.onbeforeunload = null })
+      await page.goto(uploadURL)
+    }
+  }
   // Remove hidden closebtn text
   const closeBtn = await page.$x(closeBtnXPath)
   await page.evaluate(el => { el.textContent = 'oldclosse' }, closeBtn[0])
