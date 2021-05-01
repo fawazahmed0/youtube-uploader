@@ -9,6 +9,8 @@
 
 **In the name of God, who have guided me to do this work**
 
+**Note:** This project is not updated regularly, in case you find any issue, please raise an [issue](https://github.com/fawazahmed0/youtube-uploader/issues/new/choose), So that I can fix it.
+
 Please star this repo by clicking on [:star: button](#) above [:arrow_upper_right:](#)
 
 ### Features
