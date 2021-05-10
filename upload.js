@@ -180,7 +180,7 @@ async function uploadVideo (videoJSON) {
   const childOption = await page.$x('//*[contains(text(),"No, it\'s")]')
   await childOption[0].click()
 
-  const moreOption = await page.$x('//*[normalize-space(text())=\'More options\']')
+  const moreOption = await page.$x('//*[normalize-space(text())=\'Show more\']')
   await moreOption[0].click()
   const playlist = await page.$x('//*[normalize-space(text())=\'Select\']')
   let createplaylistdone
@@ -236,7 +236,10 @@ async function uploadVideo (videoJSON) {
   next = await page.$x(nextBtnXPath)
   await next[0].click()
 
-  // await sleep(2000)
+  await page.waitForXPath(nextBtnXPath)
+  // click next button
+  next = await page.$x(nextBtnXPath)
+  await next[0].click()
 
   // Get publish button
   const publishXPath = '//*[normalize-space(text())=\'Publish\']/parent::*[not(@disabled)]'
@@ -246,7 +249,7 @@ async function uploadVideo (videoJSON) {
   await page.waitForSelector('[href^="https://youtu.be"]')
   const uploadedLinkHandle = await page.$('[href^="https://youtu.be"]')
   const uploadedLink = await page.evaluate(e => e.getAttribute('href'), uploadedLinkHandle)
-
+  await page.waitForTimeout(500)
   await publish[0].click()
   // await page.waitForXPath('//*[contains(text(),"Finished processing")]', { timeout: 0})
   // Wait for closebtn to show up
