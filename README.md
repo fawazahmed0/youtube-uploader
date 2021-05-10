@@ -22,6 +22,13 @@ Please star this repo by clicking on [:star: button](#) above [:arrow_upper_righ
 npm i youtube-videos-uploader
 ```
 
+### Youtube Setup:
+1. Go to your [Google Security settings](https://myaccount.google.com/security) and note down your recovery email and delete recovery phone from your google settings
+2. Go to your Youtube settings and Setup your upload defaults Settings:
+![Upload Defaults Settings](https://github.com/fawazahmed0/youtube-uploader/raw/main/defaultsettings.png)
+
+
+
 ### Usage:
 ```js
 const { upload } = require('youtube-videos-uploader');
