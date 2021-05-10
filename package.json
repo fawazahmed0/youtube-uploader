@@ -1,6 +1,6 @@
 {
   "name": "youtube-videos-uploader",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Uploads videos to youtube without any limits",
   "main": "upload.js",
   "dependencies": {
