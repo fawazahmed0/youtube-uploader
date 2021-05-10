@@ -29,8 +29,8 @@ const maxTitleLen = 100
 const maxDescLen = 5000
 
 const timeout = 60000
-const height = 1024
-const width = 1280
+const height = 900
+const width = 900
 
 let browser, page
 
@@ -171,8 +171,10 @@ async function uploadVideo (videoJSON) {
   // Wait until title & description box pops up
   await page.waitForFunction('document.querySelectorAll(\'[id="textbox"]\').length > 1')
   const textBoxes = await page.$x('//*[@id="textbox"]')
+  await page.bringToFront()
   // Add the title value
   await textBoxes[0].focus()
+  await page.waitForTimeout(1000)
   await textBoxes[0].type(capitalize(title).substring(0, maxTitleLen))
   // Add the Description content
   await textBoxes[1].type(description.substring(0, maxDescLen))
@@ -240,17 +242,29 @@ async function uploadVideo (videoJSON) {
   // click next button
   next = await page.$x(nextBtnXPath)
   await next[0].click()
+//  const publicXPath = `//*[normalize-space(text())='Public']`
+//  await page.waitForXPath(publicXPath)
+//  const publicOption = await page.$x(publicXPath)
+//  await publicOption[0].click()
 
   // Get publish button
   const publishXPath = '//*[normalize-space(text())=\'Publish\']/parent::*[not(@disabled)]'
   await page.waitForXPath(publishXPath)
-  const publish = await page.$x(publishXPath)
   // save youtube upload link
   await page.waitForSelector('[href^="https://youtu.be"]')
   const uploadedLinkHandle = await page.$('[href^="https://youtu.be"]')
   const uploadedLink = await page.evaluate(e => e.getAttribute('href'), uploadedLinkHandle)
-  await page.waitForTimeout(500)
-  await publish[0].click()
+  let publish;
+  for(let i=0;i<10;i++){
+    try {
+      publish = await page.$x(publishXPath)
+      await publish[0].click()
+      break
+    } catch (error) {
+      await page.waitForTimeout(5000)
+    }
+  
+  }
   // await page.waitForXPath('//*[contains(text(),"Finished processing")]', { timeout: 0})
   // Wait for closebtn to show up
   await page.waitForXPath(closeBtnXPath)
