@@ -4,6 +4,7 @@
   <img width="460" height="300" src="https://github.com/fawazahmed0/youtube-uploader/raw/main/youtube.png">
 
 [![npm version](https://img.shields.io/npm/v/youtube-videos-uploader.svg?style=flat)](https://www.npmjs.com/package/youtube-videos-uploader)
+[![](https://img.shields.io/badge/Donate-Donate-orange)](https://fawazahmed0.github.io/donate)  
 
 **In the name of God, who have guided me to do this work**
 
