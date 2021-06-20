@@ -78,14 +78,24 @@ async function launchBrowser () {
 async function login (localPage, credentials) {
   await localPage.goto(uploadURL)
   await localPage.waitForSelector('input[type="email"]')
+
+ // await localPage.click('[aria-selected="true"]')
+ // await localPage.click('[data-value="af"]')
+ // const ukLangXpath = '//*[normalize-space(text())=\'‪English (United Kingdom)‬\']'
+// const ukLangXpath = '//*[contains(text(),"Afrikaans")]'
+ 
+ // const ukBtn = await localPage.$x(ukLangXpath)
+//  await page.evaluate(() => document.querySelector('[data-value="af"]').scrollIntoView())
+ // await page.evaluate(el => el.click(), ukBtn[0])
+
   await localPage.type('input[type="email"]', credentials.email)
   await localPage.keyboard.press('Enter')
   await localPage.waitForNavigation({
     waitUntil: 'networkidle0'
   })
 
-  await localPage.waitForXPath('//*[normalize-space(text())=\'Show password\']')
-  // await page.waitForSelector('input[type="password"]')
+ // await localPage.waitForXPath('//*[normalize-space(text())=\'Show password\']')
+  await localPage.waitForSelector('input[type="password"]')
   await localPage.type('input[type="password"]', credentials.pass)
 
   await localPage.keyboard.press('Enter')
