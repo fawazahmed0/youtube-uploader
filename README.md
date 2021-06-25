@@ -8,8 +8,9 @@
 
 **In the name of God, who have guided me to do this work**
 
-**Note:** In case you find any issue, please raise an [issue](https://github.com/fawazahmed0/youtube-uploader/issues/new/choose), So that I can fix it.
-
+**Note1:** In case you find any issue, please raise an [issue](https://github.com/fawazahmed0/youtube-uploader/issues/new/choose), So that I can fix it.
+**Note2:** This package only works for English version of youtube, if your youtube.com is in other language, this package will not work, currently there is a [Feature request](https://github.com/fawazahmed0/youtube-uploader/issues/10) to add support for other languages.
+  
 Please star this repo by clicking on [:star: button](#) above [:arrow_upper_right:](#)
 
 ### Features
@@ -28,11 +29,6 @@ npm i youtube-videos-uploader
 
 ![Upload Defaults Settings](https://github.com/fawazahmed0/youtube-uploader/raw/main/defaultsettings.png)
   
-3. Set your Youtube language to English (UK)
-  
-![Set to English UK 1](https://github.com/fawazahmed0/youtube-uploader/raw/main/english-uk-1.png)
-  
-![Set to English UK 2](https://github.com/fawazahmed0/youtube-uploader/raw/main/english-uk-2.png)
 
 
 
