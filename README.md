@@ -8,7 +8,7 @@
 
 **In the name of God, who have guided me to do this work**
 
-**Note1:** In case you find any issue, please raise an [issue](https://github.com/fawazahmed0/youtube-uploader/issues/new/choose), So that I can fix it.
+**Note1:** In case you find any issue, please raise an [issue](https://github.com/fawazahmed0/youtube-uploader/issues/new/choose), So that I can fix it.<br>
 **Note2:** This package only works for English version of youtube, if your youtube.com is in other language, this package will not work, currently there is a [Feature request](https://github.com/fawazahmed0/youtube-uploader/issues/10) to add support for other languages.
   
 Please star this repo by clicking on [:star: button](#) above [:arrow_upper_right:](#)
