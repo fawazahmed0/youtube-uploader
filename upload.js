@@ -365,7 +365,7 @@ async function uploadVideo (videoJSON) {
 //  await publicOption[0].click()
 
   // Get publish button
-  const publishXPath = '//*[normalize-space(text())=\'Publish\']/parent::*[not(@disabled)]'
+  const publishXPath = '//*[normalize-space(text())=\'Publish\']/parent::*[not(@disabled)] | //*[normalize-space(text())=\'Save\']/parent::*[not(@disabled)]'
   await page.waitForXPath(publishXPath)
   // save youtube upload link
   await page.waitForSelector('[href^="https://youtu.be"]')
