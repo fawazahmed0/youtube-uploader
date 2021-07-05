@@ -35,6 +35,7 @@ const width = 900
 let browser, page
 
 const uploadURL = 'https://www.youtube.com/upload'
+const homePageURL = 'https://www.youtube.com'
 
 // capitalizes all the first letters in a sentense
 const capitalize = words => words.split(' ').map(w => w[0].toUpperCase() + w.substring(1)).join(' ')
@@ -55,6 +56,8 @@ async function upload (credentials, videos) {
     console.log("Login failed trying again to login")
     await login(page, credentials)
   }
+  
+  await changeHomePageLangIfNeeded(page)
 
   for (const video of videos) {
     const link = await uploadVideo(video)
@@ -67,23 +70,23 @@ async function upload (credentials, videos) {
 }
 
 /**
- * @param {import('puppeteer').Page} page
+ * @param {import('puppeteer').Page} localPage
  * 
  * @returns {void} 
  */
-async function changeLoginPageLangIfNeeded(page) {
+async function changeLoginPageLangIfNeeded(localPage) {
   console.log('Checking selected lang...')
 
   const selectedLangSelector = '[aria-selected="true"]'
   try {
-    await page.waitForSelector(selectedLangSelector)
+    await localPage.waitForSelector(selectedLangSelector)
   } catch(e) {
     throw new Error('Failed to find selected lang : ' + e.name)
   }
   
   
   /** @type {?string} */
-  const selectedLang = await page.evaluate(
+  const selectedLang = await localPage.evaluate(
     selectedLangSelector => document.querySelector(selectedLangSelector).innerText,
     selectedLangSelector
   )
@@ -100,23 +103,87 @@ async function changeLoginPageLangIfNeeded(page) {
 
   console.log('Currently selected lang is ' + selectedLang + ', let\'s change it for English, shall we !')
 
-  await page.click(selectedLangSelector)
+  await localPage.click(selectedLangSelector)
 
-  await page.waitForTimeout(1000)
+  await localPage.waitForTimeout(1000)
 
   const englishLangItemSelector = '[role="presentation"]:not([aria-hidden="true"])>[data-value="en-GB"]'
 
   try {
-    await page.waitForSelector(englishLangItemSelector)
+    await localPage.waitForSelector(englishLangItemSelector)
   } catch(e) {
     throw new Error('Failed to find english lang item : ' + e.name)
   }
   
-  await page.click(englishLangItemSelector)
+  await localPage.click(englishLangItemSelector)
 
   console.log('Changed to English !')
 
-  await page.waitForTimeout(1000)
+  await localPage.waitForTimeout(1000)
+}
+
+/**
+ * @param {import('puppeteer').Page} localPage
+ * 
+ * @returns {void} 
+ */
+async function changeHomePageLangIfNeeded(localPage) {
+  await localPage.goto(homePageURL)
+  console.log('Checking selected lang...')
+
+  const avatarButtonSelector = 'button#avatar-btn'
+
+  try {
+    await localPage.waitForSelector(avatarButtonSelector)
+  } catch (e) {
+    throw new Error('Avatar button not found : ' + e.name)
+  }
+  
+  await localPage.click(avatarButtonSelector)
+
+  const langMenuItemSelector = 'yt-multi-page-menu-section-renderer+yt-multi-page-menu-section-renderer>#items>ytd-compact-link-renderer>a'
+  try {
+    await localPage.waitForSelector(langMenuItemSelector)
+  } catch (e) {
+    throw new Error('Lang menu item selector not found : ' + e.name)
+  }
+
+  /** @type {?string} */
+  const selectedLang = await localPage.evaluate(
+    langMenuItemSelector => document.querySelector(langMenuItemSelector).innerText,
+    langMenuItemSelector
+  )
+
+  if (! selectedLang) {
+    throw new Error('Failed to find selected lang : Empty text')
+  }
+
+  if (selectedLang.includes('English')) {
+    await localPage.goto(uploadURL)
+
+    return
+  }
+
+  await localPage.click(langMenuItemSelector)
+
+  const englishItemXPath = '//*[normalize-space(text())=\'English (UK)\']'
+  
+  try {
+    await localPage.waitForXPath(englishItemXPath)
+  } catch (e) {
+    throw new Error('English item selector not found : ' + e.name)
+  }
+
+  await localPage.waitForTimeout(3000)
+
+  await localPage.evaluate(
+    englishItemXPath => document.evaluate(englishItemXPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(),
+    englishItemXPath
+  )
+
+  console.log('Changed to English !')
+
+  await localPage.goto(uploadURL)
 }
 
 // context and browser is a global variable and it can be accessed from anywhere
@@ -151,8 +218,8 @@ async function login (localPage, credentials) {
   await localPage.waitForNavigation()
 
   try {
-    const selectBtnXPath = '//*[normalize-space(text())=\'Select files\']'
-    await localPage.waitForXPath(selectBtnXPath, { timeout: 60000 })
+    const uploadPopupSelector = 'ytcp-uploads-dialog'
+    await localPage.waitForSelector(uploadPopupSelector, { timeout: 60000 })
   } catch (error) {
     console.error(error)
     await securityBypass(localPage, credentials.recoveryemail)
