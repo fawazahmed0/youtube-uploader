@@ -66,10 +66,63 @@ async function upload (credentials, videos) {
   return uploadedYTLink
 }
 
+/**
+ * @param {import('puppeteer').Page} page
+ * 
+ * @returns {void} 
+ */
+async function changeLoginPageLangIfNeeded(page) {
+  console.log('Checking selected lang...')
+
+  const selectedLangSelector = '[aria-selected="true"]'
+  try {
+    await page.waitForSelector(selectedLangSelector)
+  } catch(e) {
+    throw new Error('Failed to find selected lang : ' + e.name)
+  }
+  
+  
+  /** @type {?string} */
+  const selectedLang = await page.evaluate(
+    selectedLangSelector => document.querySelector(selectedLangSelector).innerText,
+    selectedLangSelector
+  )
+
+  if (! selectedLang) {
+    throw new Error('Failed to find selected lang : Empty text')
+  }
+
+  if (selectedLang.includes('English')) {
+    console.log('Selected lang is already english')
+
+    return
+  }
+
+  console.log('Currently selected lang is ' + selectedLang + ', let\'s change it for English, shall we !')
+
+  await page.click(selectedLangSelector)
+
+  await page.waitForTimeout(1000)
+
+  const englishLangItemSelector = '[role="presentation"]:not([aria-hidden="true"])>[data-value="en-GB"]'
+
+  try {
+    await page.waitForSelector(englishLangItemSelector)
+  } catch(e) {
+    throw new Error('Failed to find english lang item : ' + e.name)
+  }
+  
+  await page.click(englishLangItemSelector)
+
+  console.log('Changed to English !')
+
+  await page.waitForTimeout(1000)
+}
+
 // context and browser is a global variable and it can be accessed from anywhere
 // function that launches a browser
 async function launchBrowser () {
-  browser = await puppeteer.launch({ headless: true })
+  browser = await puppeteer.launch({ headless: false })
   page = await browser.newPage()
   await page.setDefaultTimeout(timeout)
   await page.setViewport({ width: width, height: height })
@@ -77,26 +130,21 @@ async function launchBrowser () {
 
 async function login (localPage, credentials) {
   await localPage.goto(uploadURL)
-  await localPage.waitForSelector('input[type="email"]')
 
- // await localPage.click('[aria-selected="true"]')
- // await localPage.click('[data-value="af"]')
- // const ukLangXpath = '//*[normalize-space(text())=\'‪English (United Kingdom)‬\']'
-// const ukLangXpath = '//*[contains(text(),"Afrikaans")]'
- 
- // const ukBtn = await localPage.$x(ukLangXpath)
-//  await page.evaluate(() => document.querySelector('[data-value="af"]').scrollIntoView())
- // await page.evaluate(el => el.click(), ukBtn[0])
+  await changeLoginPageLangIfNeeded(localPage)
 
-  await localPage.type('input[type="email"]', credentials.email)
+  const emailInputSelector = 'input[type="email"]'
+  await localPage.waitForSelector(emailInputSelector)
+
+  await localPage.type(emailInputSelector, credentials.email)
   await localPage.keyboard.press('Enter')
   await localPage.waitForNavigation({
     waitUntil: 'networkidle0'
   })
 
- // await localPage.waitForXPath('//*[normalize-space(text())=\'Show password\']')
-  await localPage.waitForSelector('input[type="password"]')
-  await localPage.type('input[type="password"]', credentials.pass)
+  const passwordInputSelector = 'input[type="password"]:not([aria-hidden="true"])'
+  await localPage.waitForSelector(passwordInputSelector)
+  await localPage.type(passwordInputSelector, credentials.pass)
 
   await localPage.keyboard.press('Enter')
 
