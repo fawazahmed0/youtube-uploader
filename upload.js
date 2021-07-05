@@ -122,7 +122,7 @@ async function changeLoginPageLangIfNeeded(page) {
 // context and browser is a global variable and it can be accessed from anywhere
 // function that launches a browser
 async function launchBrowser () {
-  browser = await puppeteer.launch({ headless: false })
+  browser = await puppeteer.launch({ headless: true })
   page = await browser.newPage()
   await page.setDefaultTimeout(timeout)
   await page.setViewport({ width: width, height: height })
