@@ -75,7 +75,6 @@ async function upload (credentials, videos) {
  * @returns {void} 
  */
 async function changeLoginPageLangIfNeeded(localPage) {
-  console.log('Checking selected lang...')
 
   const selectedLangSelector = '[aria-selected="true"]'
   try {
@@ -101,8 +100,6 @@ async function changeLoginPageLangIfNeeded(localPage) {
     return
   }
 
-  console.log('Currently selected lang is ' + selectedLang + ', let\'s change it for English, shall we !')
-
   await localPage.click(selectedLangSelector)
 
   await localPage.waitForTimeout(1000)
@@ -117,8 +114,6 @@ async function changeLoginPageLangIfNeeded(localPage) {
   
   await localPage.click(englishLangItemSelector)
 
-  console.log('Changed to English !')
-
   await localPage.waitForTimeout(1000)
 }
 
@@ -129,7 +124,6 @@ async function changeLoginPageLangIfNeeded(localPage) {
  */
 async function changeHomePageLangIfNeeded(localPage) {
   await localPage.goto(homePageURL)
-  console.log('Checking selected lang...')
 
   const avatarButtonSelector = 'button#avatar-btn'
 
@@ -180,8 +174,6 @@ async function changeHomePageLangIfNeeded(localPage) {
     englishItemXPath => document.evaluate(englishItemXPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(),
     englishItemXPath
   )
-
-  console.log('Changed to English !')
 
   await localPage.goto(uploadURL)
 }
@@ -378,7 +370,12 @@ async function uploadVideo (videoJSON) {
   // save youtube upload link
   await page.waitForSelector('[href^="https://youtu.be"]')
   const uploadedLinkHandle = await page.$('[href^="https://youtu.be"]')
-  const uploadedLink = await page.evaluate(e => e.getAttribute('href'), uploadedLinkHandle)
+
+  let uploadedLink
+  do {
+    uploadedLink = await page.evaluate(e => e.getAttribute('href'), uploadedLinkHandle)
+  } while (uploadedLink === 'https://youtu.be/')
+
   let publish;
   for(let i=0;i<10;i++){
     try {
