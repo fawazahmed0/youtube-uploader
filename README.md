@@ -9,7 +9,6 @@
 **In the name of God, who have guided me to do this work**
 
 **Note1:** In case you find any issue, please raise an [issue](https://github.com/fawazahmed0/youtube-uploader/issues/new/choose), So that I can fix it.<br>
-**Note2:** This package only works for English version of youtube, if your youtube.com is in other language, this package will not work, currently there is a [Feature request](https://github.com/fawazahmed0/youtube-uploader/issues/10) to add support for other languages.
   
 Please star this repo by clicking on [:star: button](#) above [:arrow_upper_right:](#)
 
@@ -56,6 +55,9 @@ upload (credentials, [video1, video2]).then(console.log)
 [ 'https://youtu.be/fh2Kreex5Eg', 'https://youtu.be/fh2Krefx5Eg' ]
 ```
 
+### Contributors 🎉:
+- Pierre Miniggio( @pierreminiggio ) - For Adding [Youtube UI English Language Support](https://github.com/fawazahmed0/youtube-uploader/pull/16) 
+  
 ### Donate:
 Please do consider donating, if this project is helpful to you:<br>
 [Donate Link](https://fawazahmed0.github.io/donate.html)
