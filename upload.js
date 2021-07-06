@@ -69,7 +69,7 @@ module.exports.upload = upload
  * @property {string} description
  * @property {string[]|undefined} tags
  * @property {string|undefined} language
- * @property {Playlist} playlist
+ * @property {Playlist|undefined} playlist
  */
 
 /**
