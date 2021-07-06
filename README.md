@@ -48,6 +48,13 @@ const video2 = { path: 'video2.mp4', title: 'title 2', description: 'description
 
 // Returns uploaded video links in array
 upload (credentials, [video1, video2]).then(console.log)
+
+// OR
+// This package uses Puppeteer, you can also pass Puppeteer launch configuration
+upload (credentials, [video1, video2], {headless:false}).then(console.log)
+
+// Refer Puppeteer documentation for more launch configurations like proxy etc
+// https://pptr.dev/#?product=Puppeteer&version=main&show=api-puppeteerlaunchoptions
 ```
 
 ### Output:

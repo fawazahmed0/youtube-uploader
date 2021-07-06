@@ -17,6 +17,13 @@ const video2 = { path: 'video2.mp4', title: 'title 2', description: 'description
 // Returns uploaded video links in array
 upload (credentials, [video1, video2]).then(console.log)
 
+// OR
+// This package uses Puppeteer, you can also pass Puppeteer launch configuration
+upload (credentials, [video1, video2], {headless:false}).then(console.log)
+
+// Refer Puppeteer documentation for more launch configurations like proxy etc
+// https://pptr.dev/#?product=Puppeteer&version=main&show=api-puppeteerlaunchoptions
+
 */
 
 const puppeteer = require('puppeteer-extra')
@@ -42,8 +49,8 @@ const capitalize = words => words.split(' ').map(w => w[0].toUpperCase() + w.sub
 
 module.exports.upload = upload
 
-async function upload (credentials, videos) {
-  await launchBrowser()
+async function upload (credentials, videos, puppeteerLaunch) {
+  await launchBrowser(puppeteerLaunch)
 
   const uploadedYTLink = []
 
@@ -180,8 +187,8 @@ async function changeHomePageLangIfNeeded(localPage) {
 
 // context and browser is a global variable and it can be accessed from anywhere
 // function that launches a browser
-async function launchBrowser () {
-  browser = await puppeteer.launch({ headless: true })
+async function launchBrowser (puppeteerLaunch) {
+  browser = await puppeteer.launch(puppeteerLaunch)
   page = await browser.newPage()
   await page.setDefaultTimeout(timeout)
   await page.setViewport({ width: width, height: height })
