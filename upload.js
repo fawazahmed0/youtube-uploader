@@ -77,10 +77,10 @@ module.exports.upload = upload
  */
 
 /**
- * @param {Credentials} credentials 
- * @param {Video[]} videos 
+ * @param {Credentials} credentials
+ * @param {Video[]} videos
  * @param {import('puppeteer').LaunchOptions} puppeteerLaunch
- * 
+ *
  * @returns {Promise<VideoLink[]>}
  */
 async function upload (credentials, videos, puppeteerLaunch) {
