@@ -63,7 +63,7 @@ upload (credentials, [video1, video2], {headless:false}).then(console.log)
 ```
 
 ### Contributors 🎉:
-- Pierre Miniggio( @pierreminiggio ) - For Adding [Youtube UI English Language Support](https://github.com/fawazahmed0/youtube-uploader/pull/16) 
+- [Pierre Miniggio( @pierreminiggio )](https://ggio.link/twitter) - For Adding [Youtube UI English Language Support](https://github.com/fawazahmed0/youtube-uploader/pull/16) 
   
 ### Donate:
 Please do consider donating, if this project is helpful to you:<br>
