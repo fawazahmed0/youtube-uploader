@@ -49,6 +49,40 @@ const capitalize = words => words.split(' ').map(w => w[0].toUpperCase() + w.sub
 
 module.exports.upload = upload
 
+/**
+ * @typedef {Object} Credentials
+ * @property {string} email
+ * @property {string} pass
+ * @property {string|undefined} recoveryemail
+ */
+
+/**
+ * @typedef {Object} Playlist
+ * @property {boolean} create
+ * @property {string} name
+ */
+
+/**
+ * @typedef {Object} Video
+ * @property {string} path
+ * @property {string} title
+ * @property {string} description
+ * @property {string[]|undefined} tags
+ * @property {string|undefined} language
+ * @property {Playlist} playlist
+ */
+
+/**
+ * @typedef {string} VideoLink
+ */
+
+/**
+ * @param {Credentials} credentials 
+ * @param {Video[]} videos 
+ * @param {import('puppeteer').LaunchOptions} puppeteerLaunch
+ * 
+ * @returns {Promise<VideoLink[]>}
+ */
 async function upload (credentials, videos, puppeteerLaunch) {
   await launchBrowser(puppeteerLaunch)
 
