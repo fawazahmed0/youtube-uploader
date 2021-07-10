@@ -66,6 +66,6 @@ upload (credentials, [video1, video2], {headless:false}).then(console.log)
 - [Pierre Miniggio( @pierreminiggio )](https://ggio.link/twitter) - For Adding [Youtube UI English Language Support](https://github.com/fawazahmed0/youtube-uploader/pull/16) 
   
 ### Donate:
-Please do consider donating, if this project is helpful to you:<br>
+Please do consider donating $3 or more, if this project is helpful to you:<br>
 [Donate Link](https://fawazahmed0.github.io/donate.html)
 
