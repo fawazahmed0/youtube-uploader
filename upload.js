@@ -293,7 +293,7 @@ async function uploadVideo (videoJSON) {
   const playlistName = videoJSON.playlist ? videoJSON.playlist.name : null
   const createplaylistbool = videoJSON.playlist ? videoJSON.playlist.create : null
   const videoLang = videoJSON.language
-
+  const thumb = videoJSON.thumbnail
   await page.evaluate(() => { window.onbeforeunload = null })
   await page.goto(uploadURL)
 
@@ -327,6 +327,15 @@ async function uploadVideo (videoJSON) {
   // Wait for upload to go away and processing to start
   await page.waitForXPath('//*[contains(text(),"Upload complete")]', { hidden: true, timeout: 0 })
   // Wait until title & description box pops up
+  if(thumb){
+    const [thumbChooser] = await Promise.all([  
+        page.waitForFileChooser(),
+  await page.waitForSelector(`[class="remove-default-style style-scope ytcp-thumbnails-compact-editor-uploader"]`),
+  await page.click(`[class="remove-default-style style-scope ytcp-thumbnails-compact-editor-uploader"]`)
+])
+  await thumbChooser.accept([thumb])
+        }
+  
   await page.waitForFunction('document.querySelectorAll(\'[id="textbox"]\').length > 1')
   const textBoxes = await page.$x('//*[@id="textbox"]')
   await page.bringToFront()
