@@ -9,10 +9,8 @@ const credentials = { email: 'email', pass: 'pass', recoveryemail: 'recoveryemai
 // minimum required options to upload video
 const video1 = { path: 'video1.mp4', title: 'title 1', description: 'description 1' }
 
-//set create to true, if playlist doesn't exist
-const playlist = { create: true, name: 'my playlist' }
 // Extra options like tags, thumbnail, language, playlist etc
-const video2 = { path: 'video2.mp4', title: 'title 2', description: 'description 2', thumbnail:'thumbnail.png', language: 'english', tags: ['video', 'github'], playlist: playlist }
+const video2 = { path: 'video2.mp4', title: 'title 2', description: 'description 2', thumbnail:'thumbnail.png', language: 'english', tags: ['video', 'github'], playlist: 'playlist name' }
 
 // Returns uploaded video links in array
 upload (credentials, [video1, video2]).then(console.log)
@@ -57,19 +55,13 @@ module.exports.upload = upload
  */
 
 /**
- * @typedef {Object} Playlist
- * @property {boolean} create
- * @property {string} name
- */
-
-/**
  * @typedef {Object} Video
  * @property {string} path
  * @property {string} title
  * @property {string} description
  * @property {string[]|undefined} tags
  * @property {string|undefined} language
- * @property {Playlist|undefined} playlist
+ * @property {string|undefined} playlist
  */
 
 /**
@@ -136,8 +128,6 @@ async function changeLoginPageLangIfNeeded(localPage) {
   }
 
   if (selectedLang.includes('English')) {
-    console.log('Selected lang is already english')
-
     return
   }
 
@@ -290,8 +280,8 @@ async function uploadVideo (videoJSON) {
   const title = videoJSON.title
   const description = videoJSON.description
   const tags = videoJSON.tags
-  const playlistName = videoJSON.playlist ? videoJSON.playlist.name : null
-  const createplaylistbool = videoJSON.playlist ? videoJSON.playlist.create : null
+  // For backward compatablility playlist.name is checked first
+  const playlistName = videoJSON.playlist?.name || videoJSON.playlist
   const videoLang = videoJSON.language
   const thumb = videoJSON.thumbnail
   await page.evaluate(() => { window.onbeforeunload = null })
@@ -353,10 +343,21 @@ async function uploadVideo (videoJSON) {
   await moreOption[0].click()
   const playlist = await page.$x('//*[normalize-space(text())=\'Select\']')
   let createplaylistdone
-  if (createplaylistbool) {
-    // Creating new playlist
+  if (playlistName) {
+    // Selecting playlist
+    for(let i=0;i<2;i++){
+    try{
+    await page.evaluate(el => el.click(), playlist[0])
+    const playlistToSelectXPath = '//*[normalize-space(text())=\'' + playlistName + '\']'
+    await page.waitForXPath(playlistToSelectXPath,{timeout:5000})
+    const playlistNameSelector = await page.$x(playlistToSelectXPath)
+    await page.evaluate(el => el.click(), playlistNameSelector[0])
+    createplaylistdone = await page.$x('//*[normalize-space(text())=\'Done\']')
+    await page.evaluate(el => el.click(), createplaylistdone[0])
+    break;
+    }catch(error){
+     // Creating new playlist
     // click on playlist dropdown
-
     await page.evaluate(el => el.click(), playlist[0])
     // click New playlist button
     const newPlaylistXPath = '//*[normalize-space(text())=\'New playlist\'] | //*[normalize-space(text())=\'Create playlist\']'
@@ -370,15 +371,8 @@ async function uploadVideo (videoJSON) {
     await page.evaluate(el => el.click(), createplaylistbtn[1])
     createplaylistdone = await page.$x('//*[normalize-space(text())=\'Done\']')
     await page.evaluate(el => el.click(), createplaylistdone[0])
-  } else if (playlistName) {
-    // Selecting playlist
-    await page.evaluate(el => el.click(), playlist[0])
-    const playlistToSelectXPath = '//*[normalize-space(text())=\'' + playlistName + '\']'
-    await page.waitForXPath(playlistToSelectXPath)
-    const playlistNameSelector = await page.$x(playlistToSelectXPath)
-    await page.evaluate(el => el.click(), playlistNameSelector[0])
-    createplaylistdone = await page.$x('//*[normalize-space(text())=\'Done\']')
-    await page.evaluate(el => el.click(), createplaylistdone[0])
+    }
+    }
   }
   // Add tags
   if (tags) {

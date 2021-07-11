@@ -105,3 +105,4 @@ dist
 .dccache
 *.mp4
 test.js
+thumbnail.png
