@@ -417,6 +417,7 @@ async function uploadVideo (videoJSON) {
 
   let uploadedLink
   do {
+    await page.waitForTimeout(500)
     uploadedLink = await page.evaluate(e => e.getAttribute('href'), uploadedLinkHandle)
   } while (uploadedLink === 'https://youtu.be/')
 
