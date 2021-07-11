@@ -44,7 +44,7 @@ const video1 = { path: 'video1.mp4', title: 'title 1', description: 'description
 //set create to true, if playlist doesn't exist
 const playlist = { create: true, name: 'my playlist' }
 // Extra options like tags, language, playlist etc
-const video2 = { path: 'video2.mp4', title: 'title 2', description: 'description 2', language: 'english', tags: ['video', 'github'], playlist: playlist }
+const video2 = { path: 'video2.mp4', title: 'title 2', description: 'description 2', thumbnail:'thumbnail.png', language: 'english', tags: ['video', 'github'], playlist: playlist }
 
 // Returns uploaded video links in array
 upload (credentials, [video1, video2]).then(console.log)
@@ -64,6 +64,7 @@ upload (credentials, [video1, video2], {headless:false}).then(console.log)
 
 ### Contributors 🎉:
 - [Pierre Miniggio( @pierreminiggio )](https://ggio.link/twitter) - For Adding [Youtube UI English Language Support](https://github.com/fawazahmed0/youtube-uploader/pull/16) 
+- [TentacleSama4254 ](https://github.com/TentacleSama4254) - For Adding [Thumbnail option](https://github.com/fawazahmed0/youtube-uploader/pull/22)
   
 ### Donate($3 or more):
 Please do consider donating $3 or more, if this project is helpful to you:<br>

@@ -12,7 +12,7 @@ const video1 = { path: 'video1.mp4', title: 'title 1', description: 'description
 //set create to true, if playlist doesn't exist
 const playlist = { create: true, name: 'my playlist' }
 // Extra options like tags, language, playlist etc
-const video2 = { path: 'video2.mp4', title: 'title 2', description: 'description 2', language: 'english', tags: ['video', 'github'], playlist: playlist }
+const video2 = { path: 'video2.mp4', title: 'title 2', description: 'description 2', thumbnail:'thumbnail.png', language: 'english', tags: ['video', 'github'], playlist: playlist }
 
 // Returns uploaded video links in array
 upload (credentials, [video1, video2]).then(console.log)
