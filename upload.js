@@ -376,8 +376,8 @@ async function uploadVideo (videoJSON) {
   }
   // Add tags
   if (tags) {
-    await page.focus('[placeholder="Add tag"]')
-    await page.type('[placeholder="Add tag"]', tags.join(', ').substring(0, 495) + ', ')
+    await page.focus(`[aria-label="Tags"]`)
+    await page.type(`[aria-label="Tags"]`, tags.join(', ').substring(0, 495) + ', ')
   }
 
   // Selecting video language
