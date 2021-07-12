@@ -61,8 +61,8 @@ upload (credentials, [video1, video2], {headless:false}).then(console.log)
 ```
 
 ### Contributors 🎉:
-- [Pierre Miniggio( @pierreminiggio )](https://ggio.link/twitter) - For Adding [Youtube UI English Language Support](https://github.com/fawazahmed0/youtube-uploader/pull/16) 
-- [TentacleSama4254 ](https://github.com/TentacleSama4254) - For Adding [Thumbnail option](https://github.com/fawazahmed0/youtube-uploader/pull/22)
+- [Pierre Miniggio( @pierreminiggio )](https://ggio.link/twitter) - For Adding [Youtube UI English Language Support](https://github.com/fawazahmed0/youtube-uploader/pull/16) and [JSDoc](https://github.com/fawazahmed0/youtube-uploader/pull/18)
+- [TentacleSama4254 ](https://github.com/TentacleSama4254) - For Adding [Thumbnail option](https://github.com/fawazahmed0/youtube-uploader/pull/22) and Fixing [tags error](https://github.com/fawazahmed0/youtube-uploader/pull/23)
   
 ### Donate($3 or more):
 Please do consider donating $3 or more, if this project is helpful to you:<br>
