@@ -348,8 +348,13 @@ async function uploadVideo (videoJSON) {
     for(let i=0;i<2;i++){
     try{
     await page.evaluate(el => el.click(), playlist[0])
+    // Type the playlist name to filter out
+    await page.waitForSelector('#search-input')
+    await page.focus(`#search-input`)
+    await page.type(`#search-input`, playlistName)
+
     const playlistToSelectXPath = '//*[normalize-space(text())=\'' + playlistName + '\']'
-    await page.waitForXPath(playlistToSelectXPath,{timeout:5000})
+    await page.waitForXPath(playlistToSelectXPath,{timeout:10000})
     const playlistNameSelector = await page.$x(playlistToSelectXPath)
     await page.evaluate(el => el.click(), playlistNameSelector[0])
     createplaylistdone = await page.$x('//*[normalize-space(text())=\'Done\']')
