@@ -12,10 +12,13 @@
   
 Please star this repo by clicking on [:star: button](#) above [:arrow_upper_right:](#)
 
-### Features
+### Features:
 - No upload Limits (100 videos/day limit set by youtube for every channel)
 - Free & Easy to use
 
+### Prerequisite:
+- Install [Nodejs](https://nodejs.org/en/)
+  
 ### Installation:
 ```js
 npm i youtube-videos-uploader
