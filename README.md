@@ -4,7 +4,6 @@
   <img width="460" height="300" src="https://github.com/fawazahmed0/youtube-uploader/raw/main/youtube.png">
 
 [![npm version](https://img.shields.io/npm/v/youtube-videos-uploader.svg?style=flat)](https://www.npmjs.com/package/youtube-videos-uploader)
-[![](https://img.shields.io/badge/Donate-Donate-orange)](https://fawazahmed0.github.io/donate)  
 
 **In the name of God, who have guided me to do this work**
 
@@ -67,7 +66,7 @@ upload (credentials, [video1, video2], {headless:false}).then(console.log)
 - [Pierre Miniggio( @pierreminiggio )](https://ggio.link/twitter) - For Adding [Youtube UI English Language Support](https://github.com/fawazahmed0/youtube-uploader/pull/16) and [JSDoc](https://github.com/fawazahmed0/youtube-uploader/pull/18)
 - [TentacleSama4254 ](https://github.com/TentacleSama4254) - For Adding [Thumbnail option](https://github.com/fawazahmed0/youtube-uploader/pull/22) and fixing [tags error](https://github.com/fawazahmed0/youtube-uploader/pull/23)
   
-### Donate($3 or more):
-Please do consider donating $3 or more, if this project is helpful to you:<br>
-[Donate Link](https://fawazahmed0.github.io/donate.html)
+### Support:
+You can help support this package by as little as $3, because this package needs regular maintenance<br>
+[Donate Link](https://fawazahmed0.github.io/donate)
 
