@@ -68,5 +68,5 @@ upload (credentials, [video1, video2], {headless:false}).then(console.log)
   
 ### Support:
 You can help support this package by as little as $3, because this package needs regular maintenance<br>
-[Donate Link](https://fawazahmed0.github.io/donate)
+[Support Link](https://fawazahmed0.github.io/donate)
 
