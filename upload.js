@@ -42,8 +42,6 @@ let browser, page
 const uploadURL = 'https://www.youtube.com/upload'
 const homePageURL = 'https://www.youtube.com'
 
-// capitalizes all the first letters in a sentense
-const capitalize = words => words.split(' ').map(w => w[0].toUpperCase() + w.substring(1)).join(' ')
 
 module.exports.upload = upload
 
@@ -332,7 +330,7 @@ async function uploadVideo (videoJSON) {
   // Add the title value
   await textBoxes[0].focus()
   await page.waitForTimeout(1000)
-  await textBoxes[0].type(capitalize(title).substring(0, maxTitleLen))
+  await textBoxes[0].type(title.substring(0, maxTitleLen))
   // Add the Description content
   await textBoxes[1].type(description.substring(0, maxDescLen))
 
