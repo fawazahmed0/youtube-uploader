@@ -92,6 +92,12 @@ async function upload (credentials, videos, puppeteerLaunch) {
 
   for (const video of videos) {
     const link = await uploadVideo(video)
+
+    const { onSuccess } = video
+    if (typeof onSuccess === 'function') {
+      onSuccess(link)
+    }
+    
     uploadedYTLink.push(link)
   }
 
