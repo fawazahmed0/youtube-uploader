@@ -10,7 +10,12 @@ const credentials = { email: 'email', pass: 'pass', recoveryemail: 'recoveryemai
 const video1 = { path: 'video1.mp4', title: 'title 1', description: 'description 1' }
 
 // Extra options like tags, thumbnail, language, playlist etc
-const video2 = { path: 'video2.mp4', title: 'title 2', description: 'description 2', thumbnail:'thumbnail.png', language: 'english', tags: ['video', 'github'], playlist: 'playlist name' }
+const video2 = { path: 'video2.mp4', title: 'title 2', description: 'description 2', thumbnail:'thumbnail.png', language: 'english', tags: ['video', 'github'], playlist: 'playlist name', onSuccess:onVideoUploadSuccess }
+
+const onVideoUploadSuccess = (videoUrl) => {
+    // ..do something..
+}
+
 
 // Returns uploaded video links in array
 upload (credentials, [video1, video2]).then(console.log)
@@ -60,6 +65,7 @@ module.exports.upload = upload
  * @property {string[]|undefined} tags
  * @property {string|undefined} language
  * @property {string|undefined} playlist
+*  @property {function|undefined} onSuccess
  */
 
 /**
