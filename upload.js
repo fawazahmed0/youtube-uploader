@@ -453,7 +453,7 @@ async function uploadVideo (videoJSON) {
     await page.waitForXPath(closeBtnXPath)
   } catch (e) {
     await browser.close()
-    throw new Error('Please make sure you set up your default video visibility correctly. More infos : https://github.com/fawazahmed0/youtube-uploader#youtube-setup');
+    throw new Error('Please make sure you set up your default video visibility correctly, you might have forgotten. More infos : https://github.com/fawazahmed0/youtube-uploader#youtube-setup');
   }
 
   return uploadedLink
