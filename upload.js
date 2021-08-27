@@ -449,7 +449,12 @@ async function uploadVideo (videoJSON) {
   }
   // await page.waitForXPath('//*[contains(text(),"Finished processing")]', { timeout: 0})
   // Wait for closebtn to show up
-  await page.waitForXPath(closeBtnXPath)
+  try {
+    await page.waitForXPath(closeBtnXPath)
+  } catch (e) {
+    await browser.close()
+    throw new Error('Please make sure you set up your default video visibility correctly, you might have forgotten. More infos : https://github.com/fawazahmed0/youtube-uploader#youtube-setup');
+  }
 
   return uploadedLink
 }
