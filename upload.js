@@ -242,15 +242,14 @@ async function login (localPage, credentials) {
   const emailInputSelector = 'input[type="email"]'
   await localPage.waitForSelector(emailInputSelector)
 
-  await localPage.type(emailInputSelector, credentials.email, {delay: 100})
+  await localPage.type(emailInputSelector, credentials.email, {delay: 50})
   await localPage.keyboard.press('Enter')
-  await localPage.waitForNavigation({
-    waitUntil: 'networkidle0'
-  })
+
 
   const passwordInputSelector = 'input[type="password"]:not([aria-hidden="true"])'
   await localPage.waitForSelector(passwordInputSelector)
-  await localPage.type(passwordInputSelector, credentials.pass, {delay: 100})
+  await localPage.waitForTimeout(3000)
+  await localPage.type(passwordInputSelector, credentials.pass, {delay: 50})
 
   await localPage.keyboard.press('Enter')
 
