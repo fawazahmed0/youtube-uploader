@@ -89,8 +89,14 @@ async function upload (credentials, videos, puppeteerLaunch) {
   try {
     await login(page, credentials)
   } catch (error) {
-    console.error(error)
-    console.log("Login failed trying again to login")
+    if (error.message === 'Recapcha found') {
+      if (browser) {
+        await browser.close()
+      }
+      throw error
+    }
+
+    // Login failed trying again to login
     await login(page, credentials)
   }
   
@@ -236,25 +242,38 @@ async function login (localPage, credentials) {
   const emailInputSelector = 'input[type="email"]'
   await localPage.waitForSelector(emailInputSelector)
 
-  await localPage.type(emailInputSelector, credentials.email, {delay: 100})
+  await localPage.type(emailInputSelector, credentials.email, {delay: 50})
   await localPage.keyboard.press('Enter')
-  await localPage.waitForNavigation({
-    waitUntil: 'networkidle0'
-  })
+
 
   const passwordInputSelector = 'input[type="password"]:not([aria-hidden="true"])'
   await localPage.waitForSelector(passwordInputSelector)
-  await localPage.type(passwordInputSelector, credentials.pass, {delay: 100})
+  await localPage.waitForTimeout(3000)
+  await localPage.type(passwordInputSelector, credentials.pass, {delay: 50})
 
   await localPage.keyboard.press('Enter')
 
-  await localPage.waitForNavigation()
+  try {
+    await localPage.waitForNavigation()
+  } catch (error) {
+    const recaptchaInputSelector = 'input[aria-label="Type the text you hear or see"]'
+
+    const isOnRecaptchaPage = await localPage.evaluate(
+      recaptchaInputSelector => document.querySelector(recaptchaInputSelector) !== null,
+      recaptchaInputSelector
+    )
+
+    if (isOnRecaptchaPage) {
+      throw new Error('Recaptcha found')
+    }
+
+    throw new Error(error)
+  }
 
   try {
     const uploadPopupSelector = 'ytcp-uploads-dialog'
     await localPage.waitForSelector(uploadPopupSelector, { timeout: 60000 })
   } catch (error) {
-    console.error(error)
     await securityBypass(localPage, credentials.recoveryemail)
   }
 }
