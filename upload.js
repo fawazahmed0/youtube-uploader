@@ -260,7 +260,7 @@ async function login (localPage, credentials) {
 
     if (isOnRecaptchaPage) {
       await browser.close()
-      throw new Error('Recapcha found')
+      throw new Error('Recaptcha found')
     }
 
     await browser.close()
