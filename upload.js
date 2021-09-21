@@ -248,7 +248,13 @@ async function login (localPage, credentials) {
 
   await localPage.keyboard.press('Enter')
 
-  await localPage.waitForNavigation()
+  try {
+    await localPage.waitForNavigation()
+  } catch (error) {
+    console.log(await localPage.evaluate(() => document.body.outerHTML))
+    await browser.close()
+    throw new Error('Recapcha found')
+  }
 
   try {
     const uploadPopupSelector = 'ytcp-uploads-dialog'
