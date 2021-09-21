@@ -89,8 +89,11 @@ async function upload (credentials, videos, puppeteerLaunch) {
   try {
     await login(page, credentials)
   } catch (error) {
-    console.error(error)
-    console.log("Login failed trying again to login")
+    if (error.message === 'Recapcha found') {
+      throw error
+    }
+
+    // Login failed trying again to login
     await login(page, credentials)
   }
   
