@@ -43,12 +43,13 @@ const credentials = { email: 'email', pass: 'pass', recoveryemail: 'recoveryemai
 // minimum required options to upload video
 const video1 = { path: 'video1.mp4', title: 'title 1', description: 'description 1' }
 
-// Extra options like tags, thumbnail, language, playlist etc
-const video2 = { path: 'video2.mp4', title: 'title 2', description: 'description 2', thumbnail:'thumbnail.png', language: 'english', tags: ['video', 'github'], playlist: 'playlist name', onSuccess:onVideoUploadSuccess }
-
 const onVideoUploadSuccess = (videoUrl) => {
     // ..do something..
 }
+// Extra options like tags, thumbnail, language, playlist etc
+const video2 = { path: 'video2.mp4', title: 'title 2', description: 'description 2', thumbnail:'thumbnail.png', language: 'english', tags: ['video', 'github'], playlist: 'playlist name', onSuccess:onVideoUploadSuccess }
+
+
 // Returns uploaded video links in array
 upload (credentials, [video1, video2]).then(console.log)
 

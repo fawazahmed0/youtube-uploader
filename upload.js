@@ -9,12 +9,12 @@ const credentials = { email: 'email', pass: 'pass', recoveryemail: 'recoveryemai
 // minimum required options to upload video
 const video1 = { path: 'video1.mp4', title: 'title 1', description: 'description 1' }
 
-// Extra options like tags, thumbnail, language, playlist etc
-const video2 = { path: 'video2.mp4', title: 'title 2', description: 'description 2', thumbnail:'thumbnail.png', language: 'english', tags: ['video', 'github'], playlist: 'playlist name', onSuccess:onVideoUploadSuccess }
-
 const onVideoUploadSuccess = (videoUrl) => {
     // ..do something..
 }
+
+// Extra options like tags, thumbnail, language, playlist etc
+const video2 = { path: 'video2.mp4', title: 'title 2', description: 'description 2', thumbnail:'thumbnail.png', language: 'english', tags: ['video', 'github'], playlist: 'playlist name', onSuccess:onVideoUploadSuccess }
 
 
 // Returns uploaded video links in array
@@ -236,7 +236,7 @@ async function login (localPage, credentials) {
   const emailInputSelector = 'input[type="email"]'
   await localPage.waitForSelector(emailInputSelector)
 
-  await localPage.type(emailInputSelector, credentials.email)
+  await localPage.type(emailInputSelector, credentials.email, {delay: 100})
   await localPage.keyboard.press('Enter')
   await localPage.waitForNavigation({
     waitUntil: 'networkidle0'
@@ -244,7 +244,7 @@ async function login (localPage, credentials) {
 
   const passwordInputSelector = 'input[type="password"]:not([aria-hidden="true"])'
   await localPage.waitForSelector(passwordInputSelector)
-  await localPage.type(passwordInputSelector, credentials.pass)
+  await localPage.type(passwordInputSelector, credentials.pass, {delay: 100})
 
   await localPage.keyboard.press('Enter')
 
@@ -271,17 +271,21 @@ async function securityBypass (localPage, recoveryemail) {
     console.error(error)
   }
 
- 
+  await localPage.waitForNavigation({
+    waitUntil: 'networkidle0'
+  })
     const enterRecoveryXPath = '//*[normalize-space(text())=\'Enter recovery email address\']'
     await localPage.waitForXPath(enterRecoveryXPath)
+    await localPage.waitForTimeout(5000)
     await localPage.focus('input[type="email"]')
-    await localPage.type('input[type="email"]', recoveryemail)
+    await localPage.waitForTimeout(3000)
+    await localPage.type('input[type="email"]', recoveryemail, {delay: 100})
     await localPage.keyboard.press('Enter')
     await localPage.waitForNavigation({
       waitUntil: 'networkidle0'
     })
-    const selectBtnXPath = '//*[normalize-space(text())=\'Select files\']'
-    await localPage.waitForXPath(selectBtnXPath)
+    const uploadPopupSelector = 'ytcp-uploads-dialog'
+    await localPage.waitForSelector(uploadPopupSelector, { timeout: 60000 })
 }
 
 async function uploadVideo (videoJSON) {
