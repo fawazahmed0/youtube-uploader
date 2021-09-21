@@ -97,7 +97,14 @@ async function upload (credentials, videos, puppeteerLaunch) {
     }
 
     // Login failed trying again to login
-    await login(page, credentials)
+    try {
+      await login(page, credentials)
+    } catch (error) {
+      if (browser) {
+        await browser.close()
+      }
+      throw error
+    }
   }
   
   await changeHomePageLangIfNeeded(page)
