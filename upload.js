@@ -251,16 +251,26 @@ async function login (localPage, credentials) {
   try {
     await localPage.waitForNavigation()
   } catch (error) {
-    console.log(await localPage.evaluate(() => document.body.outerHTML))
+    const recaptchaInputSelector = 'input[aria-label="Type the text you hear or see"]'
+
+    const isOnRecaptchaPage = await localPage.evaluate(
+      recaptchaInputSelector => document.querySelector(recaptchaInputSelector) !== null,
+      recaptchaInputSelector
+    )
+
+    if (isOnRecaptchaPage) {
+      await browser.close()
+      throw new Error('Recapcha found')
+    }
+
     await browser.close()
-    throw new Error('Recapcha found')
+    throw new Error(error)
   }
 
   try {
     const uploadPopupSelector = 'ytcp-uploads-dialog'
     await localPage.waitForSelector(uploadPopupSelector, { timeout: 60000 })
   } catch (error) {
-    console.error(error)
     await securityBypass(localPage, credentials.recoveryemail)
   }
 }
