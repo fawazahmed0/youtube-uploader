@@ -90,6 +90,9 @@ async function upload (credentials, videos, puppeteerLaunch) {
     await login(page, credentials)
   } catch (error) {
     if (error.message === 'Recapcha found') {
+      if (browser) {
+        await browser.close()
+      }
       throw error
     }
 
@@ -262,11 +265,9 @@ async function login (localPage, credentials) {
     )
 
     if (isOnRecaptchaPage) {
-      await browser.close()
       throw new Error('Recaptcha found')
     }
 
-    await browser.close()
     throw new Error(error)
   }
 
