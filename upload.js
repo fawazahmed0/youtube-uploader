@@ -321,7 +321,7 @@ async function uploadVideo (videoJSON) {
   const description = videoJSON.description
   const tags = videoJSON.tags
   // For backward compatablility playlist.name is checked first
-  const playlistName = videoJSON.playlist?.name || videoJSON.playlist
+  const playlistName = videoJSON.playlist && videoJSON.playlist.name || videoJSON.playlist
   const videoLang = videoJSON.language
   const thumb = videoJSON.thumbnail
   await page.evaluate(() => { window.onbeforeunload = null })
