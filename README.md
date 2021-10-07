@@ -70,6 +70,7 @@ upload (credentials, [video1, video2], {headless:false}).then(console.log)
 - [Pierre Miniggio( @pierreminiggio )](https://ggio.link/twitter) - For Adding [Youtube UI English Language Support](https://github.com/fawazahmed0/youtube-uploader/pull/16), [JSDoc](https://github.com/fawazahmed0/youtube-uploader/pull/18), and [debug message](https://github.com/fawazahmed0/youtube-uploader/pull/34)
 - [TentacleSama4254 ](https://github.com/TentacleSama4254) - For Adding [Thumbnail option](https://github.com/fawazahmed0/youtube-uploader/pull/22) and fixing [tags error](https://github.com/fawazahmed0/youtube-uploader/pull/23)
 - [Sai Charan](https://github.com/charan0017) - For [onSuccess Option](https://github.com/fawazahmed0/youtube-uploader/pull/32)
+- [Tue Nguyen](https://github.com/TueNguyen2911) - For [Better error messages](https://github.com/fawazahmed0/youtube-uploader/pull/46)
   
 ### Support:
 You can help support this package by as little as $3, because this package needs regular maintenance<br>
