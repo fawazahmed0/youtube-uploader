@@ -136,7 +136,7 @@ async function changeLoginPageLangIfNeeded(localPage) {
   try {
     await localPage.waitForSelector(selectedLangSelector)
   } catch(e) {
-    throw new Error('Failed to find selected lang : ' + e.name)
+    throw new Error('Failed to find selected language : ' + e.name)
   }
   
   
@@ -147,7 +147,7 @@ async function changeLoginPageLangIfNeeded(localPage) {
   )
 
   if (! selectedLang) {
-    throw new Error('Failed to find selected lang : Empty text')
+    throw new Error('Failed to find selected language : Empty text')
   }
 
   if (selectedLang.includes('English')) {
@@ -163,7 +163,7 @@ async function changeLoginPageLangIfNeeded(localPage) {
   try {
     await localPage.waitForSelector(englishLangItemSelector)
   } catch(e) {
-    throw new Error('Failed to find english lang item : ' + e.name)
+    throw new Error('Failed to find english language item : ' + e.name)
   }
   
   await localPage.click(englishLangItemSelector)
@@ -184,7 +184,7 @@ async function changeHomePageLangIfNeeded(localPage) {
   try {
     await localPage.waitForSelector(avatarButtonSelector)
   } catch (e) {
-    throw new Error('Avatar button not found : ' + e.name)
+    throw new Error('Avatar/Profile picture button not found : ' + e.name)
   }
   
   await localPage.click(avatarButtonSelector)
@@ -193,7 +193,7 @@ async function changeHomePageLangIfNeeded(localPage) {
   try {
     await localPage.waitForSelector(langMenuItemSelector)
   } catch (e) {
-    throw new Error('Lang menu item selector not found : ' + e.name)
+    throw new Error('Language menu item selector/button(">") not found : ' + e.name)
   }
 
   /** @type {?string} */
@@ -203,7 +203,7 @@ async function changeHomePageLangIfNeeded(localPage) {
   )
 
   if (! selectedLang) {
-    throw new Error('Failed to find selected lang : Empty text')
+    throw new Error('Failed to find selected language : Empty text')
   }
 
   if (selectedLang.includes('English')) {
@@ -219,7 +219,7 @@ async function changeHomePageLangIfNeeded(localPage) {
   try {
     await localPage.waitForXPath(englishItemXPath)
   } catch (e) {
-    throw new Error('English item selector not found : ' + e.name)
+    throw new Error('English(UK) item selector not found : ' + e.name)
   }
 
   await localPage.waitForTimeout(3000)
@@ -336,7 +336,7 @@ async function uploadVideo (videoJSON) {
       break
     } catch (error) {
       const nextText = i === 0 ? ' trying again' : ' failed again'
-      console.log('failed to find the select files button for chapter ', chapter, nextText)
+      console.log('Failed to find the select files button for chapter ', chapter, nextText)
       console.error(error)
       await page.evaluate(() => { window.onbeforeunload = null })
       await page.goto(uploadURL)
@@ -353,7 +353,7 @@ async function uploadVideo (videoJSON) {
   ])
   await fileChooser.accept([pathToFile])
   // Wait for upload to complete
-  await page.waitForXPath('//*[contains(text(),"Upload complete")]', { timeout: 0 })
+  await page.waitForXPath('//*[contains(text(),"Upload complete")]', { hidden: true, timeout: 0 })
   // Wait for upload to go away and processing to start
   await page.waitForXPath('//*[contains(text(),"Upload complete")]', { hidden: true, timeout: 0 })
   // Wait until title & description box pops up
