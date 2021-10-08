@@ -314,8 +314,12 @@ async function securityBypass (localPage, recoveryemail) {
     await localPage.waitForSelector(uploadPopupSelector, { timeout: 60000 })
 }
 
-async function uploadVideo (videoJSON) {
+// `videoJSON = {}`, avoid `videoJSON = undefined` throw error.
+async function uploadVideo (videoJSON = {}) {
   const pathToFile = videoJSON.path
+  if (!pathToFile) {
+    throw new Error("function `upload`'s second param `videos`'s item `video` must include `path` property.")
+  }
 
   const title = videoJSON.title
   const description = videoJSON.description
