@@ -239,6 +239,7 @@ async function launchBrowser (puppeteerLaunch) {
   page = await browser.newPage()
   await page.setDefaultTimeout(timeout)
   await page.setViewport({ width: width, height: height })
+  await page.setBypassCSP(true)
 }
 
 async function login (localPage, credentials) {
