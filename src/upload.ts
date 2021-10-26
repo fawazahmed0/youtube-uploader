@@ -4,7 +4,7 @@ import { Puppeteer, PuppeteerNode, PuppeteerNodeLaunchOptions,Browser,Page,error
 import fs from 'fs-extra'
 
 const StealthPlugin = require('puppeteer-extra-plugin-stealth')
-const cookiesFilePath = './auth/cookies.json';
+const cookiesFilePath = './yt-auth/cookies.json';
 puppeteer.use(StealthPlugin())
 
 const maxTitleLen = 100
@@ -233,7 +233,7 @@ async function login (localPage:Page, credentials:Credentials) {
   }
 
   const cookiesObject = await localPage.cookies()
-  await fs.mkdirSync('./auth', { recursive: true })
+  await fs.mkdirSync('./yt-auth', { recursive: true })
   // Write cookies to temp file to be used in other profile pages
   await fs.writeFile(cookiesFilePath, JSON.stringify(cookiesObject),
    function(err) { 
