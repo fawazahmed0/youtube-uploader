@@ -2,15 +2,21 @@
   "name": "youtube-videos-uploader",
   "version": "1.3.25",
   "description": "Uploads videos to youtube without any limits",
-  "main": "upload.js",
+  "main": "dist/upload.js",
   "dependencies": {
+    "prettier": "^2.4.1",
     "puppeteer": "latest",
-    "puppeteer-extra": "latest",
+    "puppeteer-extra": "^3.2.3",
     "puppeteer-extra-plugin-stealth": "latest"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/fawazahmed0/youtube-uploader.git"
+  },
+  "scripts": {
+    "build": "tsc -p .",
+    "prepublish": "npm run build",
+    "format": "prettier --config .prettierrc \"src/**/*.ts\" --write"
   },
   "keywords": [
     "youtube uploader",
@@ -28,5 +34,8 @@
   "bugs": {
     "url": "https://github.com/fawazahmed0/youtube-uploader/issues"
   },
-  "homepage": "https://github.com/fawazahmed0/youtube-uploader#readme"
+  "homepage": "https://github.com/fawazahmed0/youtube-uploader#readme",
+  "devDependencies": {
+    "@types/fs-extra": "^9.0.13"
+  }
 }

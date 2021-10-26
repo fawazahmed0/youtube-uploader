@@ -1,7 +1,7 @@
 <h1 align="center">Youtube Videos Uploader</h1>
 
 <p align="center">
-  <img width="460" height="300" src="https://github.com/fawazahmed0/youtube-uploader/raw/main/youtube.png">
+  <img width="460" height="300" src="assets/youtube.png">
 
 [![npm version](https://img.shields.io/npm/v/youtube-videos-uploader.svg?style=flat)](https://www.npmjs.com/package/youtube-videos-uploader)
 
@@ -28,7 +28,7 @@ npm i youtube-videos-uploader
 2. Go to your [Youtube settings](https://studio.youtube.com/) and Setup your upload defaults Settings:
 
 
-![Upload Defaults Settings](https://github.com/fawazahmed0/youtube-uploader/raw/main/defaultsettings.png)
+![Upload Defaults Settings](src/defaultsettings.png)
   
 
 

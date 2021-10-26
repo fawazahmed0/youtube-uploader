@@ -1,0 +1,29 @@
+{
+    "compilerOptions": {            
+      "target": "ES6",                                
+      "module": "commonjs",                           
+      "lib": [
+        "DOM",
+        "ESNext",
+        "ESNext.Array",
+        "ESNext.AsyncIterable"
+      ],                                   
+      "outDir": "./dist",                    
+      "strict": true,                                
+      "esModuleInterop": true,                        
+      "skipLibCheck": true,                          
+      "forceConsistentCasingInFileNames": true,
+      "experimentalDecorators": true,
+      "emitDecoratorMetadata": true,
+      "strictFunctionTypes": true,
+      
+      "baseUrl":"src",
+      "paths":{
+        "@jsLib/*": ["../lib/*"]
+      }
+
+    },
+    "include": [
+      "src/**/*"
+    ]
+}

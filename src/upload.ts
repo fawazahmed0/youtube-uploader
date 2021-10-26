@@ -1,38 +1,10 @@
+import { Credentials,Video } from "./types"
+import puppeteer, { PuppeteerExtra } from 'puppeteer-extra'
+import { Puppeteer, PuppeteerNode, PuppeteerNodeLaunchOptions,Browser,Page,errors,PuppeteerErrors } from "puppeteer"
+import fs from 'fs-extra'
 
-/*
-Usage:
-const { upload } = require('youtube-videos-uploader');
-
-// recoveryemail is optional, only required to bypass login with recovery email if prompted for confirmation
-const credentials = { email: 'email', pass: 'pass', recoveryemail: 'recoveryemail' }
-
-// minimum required options to upload video
-const video1 = { path: 'video1.mp4', title: 'title 1', description: 'description 1' }
-
-const onVideoUploadSuccess = (videoUrl) => {
-    // ..do something..
-}
-
-// Extra options like tags, thumbnail, language, playlist etc
-const video2 = { path: 'video2.mp4', title: 'title 2', description: 'description 2', thumbnail:'thumbnail.png', language: 'english', tags: ['video', 'github'], playlist: 'playlist name', onSuccess:onVideoUploadSuccess }
-
-
-// Returns uploaded video links in array
-upload (credentials, [video1, video2]).then(console.log)
-
-// OR
-// This package uses Puppeteer, you can also pass Puppeteer launch configuration
-upload (credentials, [video1, video2], {headless:false}).then(console.log)
-
-// Refer Puppeteer documentation for more launch configurations like proxy etc
-// https://pptr.dev/#?product=Puppeteer&version=main&show=api-puppeteerlaunchoptions
-
-*/
-
-const puppeteer = require('puppeteer-extra')
-
-// Add stealth plugin and use defaults (all tricks to hide puppeteer usage)
 const StealthPlugin = require('puppeteer-extra-plugin-stealth')
+const cookiesFilePath = './auth/cookies.json';
 puppeteer.use(StealthPlugin())
 
 const maxTitleLen = 100
@@ -42,53 +14,24 @@ const timeout = 60000
 const height = 900
 const width = 900
 
-let browser, page
+let browser:Browser, page:Page
 
 const uploadURL = 'https://www.youtube.com/upload'
 const homePageURL = 'https://www.youtube.com'
 
-
-module.exports.upload = upload
-
 /**
- * @typedef {Object} Credentials
- * @property {string} email
- * @property {string} pass
- * @property {string|undefined} recoveryemail
+ * import { upload } from 'youtube-videos-uploader' 
+ * or
+ * const { upload } = require('youtube-videos-uploader');
  */
-
-/**
- * @typedef {Object} Video
- * @property {string} path
- * @property {string} title
- * @property {string} description
- * @property {string[]|undefined} tags
- * @property {string|undefined} language
- * @property {string|undefined} playlist
-*  @property {function|undefined} onSuccess
- */
-
-/**
- * @typedef {string} VideoLink
- */
-
-/**
- * @param {Credentials} credentials
- * @param {Video[]} videos
- * @param {import('puppeteer').LaunchOptions} puppeteerLaunch
- *
- * @returns {Promise<VideoLink[]>}
- */
-async function upload (credentials, videos, puppeteerLaunch) {
+export const upload= async (credentials:Credentials, videos:Video[], puppeteerLaunch:PuppeteerNodeLaunchOptions)=> {
   await launchBrowser(puppeteerLaunch)
 
   const uploadedYTLink = []
 
-  // sometimes chapter may begin from large no like 95,
-  // that's why we are calling the func two times, to reach maxUploadNo
   try {
-    await login(page, credentials)
-  } catch (error) {
+    if (!fs.existsSync(cookiesFilePath)) await login(page, credentials)
+  } catch (error:any) {
     if (error.message === 'Recapcha found') {
       if (browser) {
         await browser.close()
@@ -125,24 +68,18 @@ async function upload (credentials, videos, puppeteerLaunch) {
   return uploadedYTLink
 }
 
-/**
- * @param {import('puppeteer').Page} localPage
- * 
- * @returns {void} 
- */
-async function changeLoginPageLangIfNeeded(localPage) {
+async function changeLoginPageLangIfNeeded(localPage:Page) {
 
   const selectedLangSelector = '[aria-selected="true"]'
   try {
     await localPage.waitForSelector(selectedLangSelector)
-  } catch(e) {
+  } catch(e:any) {
     throw new Error('Failed to find selected language : ' + e.name)
   }
   
-  
-  /** @type {?string} */
+ 
   const selectedLang = await localPage.evaluate(
-    selectedLangSelector => document.querySelector(selectedLangSelector).innerText,
+    (selectedLangSelector:any) => document.querySelector(selectedLangSelector).innerText,
     selectedLangSelector
   )
 
@@ -162,7 +99,7 @@ async function changeLoginPageLangIfNeeded(localPage) {
 
   try {
     await localPage.waitForSelector(englishLangItemSelector)
-  } catch(e) {
+  } catch(e:any) {
     throw new Error('Failed to find english language item : ' + e.name)
   }
   
@@ -171,19 +108,15 @@ async function changeLoginPageLangIfNeeded(localPage) {
   await localPage.waitForTimeout(1000)
 }
 
-/**
- * @param {import('puppeteer').Page} localPage
- * 
- * @returns {void} 
- */
-async function changeHomePageLangIfNeeded(localPage) {
+
+async function changeHomePageLangIfNeeded(localPage:Page) {
   await localPage.goto(homePageURL)
 
   const avatarButtonSelector = 'button#avatar-btn'
 
   try {
     await localPage.waitForSelector(avatarButtonSelector)
-  } catch (e) {
+  } catch(e:any) {
     throw new Error('Avatar/Profile picture button not found : ' + e.name)
   }
   
@@ -192,11 +125,10 @@ async function changeHomePageLangIfNeeded(localPage) {
   const langMenuItemSelector = 'yt-multi-page-menu-section-renderer+yt-multi-page-menu-section-renderer>#items>ytd-compact-link-renderer>a'
   try {
     await localPage.waitForSelector(langMenuItemSelector)
-  } catch (e) {
+  } catch(e:any) {
     throw new Error('Language menu item selector/button(">") not found : ' + e.name)
   }
 
-  /** @type {?string} */
   const selectedLang = await localPage.evaluate(
     langMenuItemSelector => document.querySelector(langMenuItemSelector).innerText,
     langMenuItemSelector
@@ -218,31 +150,46 @@ async function changeHomePageLangIfNeeded(localPage) {
   
   try {
     await localPage.waitForXPath(englishItemXPath)
-  } catch (e) {
+  } catch (e:any) {
     throw new Error('English(UK) item selector not found : ' + e.name)
   }
 
   await localPage.waitForTimeout(3000)
 
-  await localPage.evaluate(
-    englishItemXPath => document.evaluate(englishItemXPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(),
+await localPage.evaluate(
+    (englishItemXPath:any) => {
+        let element:  HTMLElement =   (document?.evaluate(englishItemXPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue)as HTMLElement;
+        element.click()
+    },
     englishItemXPath
   )
 
   await localPage.goto(uploadURL)
 }
 
-// context and browser is a global variable and it can be accessed from anywhere
-// function that launches a browser
-async function launchBrowser (puppeteerLaunch) {
-  browser = await puppeteer.launch(puppeteerLaunch)
-  page = await browser.newPage()
-  await page.setDefaultTimeout(timeout)
+
+async function launchBrowser (puppeteerLaunch:PuppeteerNodeLaunchOptions) {
+    const previousSession = fs.existsSync(cookiesFilePath)
+    
+    browser = await puppeteer.launch(puppeteerLaunch)
+    page = await browser.newPage()
+    await page.setDefaultTimeout(timeout)
+    if (previousSession) {
+      // If file exist load the cookies
+      const cookiesString = fs.readFileSync(cookiesFilePath, { encoding: 'utf-8' });
+      const parsedCookies = JSON.parse(cookiesString);
+      if (parsedCookies.length !== 0) {
+        for (let cookie of parsedCookies) {
+          await page.setCookie(cookie)
+        }
+        console.log('Session has been loaded in the browser')
+      }
+    }
   await page.setViewport({ width: width, height: height })
   await page.setBypassCSP(true)
 }
 
-async function login (localPage, credentials) {
+async function login (localPage:Page, credentials:Credentials) {
   await localPage.goto(uploadURL)
 
   await changeLoginPageLangIfNeeded(localPage)
@@ -263,7 +210,7 @@ async function login (localPage, credentials) {
 
   try {
     await localPage.waitForNavigation()
-  } catch (error) {
+  } catch (error:any) {
     const recaptchaInputSelector = 'input[aria-label="Type the text you hear or see"]'
 
     const isOnRecaptchaPage = await localPage.evaluate(
@@ -280,20 +227,31 @@ async function login (localPage, credentials) {
 
   try {
     const uploadPopupSelector = 'ytcp-uploads-dialog'
-    await localPage.waitForSelector(uploadPopupSelector, { timeout: 60000 })
+    await localPage.waitForSelector(uploadPopupSelector, { timeout: 70000 })
   } catch (error) {
-    await securityBypass(localPage, credentials.recoveryemail)
+    if (credentials.recoveryemail) await securityBypass(localPage, credentials.recoveryemail)
   }
+
+  const cookiesObject = await localPage.cookies()
+  // Write cookies to temp file to be used in other profile pages
+  fs.writeFile(cookiesFilePath, JSON.stringify(cookiesObject),
+   function(err) { 
+    if (err) {
+    console.log('The file could not be written.', err)
+    }
+    console.log('Session has been successfully saved')
+  })
+  
 }
 
 // Login bypass with recovery email
-async function securityBypass (localPage, recoveryemail) {
+async function securityBypass (localPage:Page, recoveryemail:string) {
   try {
     const confirmRecoveryXPath = '//*[normalize-space(text())=\'Confirm your recovery email\']'
     await localPage.waitForXPath(confirmRecoveryXPath)
 
     const confirmRecoveryBtn = await localPage.$x(confirmRecoveryXPath)
-    await localPage.evaluate(el => el.click(), confirmRecoveryBtn[0])
+    await localPage.evaluate((el:any) => el.click(), confirmRecoveryBtn[0])
   } catch (error) {
     console.error(error)
   }
@@ -316,7 +274,7 @@ async function securityBypass (localPage, recoveryemail) {
 }
 
 // `videoJSON = {}`, avoid `videoJSON = undefined` throw error.
-async function uploadVideo (videoJSON = {}) {
+async function uploadVideo (videoJSON:Video) {
   const pathToFile = videoJSON.path
   if (!pathToFile) {
     throw new Error("function `upload`'s second param `videos`'s item `video` must include `path` property.")
@@ -326,7 +284,7 @@ async function uploadVideo (videoJSON = {}) {
   const description = videoJSON.description
   const tags = videoJSON.tags
   // For backward compatablility playlist.name is checked first
-  const playlistName = videoJSON.playlist && videoJSON.playlist.name || videoJSON.playlist
+  const playlistName = videoJSON.playlist 
   const videoLang = videoJSON.language
   const thumb = videoJSON.thumbnail
   await page.evaluate(() => { window.onbeforeunload = null })
@@ -341,7 +299,7 @@ async function uploadVideo (videoJSON = {}) {
       break
     } catch (error) {
       const nextText = i === 0 ? ' trying again' : ' failed again'
-      console.log('Failed to find the select files button for chapter ', chapter, nextText)
+      console.log('Failed to find the select files button for chapter ', nextText)
       console.error(error)
       await page.evaluate(() => { window.onbeforeunload = null })
       await page.goto(uploadURL)
