@@ -6,7 +6,9 @@
   "types": "dist",
   "files": [
     "dist"
-  ],
+  ],"directories": {
+    "test": "test"
+  },
   "dependencies": {
     "prettier": "^2.4.1",
     "puppeteer": "latest",
