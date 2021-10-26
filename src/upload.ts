@@ -233,8 +233,9 @@ async function login (localPage:Page, credentials:Credentials) {
   }
 
   const cookiesObject = await localPage.cookies()
+  await fs.mkdirSync('./auth', { recursive: true })
   // Write cookies to temp file to be used in other profile pages
-  fs.writeFile(cookiesFilePath, JSON.stringify(cookiesObject),
+  await fs.writeFile(cookiesFilePath, JSON.stringify(cookiesObject),
    function(err) { 
     if (err) {
     console.log('The file could not be written.', err)
