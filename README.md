@@ -12,7 +12,7 @@
 Please star this repo by clicking on [:star: button](#) above [:arrow_upper_right:](#)
 
 ### Features:
-- No upload Limits (100 videos/day limit set by youtube for every channel)
+- No upload Limits (100/50 videos/day limit set by youtube for every channel)
 - Free & Easy to use
 
 ### Prerequisite:

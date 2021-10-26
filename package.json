@@ -2,7 +2,11 @@
   "name": "youtube-videos-uploader",
   "version": "1.3.25",
   "description": "Uploads videos to youtube without any limits",
-  "main": "dist/upload.js",
+  "main": "dist/index.js",
+  "types": "dist",
+  "files": [
+    "dist"
+  ],
   "dependencies": {
     "prettier": "^2.4.1",
     "puppeteer": "latest",
