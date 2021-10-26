@@ -8,14 +8,16 @@
     "dist",
     "auth",
     "test"
-  ],"directories": {
+  ],
+  "directories": {
     "test": "test"
   },
   "dependencies": {
     "prettier": "^2.4.1",
     "puppeteer": "latest",
     "puppeteer-extra": "latest",
-    "puppeteer-extra-plugin-stealth": "latest"
+    "puppeteer-extra-plugin-stealth": "latest",
+    "typescript": "^4.4.4"
   },
   "repository": {
     "type": "git",
