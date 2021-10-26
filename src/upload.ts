@@ -24,7 +24,7 @@ const homePageURL = 'https://www.youtube.com'
  * or
  * const { upload } = require('youtube-videos-uploader');
  */
-export const upload= async (credentials:Credentials, videos:Video[], puppeteerLaunch:PuppeteerNodeLaunchOptions)=> {
+export const upload= async (credentials:Credentials, videos:Video[], puppeteerLaunch?:PuppeteerNodeLaunchOptions)=> {
   await launchBrowser(puppeteerLaunch)
 
   const uploadedYTLink = []
@@ -168,7 +168,7 @@ await localPage.evaluate(
 }
 
 
-async function launchBrowser (puppeteerLaunch:PuppeteerNodeLaunchOptions) {
+async function launchBrowser (puppeteerLaunch?:PuppeteerNodeLaunchOptions) {
     const previousSession = fs.existsSync(cookiesFilePath)
     
     browser = await puppeteer.launch(puppeteerLaunch)
