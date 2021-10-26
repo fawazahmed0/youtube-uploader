@@ -4,7 +4,6 @@ import { Puppeteer, PuppeteerNode, PuppeteerNodeLaunchOptions,Browser,Page,error
 import fs from 'fs-extra'
 
 const StealthPlugin = require('puppeteer-extra-plugin-stealth')
-const cookiesFilePath = './yt-auth/cookies.json';
 puppeteer.use(StealthPlugin())
 
 const maxTitleLen = 100
@@ -15,17 +14,19 @@ const height = 900
 const width = 900
 
 let browser:Browser, page:Page
+let cookiesFilePath:string
 
 const uploadURL = 'https://www.youtube.com/upload'
 const homePageURL = 'https://www.youtube.com'
-
 /**
  * import { upload } from 'youtube-videos-uploader' 
  * or
  * const { upload } = require('youtube-videos-uploader');
  */
 export const upload= async (credentials:Credentials, videos:Video[], puppeteerLaunch?:PuppeteerNodeLaunchOptions)=> {
-  await launchBrowser(puppeteerLaunch)
+    cookiesFilePath = `./yt-auth/cookies-${credentials.email.split('@')[0]}.json`;
+  
+    await launchBrowser(puppeteerLaunch)
 
   const uploadedYTLink = []
 
