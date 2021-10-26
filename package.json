@@ -5,7 +5,9 @@
   "main": "dist/index.js",
   "types": "dist",
   "files": [
-    "dist"
+    "dist",
+    "auth",
+    "test"
   ],"directories": {
     "test": "test"
   },
