@@ -23,7 +23,7 @@
   },
   "scripts": {
     "build": "tsc -p .",
-    "prepublish": "npm run build",
+    "prepublish": "npm i typescript -g && npm run build",
     "format": "prettier --config .prettierrc \"src/**/*.ts\" --write"
   },
   "keywords": [
