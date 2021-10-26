@@ -28,7 +28,7 @@ npm i youtube-videos-uploader
 2. Go to your [Youtube settings](https://studio.youtube.com/) and Setup your upload defaults Settings:
 
 
-![Upload Defaults Settings](src/defaultsettings.png)
+![Upload Defaults Settings](assets/defaultsettings.png)
   
 
 
