@@ -53,8 +53,12 @@ export const upload= async (credentials:Credentials, videos:Video[], puppeteerLa
       throw error
     }
   }
-  
+  try{
   await changeHomePageLangIfNeeded(page)
+  }catch(error){
+    console.error(error)
+    await login(page, credentials)
+  }
 
   for (const video of videos) {
     const link = await uploadVideo(video)
