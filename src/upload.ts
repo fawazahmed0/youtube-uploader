@@ -26,7 +26,7 @@ const homePageURL = 'https://www.youtube.com'
  * const { upload } = require('youtube-videos-uploader');
  */
 export const upload= async (credentials:Credentials, videos:Video[], puppeteerLaunch?:PuppeteerNodeLaunchOptions)=> {
-    cookiesDirPath = path.join(__dirname,'yt-auth' )
+    cookiesDirPath = path.join('.','yt-auth' )
     cookiesFilePath = path.join(cookiesDirPath,`cookies-${credentials.email.split('@')[0]}.json`)
   
     await launchBrowser(puppeteerLaunch)
