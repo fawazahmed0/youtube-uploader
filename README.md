@@ -1,7 +1,7 @@
 <h1 align="center">Youtube Videos Uploader</h1>
 
 <p align="center">
-  <img width="460" height="300" src="https://github.com/fawazahmed0/youtube-uploader/raw/main/youtube.png">
+  <img width="460" height="300" src="assets/youtube.png">
 
 [![npm version](https://img.shields.io/npm/v/youtube-videos-uploader.svg?style=flat)](https://www.npmjs.com/package/youtube-videos-uploader)
 
@@ -12,7 +12,7 @@
 Please star this repo by clicking on [:star: button](#) above [:arrow_upper_right:](#)
 
 ### Features:
-- No upload Limits (100 videos/day limit set by youtube for every channel)
+- No upload Limits (50+ videos/day limit set by youtube for every channel)
 - Free & Easy to use
 
 ### Prerequisite:
@@ -28,7 +28,7 @@ npm i youtube-videos-uploader
 2. Go to your [Youtube settings](https://studio.youtube.com/) and Setup your upload defaults Settings:
 
 
-![Upload Defaults Settings](https://github.com/fawazahmed0/youtube-uploader/raw/main/defaultsettings.png)
+![Upload Defaults Settings](assets/defaultsettings.png)
   
 
 
@@ -68,7 +68,7 @@ upload (credentials, [video1, video2], {headless:false}).then(console.log)
 
 ### Contributors 🎉:
 - [Pierre Miniggio( @pierreminiggio )](https://ggio.link/twitter) - For Adding [Youtube UI English Language Support](https://github.com/fawazahmed0/youtube-uploader/pull/16), [JSDoc](https://github.com/fawazahmed0/youtube-uploader/pull/18), and [debug message](https://github.com/fawazahmed0/youtube-uploader/pull/34)
-- [TentacleSama4254 ](https://github.com/TentacleSama4254) - For Adding [Thumbnail option](https://github.com/fawazahmed0/youtube-uploader/pull/22) and fixing [tags error](https://github.com/fawazahmed0/youtube-uploader/pull/23)
+- [TentacleSama4254 ](https://github.com/TentacleSama4254) - For Adding [Thumbnail option](https://github.com/fawazahmed0/youtube-uploader/pull/22), fixing [tags error](https://github.com/fawazahmed0/youtube-uploader/pull/23), [TypeScript Rewrite and storing login session](https://github.com/fawazahmed0/youtube-uploader/pull/51)
 - [Sai Charan](https://github.com/charan0017) - For [onSuccess Option](https://github.com/fawazahmed0/youtube-uploader/pull/32)
 - [Tue Nguyen](https://github.com/TueNguyen2911) - For [Better error messages](https://github.com/fawazahmed0/youtube-uploader/pull/46)
 - [weizhiqimail](https://github.com/weizhiqimail) - For [Extra Debug messages](https://github.com/fawazahmed0/youtube-uploader/pull/47)

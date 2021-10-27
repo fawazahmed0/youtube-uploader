@@ -1,0 +1,24 @@
+{
+    "compilerOptions": {            
+      "target": "ES6",                                
+      "module": "commonjs",                           
+      "lib": [
+        "DOM",
+        "ESNext",
+        "ESNext.Array",
+        "ESNext.AsyncIterable"
+      ],                                   
+      "declaration": true,                     
+      "declarationMap": true,                
+      "sourceMap": true,             
+      "outDir": "./dist",                        
+      "resolveJsonModule": true,
+      "strict": true,                           
+      "esModuleInterop": true,                  
+      "skipLibCheck": true,                     
+      "forceConsistentCasingInFileNames": true  
+    },
+    "include": [
+      "src/**/*"
+    ]
+}
