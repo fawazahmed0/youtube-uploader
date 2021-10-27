@@ -2,6 +2,7 @@ import { Credentials,Video } from "./types"
 import puppeteer, { PuppeteerExtra } from 'puppeteer-extra'
 import { Puppeteer, PuppeteerNode, PuppeteerNodeLaunchOptions,Browser,Page,errors,PuppeteerErrors } from "puppeteer"
 import fs from 'fs-extra'
+import path from 'path'
 
 const StealthPlugin = require('puppeteer-extra-plugin-stealth')
 puppeteer.use(StealthPlugin())
@@ -14,6 +15,7 @@ const height = 900
 const width = 900
 
 let browser:Browser, page:Page
+let cookiesDirPath:string
 let cookiesFilePath:string
 
 const uploadURL = 'https://www.youtube.com/upload'
@@ -24,7 +26,8 @@ const homePageURL = 'https://www.youtube.com'
  * const { upload } = require('youtube-videos-uploader');
  */
 export const upload= async (credentials:Credentials, videos:Video[], puppeteerLaunch?:PuppeteerNodeLaunchOptions)=> {
-    cookiesFilePath = `./yt-auth/cookies-${credentials.email.split('@')[0]}.json`;
+    cookiesDirPath = path.join(__dirname,'yt-auth' )
+    cookiesFilePath = path.join(cookiesDirPath,`cookies-${credentials.email.split('@')[0]}.json`)
   
     await launchBrowser(puppeteerLaunch)
 
@@ -234,7 +237,7 @@ async function login (localPage:Page, credentials:Credentials) {
   }
 
   const cookiesObject = await localPage.cookies()
-  await fs.mkdirSync('./yt-auth', { recursive: true })
+  await fs.mkdirSync(cookiesDirPath, { recursive: true })
   // Write cookies to temp file to be used in other profile pages
   await fs.writeFile(cookiesFilePath, JSON.stringify(cookiesObject),
    function(err) { 
@@ -301,7 +304,7 @@ async function uploadVideo (videoJSON:Video) {
       break
     } catch (error) {
       const nextText = i === 0 ? ' trying again' : ' failed again'
-      console.log('Failed to find the select files button for chapter ', nextText)
+      console.log('Failed to find the select files button', nextText)
       console.error(error)
       await page.evaluate(() => { window.onbeforeunload = null })
       await page.goto(uploadURL)
