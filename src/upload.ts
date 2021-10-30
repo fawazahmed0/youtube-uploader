@@ -492,8 +492,7 @@ const updateVideoInfo = async (videoJSON: VideoToEdit) => {
  
     }
     //#overflow-menu-button
-    await sleep(1000 * 1000)
-    page.waitForTimeout(100 * 1000)
+     return console.log('successfully edited')
 }
 
 async function changeLoginPageLangIfNeeded(localPage: Page) {
