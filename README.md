@@ -35,7 +35,10 @@ npm i youtube-videos-uploader
 
 ### Usage:
 ```js
-const { upload } = require('youtube-videos-uploader');
+
+import {upload} from 'youtube-videos-uploader' //Typescript
+//or
+const { upload } = require('youtube-videos-uploader'); //vanilla javascript
 
 // recoveryemail is optional, only required to bypass login with recovery email if prompted for confirmation
 const credentials = { email: 'Your Email', pass: 'Your Password', recoveryemail: 'Your Recovery Email' }

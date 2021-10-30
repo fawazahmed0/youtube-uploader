@@ -10,6 +10,25 @@ export interface Video {
     onSuccess?: Function
 }
 
+export interface VideoToEdit {
+    link: string
+    title?: string
+    description?: string
+    tags?: string[]
+    replaceTags?: string[]
+    language?: string
+    playlist?: string
+    function?: any
+    thumbnail?: string
+    publishType?: 'private' | 'unlisted' | 'public' | 'public&premiere'
+    onSuccess?: Function
+}
+
+export interface deleteObj {
+    link: string
+    delete:boolean
+}
+
 export interface Credentials {
     email: string
     pass: string
