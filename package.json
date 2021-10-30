@@ -16,8 +16,7 @@
     "prettier": "^2.4.1",
     "puppeteer": "latest",
     "puppeteer-extra": "latest",
-    "puppeteer-extra-plugin-stealth": "latest",
-    "typescript": "^4.4.4"
+    "puppeteer-extra-plugin-stealth": "latest"
   },
   "repository": {
     "type": "git",
@@ -46,6 +45,8 @@
   },
   "homepage": "https://github.com/fawazahmed0/youtube-uploader#readme",
   "devDependencies": {
-    "@types/fs-extra": "^9.0.13"
+    "@types/fs-extra": "^9.0.13",
+    "typescript": "^4.4.4"
+
   }
 }

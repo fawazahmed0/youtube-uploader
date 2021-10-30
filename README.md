@@ -34,8 +34,13 @@ npm i youtube-videos-uploader
 
 
 ### Usage:
+- #### Uploading a Video:  
+
 ```js
-const { upload } = require('youtube-videos-uploader');
+
+import { upload } from 'youtube-videos-uploader' //Typescript
+//or
+const { upload } = require('youtube-videos-uploader'); //vanilla javascript
 
 // recoveryemail is optional, only required to bypass login with recovery email if prompted for confirmation
 const credentials = { email: 'Your Email', pass: 'Your Password', recoveryemail: 'Your Recovery Email' }
@@ -61,14 +66,36 @@ upload (credentials, [video1, video2], {headless:false}).then(console.log)
 // https://pptr.dev/#?product=Puppeteer&version=main&show=api-puppeteerlaunchoptions
 ```
 
-### Output:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Output:**
 ```js
 [ 'https://youtu.be/fh2Kreex5Eg', 'https://youtu.be/fh2Krefx5Eg' ]
 ```
+  
+- #### Updating Metadata of a Youtube Video:    
+  
+ ```js
 
+import { update } from 'youtube-videos-uploader' //Typescript
+//or
+const { update } = require('youtube-videos-uploader'); //vanilla javascript
+
+const videoUpdate1 = { link: 'https://www.youtube.com/watch?v=w3jLJU7DT5E', title: 'Your New Title' }
+
+const onVideoUpdateSuccess = (videoUrl) => {
+    // ..do something..
+}
+// Extra options like tags, thumbnail, language, playlist etc
+const videoUpdate2 = { link: 'https://www.youtube.com/watch?v=w3jLJU7DT5E', title: 'title 2', description: 'description 2', thumbnail: 'thumbnail.png', language: 'english', tags: ['video', 'github'], replaceTags: ['mytag'], playlist: 'playlist name', publishType: 'unlisted', onSuccess: onVideoUpdateSuccess }
+
+update(credentials, [videoUpdate1, videoUpdate2]).then(console.log)
+// OR
+update(credentials, [videoUpdate1, videoUpdate2], { headless: false }).then(console.log)
+  
+```
+  
 ### Contributors 🎉:
 - [Pierre Miniggio( @pierreminiggio )](https://ggio.link/twitter) - For Adding [Youtube UI English Language Support](https://github.com/fawazahmed0/youtube-uploader/pull/16), [JSDoc](https://github.com/fawazahmed0/youtube-uploader/pull/18), and [debug message](https://github.com/fawazahmed0/youtube-uploader/pull/34)
-- [TentacleSama4254 ](https://github.com/TentacleSama4254) - For Adding [Thumbnail option](https://github.com/fawazahmed0/youtube-uploader/pull/22), fixing [tags error](https://github.com/fawazahmed0/youtube-uploader/pull/23), [TypeScript Rewrite and storing login session](https://github.com/fawazahmed0/youtube-uploader/pull/51)
+- [TentacleSama4254 ](https://github.com/TentacleSama4254) - For Adding [Thumbnail option](https://github.com/fawazahmed0/youtube-uploader/pull/22), fixing [tags error](https://github.com/fawazahmed0/youtube-uploader/pull/23), [TypeScript Rewrite, storing login session](https://github.com/fawazahmed0/youtube-uploader/pull/51) and [video metadata update feature](https://github.com/fawazahmed0/youtube-uploader/pull/53)
 - [Sai Charan](https://github.com/charan0017) - For [onSuccess Option](https://github.com/fawazahmed0/youtube-uploader/pull/32)
 - [Tue Nguyen](https://github.com/TueNguyen2911) - For [Better error messages](https://github.com/fawazahmed0/youtube-uploader/pull/46)
 - [weizhiqimail](https://github.com/weizhiqimail) - For [Extra Debug messages](https://github.com/fawazahmed0/youtube-uploader/pull/47)
