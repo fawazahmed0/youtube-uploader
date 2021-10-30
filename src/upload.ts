@@ -486,6 +486,8 @@ const updateVideoInfo = async (videoJSON: VideoToEdit) => {
 
       await page.waitForSelector('#save > div')
     await page.click(`#save > div`)
+    await page.waitForXPath("//*[normalize-space(text())='Save']/parent::*[@disabled]")
+    
     }catch(err){
       console.log(err)
       throw new Error('Probably nothing was changed ...')
