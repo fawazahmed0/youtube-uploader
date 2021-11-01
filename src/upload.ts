@@ -310,6 +310,7 @@ const updateVideoInfo = async (videoJSON: VideoToEdit) => {
     // Edit the title value (if)
     await textBoxes[0].focus()
     await page.waitForTimeout(1000)
+    await sleep(1000)
     if (title) {
         await page.keyboard.down('Control')
         await page.keyboard.press('A')
@@ -336,7 +337,8 @@ const updateVideoInfo = async (videoJSON: VideoToEdit) => {
         ])
         await thumbChooser.accept([thumb])
     }
-    const playlist = await page.$x("//*[normalize-space(text())='Select']")
+   // await sleep( 10000000)
+    const playlist = await page.$x(`//*[@id="basics"]/div[4]/div[3]/div[1]/ytcp-video-metadata-playlists/ytcp-text-dropdown-trigger/ytcp-dropdown-trigger/div/div[3]`)
     let createplaylistdone
     if (playlistName) {
         for (let i = 0; i < 2; i++) {
