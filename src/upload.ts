@@ -329,7 +329,15 @@ const updateVideoInfo = async (videoJSON: VideoToEdit) => {
     }
     if (thumb) {
         const [thumbChooser] = await Promise.all([
-            page.waitForFileChooser(),
+            page.waitForFileChooser({ timeout: 500 }).catch(async()=>{
+                console.log('replacing previous thumbanail')
+                await page.click('#still-1 > button')
+                await page.waitForSelector('#save > div')
+    await page.click(`#save > div`)
+    await page.waitForXPath("//*[normalize-space(text())='Save']/parent::*[@disabled]")
+    await sleep(500)
+    return await page.waitForFileChooser()
+            }),
             await page.waitForSelector(
                 `[class="remove-default-style style-scope ytcp-thumbnails-compact-editor-uploader"]`
             ),
