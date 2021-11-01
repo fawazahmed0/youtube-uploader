@@ -38,8 +38,6 @@ export const upload = async (
 
     const uploadedYTLink = []
 
-
-
     for (const video of videos) {
         const link = await uploadVideo(video)
 
@@ -329,14 +327,14 @@ const updateVideoInfo = async (videoJSON: VideoToEdit) => {
     }
     if (thumb) {
         const [thumbChooser] = await Promise.all([
-            page.waitForFileChooser({ timeout: 500 }).catch(async()=>{
+            page.waitForFileChooser({ timeout: 500 }).catch(async () => {
                 console.log('replacing previous thumbanail')
                 await page.click('#still-1 > button')
                 await page.waitForSelector('#save > div')
-    await page.click(`#save > div`)
-    await page.waitForXPath("//*[normalize-space(text())='Save']/parent::*[@disabled]")
-    await sleep(500)
-    return await page.waitForFileChooser()
+                await page.click(`#save > div`)
+                await page.waitForXPath("//*[normalize-space(text())='Save']/parent::*[@disabled]")
+                await sleep(500)
+                return await page.waitForFileChooser()
             }),
             await page.waitForSelector(
                 `[class="remove-default-style style-scope ytcp-thumbnails-compact-editor-uploader"]`
@@ -345,8 +343,10 @@ const updateVideoInfo = async (videoJSON: VideoToEdit) => {
         ])
         await thumbChooser.accept([thumb])
     }
-   // await sleep( 10000000)
-    const playlist = await page.$x(`//*[@id="basics"]/div[4]/div[3]/div[1]/ytcp-video-metadata-playlists/ytcp-text-dropdown-trigger/ytcp-dropdown-trigger/div/div[3]`)
+    // await sleep( 10000000)
+    const playlist = await page.$x(
+        `//*[@id="basics"]/div[4]/div[3]/div[1]/ytcp-video-metadata-playlists/ytcp-text-dropdown-trigger/ytcp-dropdown-trigger/div/div[3]`
+    )
     let createplaylistdone
     if (playlistName) {
         for (let i = 0; i < 2; i++) {
@@ -407,67 +407,68 @@ const updateVideoInfo = async (videoJSON: VideoToEdit) => {
         const puplishBtn = await page.$x('//*[@id="first-container"]')
         await sleep(2000)
         // puplishBtn[0].click()
-        try{
-        switch (publish) {
-            case 'private':
-                await page.click(`#privacy-radios > tp-yt-paper-radio-button:nth-child(2)`).catch(async(err)=> await page.click(
-                  `#privacy-radios > tp-yt-paper-radio-button.style-scope.ytcp-video-visibility-select.iron-selected`
-              ))
-                break
-            case 'unlisted':
-              
-                await page.click(
-                    `#privacy-radios > tp-yt-paper-radio-button.style-scope.ytcp-video-visibility-select.iron-selected`
-                ).catch(async(err)=> await page.click(
-                  `#privacy-radios > tp-yt-paper-radio-button:nth-child(11)`
-              ))
-                break
-            case 'public':
-                await page.click(`#privacy-radios > tp-yt-paper-radio-button:nth-child(15)`).catch(async(err)=> await page.click(
-                  `#privacy-radios > tp-yt-paper-radio-button:nth-child(16)`
-              ))
-                break
-            case 'public&premiere':
-                await page.click(`#privacy-radios > tp-yt-paper-radio-button:nth-child(15)`)
-                await page.click(`#enable-premiere-checkbox`)
-                break
+        try {
+            switch (publish) {
+                case 'private':
+                    await page
+                        .click(`#privacy-radios > tp-yt-paper-radio-button:nth-child(2)`)
+                        .catch(
+                            async (err) =>
+                                await page.click(
+                                    `#privacy-radios > tp-yt-paper-radio-button.style-scope.ytcp-video-visibility-select.iron-selected`
+                                )
+                        )
+                    break
+                case 'unlisted':
+                    await page
+                        .click(
+                            `#privacy-radios > tp-yt-paper-radio-button.style-scope.ytcp-video-visibility-select.iron-selected`
+                        )
+                        .catch(
+                            async (err) => await page.click(`#privacy-radios > tp-yt-paper-radio-button:nth-child(11)`)
+                        )
+                    break
+                case 'public':
+                    await page
+                        .click(`#privacy-radios > tp-yt-paper-radio-button:nth-child(15)`)
+                        .catch(
+                            async (err) => await page.click(`#privacy-radios > tp-yt-paper-radio-button:nth-child(16)`)
+                        )
+                    break
+                case 'public&premiere':
+                    await page.click(`#privacy-radios > tp-yt-paper-radio-button:nth-child(15)`)
+                    await page.click(`#enable-premiere-checkbox`)
+                    break
+            }
+        } catch (err) {
+            console.log('already selected')
+            await page.keyboard.press('Escape')
         }
-      }catch(err){
-        console.log('already selected')
-        await page.keyboard.press('Escape')
-      }
         await page.click(`#save-button`)
         await sleep(1200)
     }
-    try{
-      await page.focus(`#content`)
-      await page.focus(`#save > div`)
+    try {
+        await page.focus(`#content`)
+        await page.focus(`#save > div`)
 
-      await page.waitForSelector('#save > div')
-    await page.click(`#save > div`)
-    await page.waitForXPath("//*[normalize-space(text())='Save']/parent::*[@disabled]")
-    
-    }catch(err){
-      console.log(err)
-      throw new Error('Probably nothing was changed ...')
- 
+        await page.waitForSelector('#save > div')
+        await page.click(`#save > div`)
+        await page.waitForXPath("//*[normalize-space(text())='Save']/parent::*[@disabled]")
+    } catch (err) {
+        console.log(err)
+        throw new Error('Probably nothing was changed ...')
     }
     //#overflow-menu-button
-     return console.log('successfully edited')
+    return console.log('successfully edited')
 }
 
 export const comment = async (
     credentials: Credentials,
     videos: VideoToEdit[],
     puppeteerLaunch?: PuppeteerNodeLaunchOptions
-) => {
+) => {}
 
-
-}
-
-
-
-async function loadAccount(credentials:Credentials) {
+async function loadAccount(credentials: Credentials) {
     try {
         if (!fs.existsSync(cookiesFilePath)) await login(page, credentials)
     } catch (error: any) {
@@ -495,7 +496,6 @@ async function loadAccount(credentials:Credentials) {
         await login(page, credentials)
     }
 }
-
 
 async function changeLoginPageLangIfNeeded(localPage: Page) {
     const selectedLangSelector = '[aria-selected="true"]'
