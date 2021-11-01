@@ -309,10 +309,16 @@ const pulishComment = async (comment:Comment) => {
     }
     const cmt = comment.comment
     await page.goto(videoUrl)
+    await sleep(2000)
+   await scrollTillVeiw(page,`#placeholder-area`)
+ 
+    await page.focus(`#placeholder-area`)
     const commentBox = await page.$x('//*[@id="placeholder-area"]')
-    await commentBox[1].focus()
-    await commentBox[1].click()
-    await commentBox[1].type(cmt)
+    await commentBox[0].focus()
+    await commentBox[0].click()
+    await commentBox[0].type(cmt.substring(0,10000))
+   await page.click('#submit-button')
+   return true
 }
 
 
@@ -736,4 +742,37 @@ async function securityBypass(localPage: Page, recoveryemail: string) {
 
 async function sleep(ms: number) {
     return new Promise((sendMessage) => setTimeout(sendMessage, ms))
+}
+
+async function autoScroll(page:Page){
+    await page.evaluate(`(async () => {
+        await new Promise((resolve, reject) => {
+            var totalHeight = 0;
+            var distance = 100;
+            var timer = setInterval(() => {
+                var scrollHeight = document.body.scrollHeight;
+                window.scrollBy(0, distance);
+                totalHeight += distance;
+
+                if(totalHeight >= scrollHeight){
+                    clearInterval(timer);
+                    resolve(0);
+                }
+            }, 100);
+        });
+    })()`);
+}
+
+async function scrollTillVeiw(page:Page,element:string){
+    let sc= true
+    while (sc){
+        try{
+            await page.focus(element)
+            sc = false
+        }catch(err){
+            await autoScroll(page)
+            sc= true
+        }
+    }
+    return
 }
