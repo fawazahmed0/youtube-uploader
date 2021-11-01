@@ -24,9 +24,12 @@ export interface VideoToEdit {
     onSuccess?: Function
 }
 
-export interface deleteObj {
+export interface Comment {
+
     link: string
-    delete: boolean
+    comment: string
+    onSuccess?: Function
+
 }
 
 export interface Credentials {

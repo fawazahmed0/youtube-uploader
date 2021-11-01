@@ -1,4 +1,4 @@
-import { Credentials, Video, VideoToEdit } from './types'
+import { Credentials, Video, VideoToEdit ,Comment} from './types'
 import puppeteer, { PuppeteerExtra } from 'puppeteer-extra'
 import { Puppeteer, PuppeteerNode, PuppeteerNodeLaunchOptions, Browser, Page, errors, PuppeteerErrors } from 'puppeteer'
 import fs from 'fs-extra'
@@ -277,6 +277,45 @@ export const update = async (
     return updatedYTLink
 }
 
+export const comment = async (
+    credentials: Credentials,
+    comments: Comment[],
+    puppeteerLaunch?: PuppeteerNodeLaunchOptions
+) => {
+    cookiesDirPath = path.join('.', 'yt-auth')
+    cookiesFilePath = path.join(cookiesDirPath, `cookies-${credentials.email.split('@')[0]}.json`)
+
+    await launchBrowser(puppeteerLaunch)
+    if (!fs.existsSync(cookiesFilePath)) await loadAccount(credentials)
+    const commentsS = []
+
+    for (const comment of comments) {
+        console.log(comment)
+        const link = await pulishComment(comment)
+
+        const { onSuccess } = comment
+        if (typeof onSuccess === 'function') {
+            onSuccess(link)
+        }
+
+        commentsS.push(link)
+    }
+}
+
+const pulishComment = async (comment:Comment) => {
+    const videoUrl = comment.link
+    if (!videoUrl) {
+        throw new Error('The link of the  video is a required parameter')
+    }
+    const cmt = comment.comment
+    await page.goto(videoUrl)
+    const commentBox = await page.$x('//*[@id="placeholder-area"]')
+    await commentBox[1].focus()
+    await commentBox[1].click()
+    await commentBox[1].type(cmt)
+}
+
+
 const updateVideoInfo = async (videoJSON: VideoToEdit) => {
     const videoUrl = videoJSON.link
     if (!videoUrl) {
@@ -462,11 +501,6 @@ const updateVideoInfo = async (videoJSON: VideoToEdit) => {
     return console.log('successfully edited')
 }
 
-export const comment = async (
-    credentials: Credentials,
-    videos: VideoToEdit[],
-    puppeteerLaunch?: PuppeteerNodeLaunchOptions
-) => {}
 
 async function loadAccount(credentials: Credentials) {
     try {
