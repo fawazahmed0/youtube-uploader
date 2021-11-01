@@ -26,7 +26,7 @@ export interface VideoToEdit {
 
 export interface deleteObj {
     link: string
-    delete:boolean
+    delete: boolean
 }
 
 export interface Credentials {
