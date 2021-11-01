@@ -34,35 +34,11 @@ export const upload = async (
     cookiesFilePath = path.join(cookiesDirPath, `cookies-${credentials.email.split('@')[0]}.json`)
 
     await launchBrowser(puppeteerLaunch)
+    await loadAccount(credentials)
 
     const uploadedYTLink = []
 
-    try {
-        if (!fs.existsSync(cookiesFilePath)) await login(page, credentials)
-    } catch (error: any) {
-        if (error.message === 'Recapcha found') {
-            if (browser) {
-                await browser.close()
-            }
-            throw error
-        }
 
-        // Login failed trying again to login
-        try {
-            await login(page, credentials)
-        } catch (error) {
-            if (browser) {
-                await browser.close()
-            }
-            throw error
-        }
-    }
-    try {
-        await changeHomePageLangIfNeeded(page)
-    } catch (error) {
-        console.error(error)
-        await login(page, credentials)
-    }
 
     for (const video of videos) {
         const link = await uploadVideo(video)
@@ -283,35 +259,8 @@ export const update = async (
     cookiesFilePath = path.join(cookiesDirPath, `cookies-${credentials.email.split('@')[0]}.json`)
 
     await launchBrowser(puppeteerLaunch)
-
+    if (!fs.existsSync(cookiesFilePath)) await loadAccount(credentials)
     const updatedYTLink = []
-
-    try {
-        if (!fs.existsSync(cookiesFilePath)) await login(page, credentials)
-    } catch (error: any) {
-        if (error.message === 'Recapcha found') {
-            if (browser) {
-                await browser.close()
-            }
-            throw error
-        }
-
-        // Login failed trying again to login
-        try {
-            await login(page, credentials)
-        } catch (error) {
-            if (browser) {
-                await browser.close()
-            }
-            throw error
-        }
-    }
-    try {
-        await changeHomePageLangIfNeeded(page)
-    } catch (error) {
-        console.error(error)
-        await login(page, credentials)
-    }
 
     for (const video of videos) {
         console.log(video)
@@ -496,6 +445,47 @@ const updateVideoInfo = async (videoJSON: VideoToEdit) => {
     //#overflow-menu-button
      return console.log('successfully edited')
 }
+
+export const comment = async (
+    credentials: Credentials,
+    videos: VideoToEdit[],
+    puppeteerLaunch?: PuppeteerNodeLaunchOptions
+) => {
+
+
+}
+
+
+
+async function loadAccount(credentials:Credentials) {
+    try {
+        if (!fs.existsSync(cookiesFilePath)) await login(page, credentials)
+    } catch (error: any) {
+        if (error.message === 'Recapcha found') {
+            if (browser) {
+                await browser.close()
+            }
+            throw error
+        }
+
+        // Login failed trying again to login
+        try {
+            await login(page, credentials)
+        } catch (error) {
+            if (browser) {
+                await browser.close()
+            }
+            throw error
+        }
+    }
+    try {
+        await changeHomePageLangIfNeeded(page)
+    } catch (error) {
+        console.error(error)
+        await login(page, credentials)
+    }
+}
+
 
 async function changeLoginPageLangIfNeeded(localPage: Page) {
     const selectedLangSelector = '[aria-selected="true"]'
