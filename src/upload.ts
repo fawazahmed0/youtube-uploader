@@ -31,7 +31,7 @@ export const upload = async (
     puppeteerLaunch?: PuppeteerNodeLaunchOptions
 ) => {
     cookiesDirPath = path.join('.', 'yt-auth')
-    cookiesFilePath = path.join(cookiesDirPath, `cookies-${credentials.email.split('@')[0]}.json`)
+    cookiesFilePath = path.join(cookiesDirPath, `cookies-${credentials.email.split('@')[0].replace(/\./g, "_")}-${credentials.email.split('@')[1].replace(/\./g, "_")}.json`)
 
     await launchBrowser(puppeteerLaunch)
     await loadAccount(credentials)
@@ -254,7 +254,7 @@ export const update = async (
     puppeteerLaunch?: PuppeteerNodeLaunchOptions
 ) => {
     cookiesDirPath = path.join('.', 'yt-auth')
-    cookiesFilePath = path.join(cookiesDirPath, `cookies-${credentials.email.split('@')[0]}.json`)
+    cookiesFilePath = path.join(cookiesDirPath, `cookies-${credentials.email.split('@')[0].replace(/\./g, "_")}-${credentials.email.split('@')[1].replace(/\./g, "_")}.json`)
 
     await launchBrowser(puppeteerLaunch)
     if (!fs.existsSync(cookiesFilePath)) await loadAccount(credentials)
