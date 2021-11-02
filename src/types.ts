@@ -8,7 +8,7 @@ export interface Video {
     function?: any
     thumbnail?: string
     onSuccess?: Function
-	skipProcessingWait?: boolean
+    skipProcessingWait?: boolean
 }
 
 export interface VideoToEdit {
