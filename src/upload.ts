@@ -108,7 +108,7 @@ async function uploadVideo(videoJSON: Video) {
     if ( !videoJSON.skipProcessingWait ) {
         await page.waitForXPath('//*[contains(text(),"Upload complete")]', { hidden: true, timeout: 0 })
     } else {
-        await sleep(5000);
+        await sleep(5000)
     }
     // Wait until title & description box pops up
     if (thumb) {
