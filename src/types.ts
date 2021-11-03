@@ -28,6 +28,7 @@ export interface Comment {
 
     link: string
     comment: string
+    live?:boolean
     onSuccess?: Function
 
 }

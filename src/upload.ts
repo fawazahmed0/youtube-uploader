@@ -290,8 +290,10 @@ export const comment = async (
     const commentsS = []
 
     for (const comment of comments) {
+        let link
         console.log(comment)
-        const link = await pulishComment(comment)
+        if (comment.live) link = await pulishLiveComment(comment)
+        else link = await pulishComment(comment)
 
         const { onSuccess } = comment
         if (typeof onSuccess === 'function') {
@@ -321,6 +323,30 @@ const pulishComment = async (comment:Comment) => {
    return true
 }
 
+const pulishLiveComment = async (comment:Comment) => {
+    const videoUrl = comment.link
+    const cmt = comment.comment
+    if (!videoUrl) {
+        throw new Error('The link of the  video is a required parameter')
+    }
+        await page.goto(videoUrl)
+    await sleep(3000)
+    await scrollTillVeiw(page,`#label`)
+
+
+    try{
+    await page.focus(`#label`)
+    }catch(err){
+        console.log(err)
+    throw new Error('Video may not be Live')
+}
+console.log('pog')
+await page.focus(`#label`)
+await scrollTillVeiw(page,`#button`)
+
+//await page.click('#label')
+    await page.type(`style-scope yt-live-chat-text-input-field-renderer`,cmt.substring(0,10000))
+}
 
 const updateVideoInfo = async (videoJSON: VideoToEdit) => {
     const videoUrl = videoJSON.link
