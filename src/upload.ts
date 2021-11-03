@@ -31,7 +31,7 @@ export const upload = async (
     puppeteerLaunch?: PuppeteerNodeLaunchOptions
 ) => {
     cookiesDirPath = path.join('.', 'yt-auth')
-    cookiesFilePath = path.join(cookiesDirPath, `cookies-${credentials.email.split('@')[0]}.json`)
+    cookiesFilePath = path.join(cookiesDirPath, `cookies-${credentials.email.split('@')[0].replace(/\./g, "_")}-${credentials.email.split('@')[1].replace(/\./g, "_")}.json`)
 
     await launchBrowser(puppeteerLaunch)
     await loadAccount(credentials)
@@ -104,8 +104,12 @@ async function uploadVideo(videoJSON: Video) {
     await fileChooser.accept([pathToFile])
     // Wait for upload to complete
     await page.waitForXPath('//*[contains(text(),"Upload complete")]', { timeout: 0 })
-    // Wait for upload to go away and processing to start
-    await page.waitForXPath('//*[contains(text(),"Upload complete")]', { hidden: true, timeout: 0 })
+    // Wait for upload to go away and processing to start, skip the wait if the user doesn't want it.
+    if ( !videoJSON.skipProcessingWait ) {
+        await page.waitForXPath('//*[contains(text(),"Upload complete")]', { hidden: true, timeout: 0 })
+    } else {
+        await sleep(5000)
+    }
     // Wait until title & description box pops up
     if (thumb) {
         const [thumbChooser] = await Promise.all([
@@ -254,7 +258,7 @@ export const update = async (
     puppeteerLaunch?: PuppeteerNodeLaunchOptions
 ) => {
     cookiesDirPath = path.join('.', 'yt-auth')
-    cookiesFilePath = path.join(cookiesDirPath, `cookies-${credentials.email.split('@')[0]}.json`)
+    cookiesFilePath = path.join(cookiesDirPath, `cookies-${credentials.email.split('@')[0].replace(/\./g, "_")}-${credentials.email.split('@')[1].replace(/\./g, "_")}.json`)
 
     await launchBrowser(puppeteerLaunch)
     if (!fs.existsSync(cookiesFilePath)) await loadAccount(credentials)
