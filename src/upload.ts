@@ -285,9 +285,7 @@ export const update = async (
 
         updatedYTLink.push(link)
     }
-
     await browser.close()
-
     return updatedYTLink
 }
 
@@ -297,7 +295,9 @@ export const comment = async (
     puppeteerLaunch?: PuppeteerNodeLaunchOptions
 ) => {
     cookiesDirPath = path.join('.', 'yt-auth')
-    cookiesFilePath = path.join(cookiesDirPath, `cookies-${credentials.email.split('@')[0].replace(/\./g, '_')}-${credentials.email
+    cookiesFilePath = path.join(
+        cookiesDirPath,
+        `cookies-${credentials.email.split('@')[0].replace(/\./g, '_')}-${credentials.email
             .split('@')[1]
             .replace(/\./g, '_')}.json`
     )
@@ -307,18 +307,20 @@ export const comment = async (
     const commentsS = []
 
     for (const comment of comments) {
-        let link
+        let result
         console.log(comment)
-        if (comment.live) link = await pulishLiveComment(comment)
-        else link = await pulishComment(comment)
+        if (comment.live) result = await pulishLiveComment(comment)
+        else result = await pulishComment(comment)
 
         const { onSuccess } = comment
         if (typeof onSuccess === 'function') {
-            onSuccess(link)
+            onSuccess(result)
         }
 
-        commentsS.push(link)
+        commentsS.push(result)
     }
+    await browser.close()
+return commentsS
 }
 
 const pulishComment = async (comment: Comment) => {
