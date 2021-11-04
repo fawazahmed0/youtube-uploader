@@ -320,7 +320,7 @@ export const comment = async (
         commentsS.push(result)
     }
     await browser.close()
-return commentsS
+    return commentsS
 }
 
 const pulishComment = async (comment: Comment) => {
