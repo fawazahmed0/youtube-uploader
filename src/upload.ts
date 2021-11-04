@@ -313,6 +313,7 @@ const pulishComment = async (comment:Comment) => {
     if (!videoUrl) {
         throw new Error('The link of the  video is a required parameter')
     }
+    try{
     const cmt = comment.comment
     await page.goto(videoUrl)
     await sleep(2000)
@@ -324,7 +325,11 @@ const pulishComment = async (comment:Comment) => {
     await commentBox[0].click()
     await commentBox[0].type(cmt.substring(0,10000))
    await page.click('#submit-button')
-   return true
+   return {err:false,data:'sucess'}
+}catch(err){
+    return {err:true,data:err}
+  
+}
 }
 
 const pulishLiveComment = async (comment:Comment) => {
@@ -346,13 +351,17 @@ const pulishLiveComment = async (comment:Comment) => {
 for (let i = 0; i < 6; i++) {
     await autoScroll(page)
 }
+try {
 await page.focus('#input')
     await page.mouse.click(450,480)
 await page.keyboard.type(cmt.substring(0,200))
 await sleep(200)
     await page.mouse.click(841,495)
-return 'success'
-
+    return {err:false,data:'sucess'}
+}catch(err){
+    return {err:true,data:err}
+  
+}
 }
 
 const updateVideoInfo = async (videoJSON: VideoToEdit) => {
