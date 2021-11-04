@@ -39,7 +39,7 @@ npm i youtube-videos-uploader
 ```js
 
 import { upload } from 'youtube-videos-uploader' //Typescript
-//or
+//OR
 const { upload } = require('youtube-videos-uploader'); //vanilla javascript
 
 // recoveryemail is optional, only required to bypass login with recovery email if prompted for confirmation
@@ -76,7 +76,7 @@ upload (credentials, [video1, video2], {headless:false}).then(console.log)
  ```js
 
 import { update } from 'youtube-videos-uploader' //Typescript
-//or
+//OR
 const { update } = require('youtube-videos-uploader'); //vanilla javascript
   
 const credentials = { email: 'Your Email', pass: 'Your Password', recoveryemail: 'Your Recovery Email' }
@@ -100,7 +100,7 @@ update(credentials, [videoUpdate1, videoUpdate2], { headless: false }).then(cons
  ```js
 
 import { comment } from 'youtube-videos-uploader' //Typescript
-//or
+//OR
 const { comment } = require('youtube-videos-uploader'); //vanilla javascript
   
 const credentials = { email: 'Your Email', pass: 'Your Password', recoveryemail: 'Your Recovery Email' }
@@ -108,7 +108,7 @@ const credentials = { email: 'Your Email', pass: 'Your Password', recoveryemail:
 const comment1 = { link: 'https://www.youtube.com/watch?v=jEevRjRglFY', comment: 'Your comment' }
 
 comment(credentials, [comment1]).then(console.log)  
-Or
+//OR
 comment(credentials, [comment1], {headless:false}).then(console.log)
 
 ```  
