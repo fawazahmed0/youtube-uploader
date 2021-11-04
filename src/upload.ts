@@ -336,20 +336,23 @@ const pulishLiveComment = async (comment:Comment) => {
         await page.goto(videoUrl)
     await sleep(3000)
     await scrollTillVeiw(page,`#label`)
-
-
     try{
     await page.focus(`#label`)
     }catch(err){
         console.log(err)
     throw new Error('Video may not be Live')
 }
-console.log('pog')
-await page.focus(`#label`)
-await scrollTillVeiw(page,`#button`)
 
-//await page.click('#label')
-    await page.type(`style-scope yt-live-chat-text-input-field-renderer`,cmt.substring(0,10000))
+for (let i = 0; i < 6; i++) {
+    await autoScroll(page)
+}
+await page.focus('#input')
+    await page.mouse.click(450,480)
+await page.keyboard.type(cmt.substring(0,200))
+await sleep(200)
+    await page.mouse.click(841,495)
+return 'success'
+
 }
 
 const updateVideoInfo = async (videoJSON: VideoToEdit) => {
