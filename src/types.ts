@@ -26,12 +26,10 @@ export interface VideoToEdit {
 }
 
 export interface Comment {
-
     link: string
     comment: string
-    live?:boolean
+    live?: boolean
     onSuccess?: Function
-
 }
 
 export interface Credentials {
