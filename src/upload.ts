@@ -1,4 +1,4 @@
-import { Credentials, Video, VideoToEdit } from './types'
+import { Credentials, Video, VideoToEdit, Comment } from './types'
 import puppeteer, { PuppeteerExtra } from 'puppeteer-extra'
 import { Puppeteer, PuppeteerNode, PuppeteerNodeLaunchOptions, Browser, Page, errors, PuppeteerErrors } from 'puppeteer'
 import fs from 'fs-extra'
@@ -31,7 +31,12 @@ export const upload = async (
     puppeteerLaunch?: PuppeteerNodeLaunchOptions
 ) => {
     cookiesDirPath = path.join('.', 'yt-auth')
-    cookiesFilePath = path.join(cookiesDirPath, `cookies-${credentials.email.split('@')[0].replace(/\./g, "_")}-${credentials.email.split('@')[1].replace(/\./g, "_")}.json`)
+    cookiesFilePath = path.join(
+        cookiesDirPath,
+        `cookies-${credentials.email.split('@')[0].replace(/\./g, '_')}-${credentials.email
+            .split('@')[1]
+            .replace(/\./g, '_')}.json`
+    )
 
     await launchBrowser(puppeteerLaunch)
     await loadAccount(credentials)
@@ -105,7 +110,7 @@ async function uploadVideo(videoJSON: Video) {
     // Wait for upload to complete
     await page.waitForXPath('//*[contains(text(),"Upload complete")]', { timeout: 0 })
     // Wait for upload to go away and processing to start, skip the wait if the user doesn't want it.
-    if ( !videoJSON.skipProcessingWait ) {
+    if (!videoJSON.skipProcessingWait) {
         await page.waitForXPath('//*[contains(text(),"Upload complete")]', { hidden: true, timeout: 0 })
     } else {
         await sleep(5000)
@@ -258,7 +263,12 @@ export const update = async (
     puppeteerLaunch?: PuppeteerNodeLaunchOptions
 ) => {
     cookiesDirPath = path.join('.', 'yt-auth')
-    cookiesFilePath = path.join(cookiesDirPath, `cookies-${credentials.email.split('@')[0].replace(/\./g, "_")}-${credentials.email.split('@')[1].replace(/\./g, "_")}.json`)
+    cookiesFilePath = path.join(
+        cookiesDirPath,
+        `cookies-${credentials.email.split('@')[0].replace(/\./g, '_')}-${credentials.email
+            .split('@')[1]
+            .replace(/\./g, '_')}.json`
+    )
 
     await launchBrowser(puppeteerLaunch)
     if (!fs.existsSync(cookiesFilePath)) await loadAccount(credentials)
@@ -275,10 +285,96 @@ export const update = async (
 
         updatedYTLink.push(link)
     }
-
     await browser.close()
-
     return updatedYTLink
+}
+
+export const comment = async (
+    credentials: Credentials,
+    comments: Comment[],
+    puppeteerLaunch?: PuppeteerNodeLaunchOptions
+) => {
+    cookiesDirPath = path.join('.', 'yt-auth')
+    cookiesFilePath = path.join(
+        cookiesDirPath,
+        `cookies-${credentials.email.split('@')[0].replace(/\./g, '_')}-${credentials.email
+            .split('@')[1]
+            .replace(/\./g, '_')}.json`
+    )
+
+    await launchBrowser(puppeteerLaunch)
+    if (!fs.existsSync(cookiesFilePath)) await loadAccount(credentials)
+    const commentsS = []
+
+    for (const comment of comments) {
+        let result
+        console.log(comment)
+        if (comment.live) result = await pulishLiveComment(comment)
+        else result = await pulishComment(comment)
+
+        const { onSuccess } = comment
+        if (typeof onSuccess === 'function') {
+            onSuccess(result)
+        }
+
+        commentsS.push(result)
+    }
+    await browser.close()
+    return commentsS
+}
+
+const pulishComment = async (comment: Comment) => {
+    const videoUrl = comment.link
+    if (!videoUrl) {
+        throw new Error('The link of the  video is a required parameter')
+    }
+    try {
+        const cmt = comment.comment
+        await page.goto(videoUrl)
+        await sleep(2000)
+        await scrollTillVeiw(page, `#placeholder-area`)
+
+        await page.focus(`#placeholder-area`)
+        const commentBox = await page.$x('//*[@id="placeholder-area"]')
+        await commentBox[0].focus()
+        await commentBox[0].click()
+        await commentBox[0].type(cmt.substring(0, 10000))
+        await page.click('#submit-button')
+        return { err: false, data: 'sucess' }
+    } catch (err) {
+        return { err: true, data: err }
+    }
+}
+
+const pulishLiveComment = async (comment: Comment) => {
+    const videoUrl = comment.link
+    const cmt = comment.comment
+    if (!videoUrl) {
+        throw new Error('The link of the  video is a required parameter')
+    }
+    await page.goto(videoUrl)
+    await sleep(3000)
+    await scrollTillVeiw(page, `#label`)
+    try {
+        await page.focus(`#label`)
+    } catch (err) {
+        console.log(err)
+        throw new Error('Video may not be Live')
+    }
+
+    for (let i = 0; i < 6; i++) {
+        await autoScroll(page)
+    }
+    try {
+        await page.focus('#input')
+        await page.mouse.click(450, 480)
+        await page.keyboard.type(cmt.substring(0, 200))
+        await sleep(200)
+        await page.mouse.click(841, 495)
+        return { err: false, data: 'sucess' }
+    } catch (err) {
+        return { err: true, data: err }
+    }
 }
 
 const updateVideoInfo = async (videoJSON: VideoToEdit) => {
@@ -465,12 +561,6 @@ const updateVideoInfo = async (videoJSON: VideoToEdit) => {
     //#overflow-menu-button
     return console.log('successfully edited')
 }
-
-export const comment = async (
-    credentials: Credentials,
-    videos: VideoToEdit[],
-    puppeteerLaunch?: PuppeteerNodeLaunchOptions
-) => {}
 
 async function loadAccount(credentials: Credentials) {
     try {
@@ -706,4 +796,37 @@ async function securityBypass(localPage: Page, recoveryemail: string) {
 
 async function sleep(ms: number) {
     return new Promise((sendMessage) => setTimeout(sendMessage, ms))
+}
+
+async function autoScroll(page: Page) {
+    await page.evaluate(`(async () => {
+        await new Promise((resolve, reject) => {
+            var totalHeight = 0;
+            var distance = 100;
+            var timer = setInterval(() => {
+                var scrollHeight = document.body.scrollHeight;
+                window.scrollBy(0, distance);
+                totalHeight += distance;
+
+                if(totalHeight >= scrollHeight){
+                    clearInterval(timer);
+                    resolve(0);
+                }
+            }, 100);
+        });
+    })()`)
+}
+
+async function scrollTillVeiw(page: Page, element: string) {
+    let sc = true
+    while (sc) {
+        try {
+            await page.focus(element)
+            sc = false
+        } catch (err) {
+            await autoScroll(page)
+            sc = true
+        }
+    }
+    return
 }
