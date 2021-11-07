@@ -109,7 +109,7 @@ async function uploadVideo(videoJSON: Video) {
     await fileChooser.accept([pathToFile])
 
     // Setup onProgress
-    let progressChecker: NodeJS.Timer
+    let progressChecker: NodeJS.Timer | undefined
     let progress: VideoProgress = { progress: 0, stage: ProgressEnum.Uploading };
     if (videoJSON.onProgress)
         videoJSON.onProgress(progress)
@@ -117,16 +117,16 @@ async function uploadVideo(videoJSON: Video) {
             let curProgress = await page.evaluate(() => {
                 let items = document.querySelectorAll(".progress-label.ytcp-video-upload-progress");
                 for (let i = 0; i < items.length; i++) {
-                    if (items.item(i).textContent.indexOf("%") === -1) continue;
+                    if (items.item(i).textContent!.indexOf("%") === -1) continue;
                     return items.item(i).textContent;
                 }
             })
             if (!progressChecker) return
-            curProgress = curProgress.split(" ").find(txt => txt.indexOf("%") != -1)
+            curProgress = curProgress!.split(" ").find(txt => txt.indexOf("%") != -1)
             let newProgress = curProgress ? parseInt(curProgress.slice(0, -1)) : 0
             if ( progress.progress == newProgress ) return
             progress.progress = newProgress
-            videoJSON.onProgress(progress)
+            videoJSON.onProgress!(progress)
         }, 500)
     // Wait for upload to complete
     await page.waitForXPath('//*[contains(text(),"Upload complete")]', { timeout: 0 })
