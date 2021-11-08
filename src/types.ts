@@ -9,6 +9,18 @@ export interface Video {
     thumbnail?: string
     onSuccess?: Function
     skipProcessingWait?: boolean
+    onProgress?: (arg0: VideoProgress) => void
+}
+
+export enum ProgressEnum {
+    Uploading,
+    Processing,
+    Done
+}
+
+export interface VideoProgress {
+    progress: number
+    stage: ProgressEnum
 }
 
 export interface VideoToEdit {
