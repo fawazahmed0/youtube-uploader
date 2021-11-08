@@ -115,14 +115,14 @@ async function uploadVideo(videoJSON: Video) {
         videoJSON.onProgress(progress)
         progressChecker = setInterval(async () => {
             let curProgress = await page.evaluate(() => {
-                let items = document.querySelectorAll(".progress-label.ytcp-video-upload-progress");
+                let items = document.querySelectorAll("span.progress-label.ytcp-video-upload-progress");
                 for (let i = 0; i < items.length; i++) {
                     if (items.item(i).textContent!.indexOf("%") === -1) continue;
                     return items.item(i).textContent;
                 }
             })
-            if (!progressChecker) return
-            curProgress = curProgress!.split(" ").find(txt => txt.indexOf("%") != -1)
+            if (!progressChecker || !curProgress) return
+            curProgress = curProgress.split(" ").find(txt => txt.indexOf("%") != -1)
             let newProgress = curProgress ? parseInt(curProgress.slice(0, -1)) : 0
             if ( progress.progress == newProgress ) return
             progress.progress = newProgress
