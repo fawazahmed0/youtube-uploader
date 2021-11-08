@@ -109,9 +109,9 @@ async function uploadVideo(videoJSON: Video) {
     await fileChooser.accept([pathToFile])
 
     // Setup onProgress
-    let progressChecker: NodeJS.Timer | undefined
+    let progressChecker: any
     let progress: VideoProgress = { progress: 0, stage: ProgressEnum.Uploading };
-    if (videoJSON.onProgress)
+    if (videoJSON.onProgress) {
         videoJSON.onProgress(progress)
         progressChecker = setInterval(async () => {
             let curProgress = await page.evaluate(() => {
@@ -121,13 +121,14 @@ async function uploadVideo(videoJSON: Video) {
                     return items.item(i).textContent;
                 }
             })
-            if (!progressChecker || !curProgress) return
-            curProgress = curProgress.split(" ").find(txt => txt.indexOf("%") != -1)
+            if (progressChecker == undefined || !curProgress) return
+            curProgress = curProgress.split(" ").find((txt: string) => txt.indexOf("%") != -1)
             let newProgress = curProgress ? parseInt(curProgress.slice(0, -1)) : 0
             if ( progress.progress == newProgress ) return
             progress.progress = newProgress
             videoJSON.onProgress!(progress)
         }, 500)
+    }
     // Wait for upload to complete
     await page.waitForXPath('//*[contains(text(),"Upload complete")]', { timeout: 0 })
     if (videoJSON.onProgress) {
