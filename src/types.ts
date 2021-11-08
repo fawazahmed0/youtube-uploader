@@ -9,7 +9,7 @@ export interface Video {
     thumbnail?: string
     onSuccess?: Function
     skipProcessingWait?: boolean
-    onProgress?: (VideoProgress) => void
+    onProgress?: (arg0: VideoProgress) => void
 }
 
 export enum ProgressEnum {
