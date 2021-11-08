@@ -1,4 +1,4 @@
-import { Credentials, Video, VideoToEdit, Comment, VideoProgress, ProgressEnum } from './types'
+import { Credentials, Video, VideoToEdit, Comment } from './types'
 import puppeteer, { PuppeteerExtra } from 'puppeteer-extra'
 import { Puppeteer, PuppeteerNode, PuppeteerNodeLaunchOptions, Browser, Page, errors, PuppeteerErrors } from 'puppeteer'
 import fs from 'fs-extra'
@@ -107,47 +107,14 @@ async function uploadVideo(videoJSON: Video) {
         selectBtn[0].click() // button that triggers file selection
     ])
     await fileChooser.accept([pathToFile])
-
-    // Setup onProgress
-    let progressChecker: NodeJS.Timer | undefined
-    let progress: VideoProgress = { progress: 0, stage: ProgressEnum.Uploading };
-    if (videoJSON.onProgress)
-        videoJSON.onProgress(progress)
-        progressChecker = setInterval(async () => {
-            let curProgress = await page.evaluate(() => {
-                let items = document.querySelectorAll("span.progress-label.ytcp-video-upload-progress");
-                for (let i = 0; i < items.length; i++) {
-                    if (items.item(i).textContent!.indexOf("%") === -1) continue;
-                    return items.item(i).textContent;
-                }
-            })
-            if (!progressChecker || !curProgress) return
-            curProgress = curProgress.split(" ").find(txt => txt.indexOf("%") != -1)
-            let newProgress = curProgress ? parseInt(curProgress.slice(0, -1)) : 0
-            if ( progress.progress == newProgress ) return
-            progress.progress = newProgress
-            videoJSON.onProgress!(progress)
-        }, 500)
     // Wait for upload to complete
     await page.waitForXPath('//*[contains(text(),"Upload complete")]', { timeout: 0 })
-    if (videoJSON.onProgress) {
-        progress = { progress: 0, stage: ProgressEnum.Processing }
-        videoJSON.onProgress(progress)
-    }
-
     // Wait for upload to go away and processing to start, skip the wait if the user doesn't want it.
     if (!videoJSON.skipProcessingWait) {
         await page.waitForXPath('//*[contains(text(),"Upload complete")]', { hidden: true, timeout: 0 })
     } else {
         await sleep(5000)
     }
-    if (videoJSON.onProgress) {
-        clearInterval(progressChecker)
-        progressChecker = undefined
-        progress = { progress: 100, stage: ProgressEnum.Done }
-        videoJSON.onProgress(progress)
-    }
-        
     // Wait until title & description box pops up
     if (thumb) {
         const [thumbChooser] = await Promise.all([
