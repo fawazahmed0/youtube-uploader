@@ -739,7 +739,6 @@ async function launchBrowser(puppeteerLaunch?: PuppeteerNodeLaunchOptions) {
             for (let cookie of parsedCookies) {
                 await page.setCookie(cookie)
             }
-            console.log('Session has been loaded in the browser')
         }
     }
     await page.setViewport({ width: width, height: height })
