@@ -782,11 +782,10 @@ async function login(localPage: Page, credentials: Credentials) {
     }
     //create channel if not already created.
     try {
-	await localPage.waitForSelector('#create-channel-button');
 	await localPage.click('#create-channel-button');
 	await localPage.waitForTimeout(3000);
 } catch (error) {
-	console.log('error creating channel');
+	console.log('Channel already exists or there was an error creating the channel.');
 }
     try {
         const uploadPopupSelector = 'ytcp-uploads-dialog'
