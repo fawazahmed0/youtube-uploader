@@ -4,6 +4,15 @@
   <img width="460" height="300" src="assets/youtube.png">
 
 [![npm version](https://img.shields.io/npm/v/youtube-videos-uploader.svg?style=flat)](https://www.npmjs.com/package/youtube-videos-uploader)
+  
+------------
+ 
+ <div style="display:flex;">
+    <div><h4 align="center"><a href="https://sendletters.pp.ua"><img src="https://github.com/fawazahmed0/tiger/raw/master/envelope.svg" width="250" alt="SendLetters Brand Image"></a><br>This package is Sponsored by SendLetters, the Easiest way to Send Letters & Documents <a href="https://sendletters.pp.ua">Physically Anywhere in the World</a>.</h4></div>
+</div>
+
+ 
+------------
 
 **In the name of God, who have guided me to do this work**
 
@@ -122,7 +131,6 @@ comment(credentials, [comment1], {headless:false}).then(console.log)
 - [DaddyFrosty](https://github.com/DaddyFrosty) - For [Path Escaping](https://github.com/fawazahmed0/youtube-uploader/pull/55), [Skip Processing wait](https://github.com/fawazahmed0/youtube-uploader/pull/57) and [onProgress event](https://github.com/fawazahmed0/youtube-uploader/pull/60)
 - [Owl Burger](https://github.com/Zebraslive) - For [Create Channel](https://github.com/fawazahmed0/youtube-uploader/pull/66)
   
-### Support:
-You can help support this package by as little as $3, because this package needs regular maintenance<br>
-[Support Link](https://fawazahmed0.github.io/donate)
 
+<br>
+<br>
