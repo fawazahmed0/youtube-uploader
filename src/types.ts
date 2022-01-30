@@ -10,6 +10,7 @@ export interface Video {
     onSuccess?: Function
     skipProcessingWait?: boolean
     onProgress?: (arg0: VideoProgress) => void
+    channelName: string
 }
 
 export enum ProgressEnum {
