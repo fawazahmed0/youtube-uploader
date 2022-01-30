@@ -41,7 +41,7 @@ export const upload = async (
     await launchBrowser(puppeteerLaunch)
     await loadAccount(credentials)
 
-    const uploadedYTLink = []
+    const uploadedYTLink: string[] = []
 
     for (const video of videos) {
         const link = await uploadVideo(video)
