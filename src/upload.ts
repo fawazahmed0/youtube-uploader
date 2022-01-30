@@ -347,8 +347,8 @@ export const comment = async (
     for (const comment of comments) {
         let result
         console.log(comment)
-        if (comment.live) result = await pulishLiveComment(comment)
-        else result = await pulishComment(comment)
+        if (comment.live) result = await publishLiveComment(comment)
+        else result = await publishComment(comment)
 
         const { onSuccess } = comment
         if (typeof onSuccess === 'function') {
@@ -361,7 +361,7 @@ export const comment = async (
     return commentsS
 }
 
-const pulishComment = async (comment: Comment) => {
+const publishComment = async (comment: Comment) => {
     const videoUrl = comment.link
     if (!videoUrl) {
         throw new Error('The link of the  video is a required parameter')
@@ -384,7 +384,7 @@ const pulishComment = async (comment: Comment) => {
     }
 }
 
-const pulishLiveComment = async (comment: Comment) => {
+const publishLiveComment = async (comment: Comment) => {
     const videoUrl = comment.link
     const cmt = comment.comment
     if (!videoUrl) {
@@ -542,9 +542,9 @@ const updateVideoInfo = async (videoJSON: VideoToEdit) => {
     if (publish) {
         await page.click(`#content`)
         // await page.click(`#onRadio`);
-        const puplishBtn = await page.$x('//*[@id="first-container"]')
+        const publishBtn = await page.$x('//*[@id="first-container"]')
         await sleep(2000)
-        // puplishBtn[0].click()
+        // publishBtn[0].click()
         try {
             switch (publish) {
                 case 'private':
