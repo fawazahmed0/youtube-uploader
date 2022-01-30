@@ -420,6 +420,11 @@ const updateVideoInfo = async (videoJSON: VideoToEdit) => {
     if (!videoUrl) {
         throw new Error('The link of the  video is a required parameter')
     }
+
+    if (videoJSON.channelName) {
+        await changeChannel(videoJSON.channelName);
+    }
+
     const title = videoJSON.title
     const description = videoJSON.description
     const tags = videoJSON.tags

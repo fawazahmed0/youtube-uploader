@@ -36,6 +36,7 @@ export interface VideoToEdit {
     thumbnail?: string
     publishType?: 'private' | 'unlisted' | 'public' | 'public&premiere'
     onSuccess?: Function
+    channelName: string
 }
 
 export interface Comment {
