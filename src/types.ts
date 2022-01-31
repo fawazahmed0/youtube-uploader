@@ -7,9 +7,10 @@ export interface Video {
     playlist?: string
     function?: any
     thumbnail?: string
-    onSuccess?: Function
+    onSuccess?: (url: string) => void
     skipProcessingWait?: boolean
     onProgress?: (arg0: VideoProgress) => void
+    channelName: string
 }
 
 export enum ProgressEnum {
@@ -35,6 +36,7 @@ export interface VideoToEdit {
     thumbnail?: string
     publishType?: 'private' | 'unlisted' | 'public' | 'public&premiere'
     onSuccess?: Function
+    channelName: string
 }
 
 export interface Comment {
