@@ -192,7 +192,8 @@ async function uploadVideo(videoJSON: Video) {
                 await page.focus(`#search-input`)
                 await page.type(`#search-input`, playlistName)
 
-                const playlistToSelectXPath = "//*[normalize-space(text())='" + playlistName + "']"
+                const escapedPlaylistName = escapeQuotesForXPath(playlistName);
+                const playlistToSelectXPath = "//*[normalize-space(text())=" + escapedPlaylistName + "]";
                 await page.waitForXPath(playlistToSelectXPath, { timeout: 10000 })
                 const playlistNameSelector = await page.$x(playlistToSelectXPath)
                 await page.evaluate((el) => el.click(), playlistNameSelector[0])
@@ -499,7 +500,9 @@ const updateVideoInfo = async (videoJSON: VideoToEdit) => {
                 await page.focus(`#search-input`)
                 await page.type(`#search-input`, playlistName)
 
-                const playlistToSelectXPath = "//*[normalize-space(text())='" + playlistName + "']"
+                const escapedPlaylistName = escapeQuotesForXPath(playlistName);
+                const playlistToSelectXPath = "//*[normalize-space(text())=" + escapedPlaylistName + "]"
+
                 await page.waitForXPath(playlistToSelectXPath, { timeout: 10000 })
                 const playlistNameSelector = await page.$x(playlistToSelectXPath)
                 await page.evaluate((el) => el.click(), playlistNameSelector[0])
@@ -891,4 +894,34 @@ async function changeChannel(channelName: string) {
   await page.waitForNavigation({
     waitUntil: "networkidle0"
   });
+}
+
+function escapeQuotesForXPath(str: string) {
+    // If the value contains only single or double quotes, construct
+    // an XPath literal
+    if (!str.includes('"')){
+        return '"' + str + '"';
+    }
+    if (!str.includes("'")) {
+        return "'" + str + "'";
+    }
+    // If the value contains both single and double quotes, construct an 
+    // expression that concatenates all non-double-quote substrings with
+    // the quotes, e.g.:
+    //
+    //    concat("foo",'"',"bar")
+
+    const parts : string[] = [];
+    // First, put a '"' after each component in the string.
+    for (const part of str.split('"')) {
+        if (part.length > 0) {
+            parts.push('"' + part + '"');
+        }
+        parts.push("'\"'");
+    }
+     // Then remove the extra '"' after the last component.
+    parts.pop();
+    // Finally, put it together into a concat() function call.
+    
+    return "concat(" + parts.join(",") + ")";
 }
