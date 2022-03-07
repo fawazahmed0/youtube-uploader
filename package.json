@@ -24,7 +24,7 @@
   },
   "scripts": {
     "build": "tsc -p .",
-    "prepublish": "npm run build",
+    "prepare": "npm run build",
     "format": "prettier --config .prettierrc \"src/**/*.ts\" --write"
   },
   "keywords": [
