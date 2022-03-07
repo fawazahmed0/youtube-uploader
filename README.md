@@ -123,6 +123,7 @@ comment(credentials, [comment1], {headless:false}).then(console.log)
 - [DaddyFrosty](https://github.com/DaddyFrosty) - For [Path Escaping](https://github.com/fawazahmed0/youtube-uploader/pull/55), [Skip Processing wait](https://github.com/fawazahmed0/youtube-uploader/pull/57) and [onProgress event](https://github.com/fawazahmed0/youtube-uploader/pull/60)
 - [Owl Burger](https://github.com/Zebraslive) - For [Create Channel](https://github.com/fawazahmed0/youtube-uploader/pull/66)
 - [Ítalo Andrade](https://github.com/italodeandra) - For [Channel Switcher](https://github.com/fawazahmed0/youtube-uploader/pull/73)
+- [Dominic Findlay](https://github.com/DominicFindlay) - For Supporting [Single Quotes in playlist name](https://github.com/fawazahmed0/youtube-uploader/pull/82)
   
 
 <br>
