@@ -1,7 +1,7 @@
 import { Credentials, Video, VideoToEdit, Comment, VideoProgress, ProgressEnum } from './types'
 import puppeteer, { PuppeteerExtra } from 'puppeteer-extra'
 import { Puppeteer, PuppeteerNode, PuppeteerNodeLaunchOptions, Browser, Page, errors, PuppeteerErrors } from 'puppeteer'
-import fs, { read } from 'fs-extra'
+import fs from 'fs-extra'
 import path from 'path'
 
 import readline from 'readline'
