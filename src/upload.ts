@@ -18,6 +18,8 @@ let browser: Browser, page: Page
 let cookiesDirPath: string
 let cookiesFilePath: string
 
+const invalidCharacters = [ '<', '>' ]
+
 const uploadURL = 'https://www.youtube.com/upload'
 const homePageURL = 'https://www.youtube.com'
 /**
@@ -65,6 +67,9 @@ async function uploadVideo(videoJSON: Video) {
     if (!pathToFile) {
         throw new Error("function `upload`'s second param `videos`'s item `video` must include `path` property.")
     }
+    for (let i in invalidCharacters)
+        if (videoJSON.title.includes(invalidCharacters[i]))
+            throw new Error(`"${videoJSON.title}" includes a character not allowed in youtube titles (${invalidCharacters[i]})`)
 
     if (videoJSON.channelName) {
       await changeChannel(videoJSON.channelName);
