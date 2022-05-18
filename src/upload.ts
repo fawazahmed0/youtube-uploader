@@ -1,8 +1,16 @@
 import { Credentials, Video, VideoToEdit, Comment, VideoProgress, ProgressEnum } from './types'
 import puppeteer, { PuppeteerExtra } from 'puppeteer-extra'
 import { Puppeteer, PuppeteerNode, PuppeteerNodeLaunchOptions, Browser, Page, errors, PuppeteerErrors } from 'puppeteer'
-import fs from 'fs-extra'
+import fs, { read } from 'fs-extra'
 import path from 'path'
+
+import readline from 'readline'
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+    terminal: false
+});
+const prompt = (query: string) => new Promise<string>((resolve) => rl.question(query, resolve));
 
 const StealthPlugin = require('puppeteer-extra-plugin-stealth')
 puppeteer.use(StealthPlugin())
@@ -773,15 +781,45 @@ async function login(localPage: Page, credentials: Credentials) {
     await localPage.type(emailInputSelector, credentials.email, { delay: 50 })
     await localPage.keyboard.press('Enter')
 
-    const passwordInputSelector = 'input[type="password"]:not([aria-hidden="true"])'
-    await localPage.waitForSelector(passwordInputSelector)
-    await localPage.waitForTimeout(3000)
-    await localPage.type(passwordInputSelector, credentials.pass, { delay: 50 })
+    // check if 2fa code was sent to phone
+    await localPage.waitForNavigation()
+    await localPage.waitForTimeout(1000)
+    const googleAppAuthSelector = 'samp'
+    const isOnGoogleAppAuthPage = await localPage.evaluate(
+        (authCodeSelector) => document.querySelector(authCodeSelector) !== null,
+        googleAppAuthSelector
+    )
 
-    await localPage.keyboard.press('Enter')
+    if (isOnGoogleAppAuthPage) {
+        const codeElement = await localPage.$('samp')
+        const code = (await codeElement?.getProperty('textContent'))?.toString().replace('JSHandle:', '')
+        code && console.log('Press ' + code + ' on your phone to login')
+    }
+    // password isnt required in the case that a code was sent via google auth
+    else {
+        const passwordInputSelector = 'input[type="password"]:not([aria-hidden="true"])'
+        await localPage.waitForSelector(passwordInputSelector)
+        await localPage.waitForTimeout(3000)
+        await localPage.type(passwordInputSelector, credentials.pass, { delay: 50 })
+    
+        await localPage.keyboard.press('Enter')
+    }
 
     try {
         await localPage.waitForNavigation()
+        await localPage.waitForTimeout(1000)
+
+        // check if sms code was sent
+        const smsAuthSelector = '#idvPin'
+        const isOnSmsAuthPage = await localPage.evaluate(
+            (smsAuthSelector) => document.querySelector(smsAuthSelector) !== null,
+            smsAuthSelector
+        )
+        if (isOnSmsAuthPage) {
+            const code = await prompt('Enter the code that was sent to you via SMS: ')
+            await localPage.type(smsAuthSelector, code)
+            await localPage.keyboard.press('Enter')
+        }
     } catch (error: any) {
         const recaptchaInputSelector = 'input[aria-label="Type the text you hear or see"]'
 
@@ -798,11 +836,11 @@ async function login(localPage: Page, credentials: Credentials) {
     }
     //create channel if not already created.
     try {
-	await localPage.click('#create-channel-button');
-	await localPage.waitForTimeout(3000);
-} catch (error) {
-	console.log('Channel already exists or there was an error creating the channel.');
-}
+        await localPage.click('#create-channel-button');
+        await localPage.waitForTimeout(3000);
+    } catch (error) {
+        console.log('Channel already exists or there was an error creating the channel.');
+    }
     try {
         const uploadPopupSelector = 'ytcp-uploads-dialog'
         await localPage.waitForSelector(uploadPopupSelector, { timeout: 70000 })
