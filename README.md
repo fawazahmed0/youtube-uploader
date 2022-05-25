@@ -125,6 +125,7 @@ comment(credentials, [comment1], {headless:false}).then(console.log)
 - [Ítalo Andrade](https://github.com/italodeandra) - For [Channel Switcher](https://github.com/fawazahmed0/youtube-uploader/pull/73)
 - [Dominic Findlay](https://github.com/DominicFindlay) - For Supporting [Single Quotes in playlist name](https://github.com/fawazahmed0/youtube-uploader/pull/82)
 - [Dement6d](https://github.com/dement6d) - For [Better error messages](https://github.com/fawazahmed0/youtube-uploader/pull/99) & [handling 2FA](https://github.com/fawazahmed0/youtube-uploader/pull/101)
+- [coooo77](https://github.com/coooo77) - For [uploading videos as draft option](https://github.com/fawazahmed0/youtube-uploader/pull/105)
   
 
 <br>
