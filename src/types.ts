@@ -11,7 +11,7 @@ export interface Video {
     skipProcessingWait?: boolean
     onProgress?: (arg0: VideoProgress) => void
     channelName?: string,
-    keepDraw?: boolean
+    uploadAsDraft?: boolean
 }
 
 export enum ProgressEnum {

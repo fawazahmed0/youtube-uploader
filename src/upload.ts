@@ -90,7 +90,7 @@ async function uploadVideo(videoJSON: Video) {
     const playlistName = videoJSON.playlist
     const videoLang = videoJSON.language
     const thumb = videoJSON.thumbnail
-    const keepDraw = videoJSON.keepDraw
+    const uploadAsDraft = videoJSON.uploadAsDraft
     await page.evaluate(() => {
         window.onbeforeunload = null
     })
@@ -287,7 +287,7 @@ async function uploadVideo(videoJSON: Video) {
         uploadedLink = await page.evaluate((e) => e.getAttribute('href'), uploadedLinkHandle)
     } while (uploadedLink === 'https://youtu.be/')
 
-    const closeDialogXPath = keepDraw ? saveCloseBtnXPath : publishXPath    
+    const closeDialogXPath = uploadAsDraft ? saveCloseBtnXPath : publishXPath    
     let closeDialog
     for (let i = 0; i < 10; i++) {
         try {
@@ -300,8 +300,8 @@ async function uploadVideo(videoJSON: Video) {
     }
     // await page.waitForXPath('//*[contains(text(),"Finished processing")]', { timeout: 0})
 
-    // no closeBtn will show up if keeps video as draw
-    if (keepDraw) return uploadedLink
+    // no closeBtn will show up if keeps video as draft
+    if (uploadAsDraft) return uploadedLink
 
     // Wait for closebtn to show up
     try {
