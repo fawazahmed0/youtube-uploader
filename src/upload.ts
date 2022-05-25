@@ -90,6 +90,7 @@ async function uploadVideo(videoJSON: Video) {
     const playlistName = videoJSON.playlist
     const videoLang = videoJSON.language
     const thumb = videoJSON.thumbnail
+    const uploadAsDraft = videoJSON.uploadAsDraft
     await page.evaluate(() => {
         window.onbeforeunload = null
     })
@@ -97,6 +98,7 @@ async function uploadVideo(videoJSON: Video) {
 
     const closeBtnXPath = "//*[normalize-space(text())='Close']"
     const selectBtnXPath = "//*[normalize-space(text())='Select files']"
+    const saveCloseBtnXPath = '//*[@aria-label="Save and close"]/tp-yt-iron-icon'
     for (let i = 0; i < 2; i++) {
         try {
             await page.waitForXPath(selectBtnXPath)
@@ -285,17 +287,22 @@ async function uploadVideo(videoJSON: Video) {
         uploadedLink = await page.evaluate((e) => e.getAttribute('href'), uploadedLinkHandle)
     } while (uploadedLink === 'https://youtu.be/')
 
-    let publish
+    const closeDialogXPath = uploadAsDraft ? saveCloseBtnXPath : publishXPath    
+    let closeDialog
     for (let i = 0; i < 10; i++) {
         try {
-            publish = await page.$x(publishXPath)
-            await publish[0].click()
+            closeDialog = await page.$x(closeDialogXPath)
+            await closeDialog[0].click()
             break
         } catch (error) {
             await page.waitForTimeout(5000)
         }
     }
     // await page.waitForXPath('//*[contains(text(),"Finished processing")]', { timeout: 0})
+
+    // no closeBtn will show up if keeps video as draft
+    if (uploadAsDraft) return uploadedLink
+
     // Wait for closebtn to show up
     try {
         await page.waitForXPath(closeBtnXPath)
