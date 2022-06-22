@@ -148,6 +148,12 @@ async function uploadVideo(videoJSON: Video) {
             videoJSON.onProgress!(progress)
         }, 500)
     }
+    // Check if daily upload limit is reached
+    await page.waitForXPath('//*[contains(text(),"Daily upload limit reached")]', { timeout: 15000 }).then(() => {
+        console.log("Daily upload limit reached.");
+        browser.close();
+    }).catch(() => {});
+    
     // Wait for upload to complete
     await page.waitForXPath('//*[contains(text(),"Upload complete")]', { timeout: 0 })
     if (videoJSON.onProgress) {
