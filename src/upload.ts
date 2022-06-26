@@ -99,6 +99,18 @@ async function uploadVideo(videoJSON: Video) {
     const closeBtnXPath = "//*[normalize-space(text())='Close']"
     const selectBtnXPath = "//*[normalize-space(text())='Select files']"
     const saveCloseBtnXPath = '//*[@aria-label="Save and close"]/tp-yt-iron-icon'
+    const createBtnXPath = '//*[@id="create-icon"]/tp-yt-iron-icon'
+    const addVideoBtnXPath = '//*[@id="text-item-0"]/ytcp-ve/div/div/yt-formatted-string'
+        if(page.waitForXPath(createBtnXPath)){
+            console.log('THIS CHOSE!!')
+            const createBtn = page.$x(createBtnXPath);
+            createBtn[0].click();
+            
+        }
+        if(page.waitForXPath(addVideoBtnXPath)){
+            const addVideoBtn =page.$x(addVideoBtnXPath);
+            addVideoBtn[0].click();
+        }
     for (let i = 0; i < 2; i++) {
         try {
             await page.waitForXPath(selectBtnXPath)
