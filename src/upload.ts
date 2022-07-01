@@ -102,11 +102,11 @@ async function uploadVideo(videoJSON: Video) {
     const createBtnXPath = '//*[@id="create-icon"]/tp-yt-iron-icon'
     const addVideoBtnXPath = '//*[@id="text-item-0"]/ytcp-ve/div/div/yt-formatted-string'
         if(await page.waitForXPath(createBtnXPath)){
-            const createBtn = page.$x(createBtnXPath);
+            const createBtn = await page.$x(createBtnXPath);
             await createBtn[0].click();
         }
         if(await page.waitForXPath(addVideoBtnXPath)){
-            const addVideoBtn =page.$x(addVideoBtnXPath);
+            const addVideoBtn =await page.$x(addVideoBtnXPath);
             await addVideoBtn[0].click();
         }
     for (let i = 0; i < 2; i++) {
