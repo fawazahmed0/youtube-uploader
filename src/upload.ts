@@ -165,7 +165,9 @@ async function uploadVideo(videoJSON: Video) {
     }).catch(() => {});
     
     // Wait for upload to complete
-    await page.waitForXPath('//*[contains(text(),"Upload complete")]', { timeout: 0 })
+    await page.waitForXPath('//*[contains(text(),"Upload complete")]',{ timeout: 15000 }).catch(()=>{
+        console.log('wait for text "Upload complete" failed, skip this.');
+    });
     if (videoJSON.onProgress) {
         progress = { progress: 0, stage: ProgressEnum.Processing }
         videoJSON.onProgress(progress)
@@ -173,7 +175,9 @@ async function uploadVideo(videoJSON: Video) {
 
     // Wait for upload to go away and processing to start, skip the wait if the user doesn't want it.
     if (!videoJSON.skipProcessingWait) {
-        await page.waitForXPath('//*[contains(text(),"Upload complete")]', { hidden: true, timeout: 0 })
+        await page.waitForXPath('//*[contains(text(),"Processing complete")]', { hidden: true, timeout: 15000 }).catch(()=>{
+            console.log('wait for text "Processing complete" failed, skip this.');
+    });
     } else {
         await sleep(5000)
     }
