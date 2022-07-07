@@ -165,7 +165,7 @@ async function uploadVideo(videoJSON: Video) {
     }).catch(() => {});
     
     // Wait for upload to complete
-    await page.waitForXPath('//*[contains(text(),"Video upload complete")]',{ timeout: 0 });
+    await page.waitForXPath('//*[contains(text(),"Video upload complete")]',{ hidden: true, timeout: 0 });
     if (videoJSON.onProgress) {
         progress = { progress: 0, stage: ProgressEnum.Processing }
         videoJSON.onProgress(progress)
