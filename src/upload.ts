@@ -12,8 +12,10 @@ const rl = readline.createInterface({
 });
 const prompt = (query: string) => new Promise<string>((resolve) => rl.question(query, resolve));
 
-const StealthPlugin = require('puppeteer-extra-plugin-stealth')
-puppeteer.use(StealthPlugin())
+const StealthPlugin = require('puppeteer-extra-plugin-stealth')()
+StealthPlugin.enabledEvasions.delete('iframe.contentWindow')
+StealthPlugin.enabledEvasions.delete('navigator.plugins')
+puppeteer.use(StealthPlugin)
 
 const maxTitleLen = 100
 const maxDescLen = 5000
