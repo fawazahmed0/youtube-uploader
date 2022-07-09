@@ -12,8 +12,10 @@ const rl = readline.createInterface({
 });
 const prompt = (query: string) => new Promise<string>((resolve) => rl.question(query, resolve));
 
-const StealthPlugin = require('puppeteer-extra-plugin-stealth')
-puppeteer.use(StealthPlugin())
+const StealthPlugin = require('puppeteer-extra-plugin-stealth')()
+StealthPlugin.enabledEvasions.delete('iframe.contentWindow')
+StealthPlugin.enabledEvasions.delete('navigator.plugins')
+puppeteer.use(StealthPlugin)
 
 const maxTitleLen = 100
 const maxDescLen = 5000
@@ -101,11 +103,11 @@ async function uploadVideo(videoJSON: Video) {
     const saveCloseBtnXPath = '//*[@aria-label="Save and close"]/tp-yt-iron-icon'
     const createBtnXPath = '//*[@id="create-icon"]/tp-yt-iron-icon'
     const addVideoBtnXPath = '//*[@id="text-item-0"]/ytcp-ve/div/div/yt-formatted-string'
-        if((await page.waitForXPath(createBtnXPath))){
+        if((await page.waitForXPath(createBtnXPath).catch(() => null))){
             const createBtn = await page.$x(createBtnXPath);
             await createBtn[0].click();
         }
-        if((await page.waitForXPath(addVideoBtnXPath))){
+        if((await page.waitForXPath(addVideoBtnXPath).catch(() => null))){
             const addVideoBtn =await page.$x(addVideoBtnXPath);
             await addVideoBtn[0].click();
         }
