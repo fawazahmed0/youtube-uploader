@@ -12,8 +12,10 @@ const rl = readline.createInterface({
 });
 const prompt = (query: string) => new Promise<string>((resolve) => rl.question(query, resolve));
 
-const StealthPlugin = require('puppeteer-extra-plugin-stealth')
-puppeteer.use(StealthPlugin())
+const StealthPlugin = require('puppeteer-extra-plugin-stealth')()
+StealthPlugin.enabledEvasions.delete('iframe.contentWindow')
+StealthPlugin.enabledEvasions.delete('navigator.plugins')
+puppeteer.use(StealthPlugin)
 
 const maxTitleLen = 100
 const maxDescLen = 5000
@@ -101,11 +103,11 @@ async function uploadVideo(videoJSON: Video) {
     const saveCloseBtnXPath = '//*[@aria-label="Save and close"]/tp-yt-iron-icon'
     const createBtnXPath = '//*[@id="create-icon"]/tp-yt-iron-icon'
     const addVideoBtnXPath = '//*[@id="text-item-0"]/ytcp-ve/div/div/yt-formatted-string'
-        if((await page.waitForXPath(createBtnXPath))){
+        if((await page.waitForXPath(createBtnXPath).catch(() => null))){
             const createBtn = await page.$x(createBtnXPath);
             await createBtn[0].click();
         }
-        if((await page.waitForXPath(addVideoBtnXPath))){
+        if((await page.waitForXPath(addVideoBtnXPath).catch(() => null))){
             const addVideoBtn =await page.$x(addVideoBtnXPath);
             await addVideoBtn[0].click();
         }
@@ -165,7 +167,7 @@ async function uploadVideo(videoJSON: Video) {
     }).catch(() => {});
     
     // Wait for upload to complete
-    await page.waitForXPath('//*[contains(text(),"Video upload complete")]',{ hidden: true, timeout: 0 });
+    await page.waitForXPath('//*[contains(text(),"Upload complete")]', { timeout: 0 })
     if (videoJSON.onProgress) {
         progress = { progress: 0, stage: ProgressEnum.Processing }
         videoJSON.onProgress(progress)
@@ -173,7 +175,7 @@ async function uploadVideo(videoJSON: Video) {
 
     // Wait for upload to go away and processing to start, skip the wait if the user doesn't want it.
     if (!videoJSON.skipProcessingWait) {
-        await page.waitForXPath('//*[contains(text(),"Processing complete")]', { hidden: true, timeout: 0 })
+        await page.waitForXPath('//*[contains(text(),"Upload complete")]', { hidden: true, timeout: 0 })
     } else {
         await sleep(5000)
     }
@@ -725,7 +727,7 @@ async function changeHomePageLangIfNeeded(localPage: Page) {
     await localPage.click(avatarButtonSelector)
 
     const langMenuItemSelector =
-        'yt-multi-page-menu-section-renderer+yt-multi-page-menu-section-renderer>#items>ytd-compact-link-renderer>a'
+        '#sections > yt-multi-page-menu-section-renderer:nth-child(3)>#items>ytd-compact-link-renderer>a'
     try {
         await localPage.waitForSelector(langMenuItemSelector)
     } catch (e: any) {
