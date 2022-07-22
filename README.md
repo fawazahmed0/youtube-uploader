@@ -32,6 +32,10 @@ Visit [SendLetter.org](https://sendletter.org/?r=ytr) to Send Now! And Save your
 
 ------------ 
 
+<strong>Paid support is available if you need faster resolution. For paid support, please write mail to youtube-uploader@datascraping.pp.ua</strong>
+
+------------
+
 **In the name of God, who have guided me to do this work**
 
 **Note1:** In case you find any issue, please raise an [issue](https://github.com/fawazahmed0/youtube-uploader/issues/new/choose), So that I can fix it.<br>
