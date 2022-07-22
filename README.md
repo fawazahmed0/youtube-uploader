@@ -32,7 +32,7 @@ Visit [SendLetter.org](https://sendletter.org/?r=ytr) to Send Now! And Save your
 
 ------------ 
 
-<strong>Paid support is available if you need faster resolution. For paid support, please write mail to youtube-uploader@datascraping.pp.ua</strong>
+<strong>Paid support is available for faster resolution. For paid support, please write mail to youtube-uploader@datascraping.pp.ua</strong>
 
 ------------
 
