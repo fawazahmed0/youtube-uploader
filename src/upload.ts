@@ -727,7 +727,7 @@ async function changeHomePageLangIfNeeded(localPage: Page) {
     await localPage.click(avatarButtonSelector)
 
     const langMenuItemSelector =
-        'yt-multi-page-menu-section-renderer+yt-multi-page-menu-section-renderer>#items>ytd-compact-link-renderer>a'
+        '#sections>yt-multi-page-menu-section-renderer:nth-child(3)>#items>ytd-compact-link-renderer>a'
     try {
         await localPage.waitForSelector(langMenuItemSelector)
     } catch (e: any) {
