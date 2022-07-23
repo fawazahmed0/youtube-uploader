@@ -191,9 +191,9 @@ async function uploadVideo(videoJSON: Video) {
         const [thumbChooser] = await Promise.all([
             page.waitForFileChooser(),
             await page.waitForSelector(
-                `[class="remove-default-style style-scope ytcp-thumbnails-compact-editor-uploader"]`
+                `[class="remove-default-style style-scope ytcp-thumbnails-compact-editor-uploader-old"]`
             ),
-            await page.click(`[class="remove-default-style style-scope ytcp-thumbnails-compact-editor-uploader"]`)
+            await page.click(`[class="remove-default-style style-scope ytcp-thumbnails-compact-editor-uploader-old"]`)
         ])
         await thumbChooser.accept([thumb])
     }
@@ -771,8 +771,8 @@ async function changeHomePageLangIfNeeded(localPage: Page) {
         ).singleNodeValue as HTMLElement
         element.click()
     }, englishItemXPath)
-
-    await localPage.goto(uploadURL)
+    //Recursive language change, if YouTube, for some reason, did not change the language the first time, although the English (UK) button was pressed, the exit from the recursion occurs when the selectedLang selector is tested for the set language
+    await changeHomePageLangIfNeeded(localPage);
 }
 
 async function launchBrowser(puppeteerLaunch?: PuppeteerNodeLaunchOptions) {
