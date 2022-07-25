@@ -15,4 +15,4 @@ jobs:
         with:
           issue-number: ${{ github.event.issue.number }}
           body: |
-            Paid support is available for quick resolution. For paid support, please write mail to youtube-uploader@datascraping.pp.ua
+            Paid support is available for quick resolution, new features etc. For paid support, please write mail to youtube-uploader@datascraping.pp.ua

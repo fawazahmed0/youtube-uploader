@@ -27,7 +27,7 @@ Visit [SendLetter.org](https://sendletter.org/?r=cur) to know more
 
 ------------ 
 
-<strong>Paid support is available for quick resolution & help.
+<strong>Paid support is available for quick help, new features etc.
  
 For paid support, please write mail to youtube-uploader@datascraping.pp.ua</strong>
 
