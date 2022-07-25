@@ -1001,9 +1001,10 @@ function xpathTextSelector( text: string, caseSensitive?: boolean, nthElement?: 
     let xpathSelector = ''
     if(caseSensitive)
     xpathSelector = `//*[contains(normalize-space(text()),"${text}")]`
-    else
-    xpathSelector = `//*[contains(translate(normalize-space(text()),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),"${text.toLowerCase()}")]`
-    
+    else{
+    let uniqueText = [...new Set(text.split(''))].join('')
+    xpathSelector = `//*[contains(translate(normalize-space(text()),'${uniqueText.toUpperCase()}','${uniqueText.toLowerCase()}'),"${text.toLowerCase().replace(/\s\s+/g, " ")}")]`
+    }
     if(nthElement)
     xpathSelector = `(${xpathSelector})[${nthElement+1}]`
     
