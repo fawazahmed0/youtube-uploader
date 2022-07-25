@@ -993,3 +993,16 @@ function escapeQuotesForXPath(str: string) {
     
     return "concat(" + parts.join(",") + ")";
 }
+
+function xpathTextSelector( text: string, caseSensitive: boolean, nthElement: number ){
+    let xpathSelector = ''
+    if(caseSensitive)
+    xpathSelector = `//*[contains(normalize-space(text()),"${text}")]`
+    else
+    xpathSelector = `//*[contains(translate(normalize-space(text()),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),"${text.toLowerCase()}")]`
+    
+    if(nthElement)
+    xpathSelector = `(${xpathSelector})[${nthElement+1}]`
+    
+    return xpathSelector
+    }
