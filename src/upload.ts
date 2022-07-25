@@ -161,13 +161,16 @@ async function uploadVideo(videoJSON: Video) {
         }, 500)
     }
     // Check if daily upload limit is reached
-    await page.waitForXPath('//*[contains(text(),"Daily upload limit reached")]', { timeout: 15000 }).then(() => {
+    await page.waitForXPath('//*[contains(text(),"Daily upload limit reached")]', { timeout: 500 }).then(() => {
         console.log("Daily upload limit reached.");
         browser.close();
     }).catch(() => {});
     
-    // Wait for upload to complete
-    await page.waitForXPath('//*[contains(text(),"Upload complete")]', { hidden: true, timeout: 0 })
+  // Wait for upload to complete
+  await page.waitForXPath('//*[contains(text(),"Upload complete")]', { timeout: 0 })
+  // Wait for upload to go away and processing to start
+  await page.waitForXPath('//*[contains(text(),"Upload complete")]', { hidden: true, timeout: 0 })
+
     if (videoJSON.onProgress) {
         progress = { progress: 0, stage: ProgressEnum.Processing }
         videoJSON.onProgress(progress)
@@ -188,12 +191,12 @@ async function uploadVideo(videoJSON: Video) {
 
     // Wait until title & description box pops up
     if (thumb) {
+        let thumbnailChooserXpath = xpathTextSelector("upload thumbnail")
+        await page.waitForXPath(thumbnailChooserXpath)
+        const thumbBtn = await page.$x(thumbnailChooserXpath)
         const [thumbChooser] = await Promise.all([
             page.waitForFileChooser(),
-            await page.waitForSelector(
-                `[class="remove-default-style style-scope ytcp-thumbnails-compact-editor-uploader"]`
-            ),
-            await page.click(`[class="remove-default-style style-scope ytcp-thumbnails-compact-editor-uploader"]`)
+            thumbBtn[0].click() // button that triggers file selection
         ])
         await thumbChooser.accept([thumb])
     }
@@ -994,7 +997,7 @@ function escapeQuotesForXPath(str: string) {
     return "concat(" + parts.join(",") + ")";
 }
 
-function xpathTextSelector( text: string, caseSensitive: boolean, nthElement: number ){
+function xpathTextSelector( text: string, caseSensitive?: boolean, nthElement?: number ){
     let xpathSelector = ''
     if(caseSensitive)
     xpathSelector = `//*[contains(normalize-space(text()),"${text}")]`
