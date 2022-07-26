@@ -299,14 +299,15 @@ async function uploadVideo(videoJSON: Video) {
         "//*[normalize-space(text())='Publish']/parent::*[not(@disabled)] | //*[normalize-space(text())='Save']/parent::*[not(@disabled)]"
     await page.waitForXPath(publishXPath)
     // save youtube upload link
-    await page.waitForSelector('[href^="https://youtu.be"]')
-    const uploadedLinkHandle = await page.$('[href^="https://youtu.be"]')
+    const selector = videoJSON.customSelectorUrl ?? "https://youtu.be";
+    await page.waitForSelector(`[href^="${selector}"]`)
+    const uploadedLinkHandle = await page.$(`[href^="${selector}"]`)
 
     let uploadedLink
     do {
         await page.waitForTimeout(500)
         uploadedLink = await page.evaluate((e) => e.getAttribute('href'), uploadedLinkHandle)
-    } while (uploadedLink === 'https://youtu.be/')
+    } while (uploadedLink === selector)
 
     const closeDialogXPath = uploadAsDraft ? saveCloseBtnXPath : publishXPath    
     let closeDialog
