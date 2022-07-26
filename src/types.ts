@@ -12,8 +12,6 @@ export interface Video {
     onProgress?: (arg0: VideoProgress) => void
     channelName?: string
     uploadAsDraft?: boolean
-    /** Allow setting of a custom selector URL to detect completion (e.g. if using shorts, set this to `https://youtube.com/shorts`) */
-    customSelectorUrl?: string
 }
 
 export enum ProgressEnum {
