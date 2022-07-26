@@ -154,8 +154,9 @@ comment(credentials, [comment1], {headless:false}).then(console.log)
 - [Dement6d](https://github.com/dement6d) - For [Better error messages](https://github.com/fawazahmed0/youtube-uploader/pull/99) & [handling 2FA](https://github.com/fawazahmed0/youtube-uploader/pull/101)
 - [coooo77](https://github.com/coooo77) - For [uploading videos as draft option](https://github.com/fawazahmed0/youtube-uploader/pull/105)
 - [L1teleau](https://github.com/L1teleau) - For [upload limit reached message](https://github.com/fawazahmed0/youtube-uploader/pull/115)
-- [Sacredrel1c](https://github.com/sacredrel1c) - For [channel stuck due to no drop down menu](https://github.com/fawazahmed0/youtube-uploader/pull/118) and [upload endless wait fix](https://github.com/fawazahmed0/youtube-uploader/pull/125)
+- [Sacredrel1c](https://github.com/sacredrel1c) - For [channel stuck due to no drop down menu](https://github.com/fawazahmed0/youtube-uploader/pull/118), [upload endless wait fix](https://github.com/fawazahmed0/youtube-uploader/pull/125) and [click fix](https://github.com/fawazahmed0/youtube-uploader/pull/133)
 - [Chipped1](https://github.com/Chipped1) - For [Google login fix](https://github.com/fawazahmed0/youtube-uploader/pull/127)
+- [Jared L](https://github.com/lhjt) - For [customSelectorUrl config option](https://github.com/fawazahmed0/youtube-uploader/pull/139)
   
 ### Donate ❤️:
 - [Custom Page](https://fawazahmed0.github.io/donate)
