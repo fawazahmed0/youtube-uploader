@@ -777,8 +777,8 @@ async function changeHomePageLangIfNeeded(localPage: Page) {
         ).singleNodeValue as HTMLElement
         element.click()
     }, englishItemXPath)
-
-    await localPage.goto(uploadURL)
+    //Recursive language change, if YouTube, for some reason, did not change the language the first time, although the English (UK) button was pressed, the exit from the recursion occurs when the selectedLang selector is tested for the set language
+    await changeHomePageLangIfNeeded(localPage);
 }
 
 async function launchBrowser(puppeteerLaunch?: PuppeteerNodeLaunchOptions) {
