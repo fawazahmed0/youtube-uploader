@@ -10,29 +10,24 @@
 <div style="display: flex">
   <div>
     <div align="center">
-      <a href="https://sendletter.org/?r=ytr"
+      <a href="https://sendletter.org/?r=cur"
         ><img
           src="https://sendletter.org/original-icon.svg"
           width="150"
           alt="SendLetter Brand Image" /></a
       >
     </div>
-    <strong>
-              This work is Sponsored by SendLetter, the Cheapest way to Send Letters, Documents <a href="https://sendletter.org/?r=ytr">physically anywhere in the world</a> with the click of a button.
-Upload your PDF & we will print the pages in high quality and send it to the destination address.
-
-Our prices are cheapest in the world, starting at $1, you cannot get prices lower than this from anywhere else.
-
-You can use our service to send Forms, Documents, Invoices, Statements, Letters, Invitations, Posters, Flyers, Handwritten letters to your friends, Thank You letters to customers and for many more things.
-
-Visit [SendLetter.org](https://sendletter.org/?r=ytr) to Send Now! And Save your Time and Money.
-    </strong>
   </div>
 </div>
 
+**Note:**  I would like to tell you about [SendLetter.org](https://sendletter.org/?r=cur), you can use it to Snail Mail 🐌 Forms, Documents, Letters 📄, Invoices, Statements, Invitations, Posters, Flyers, to anywhere in the world.
+Have Documents Printed 🖨, Folded and Mailed by them 📮, starting at $1
+
+Visit [SendLetter.org](https://sendletter.org/?r=cur) to know more
+
 ------------ 
 
-<strong>Paid support is available for quick resolution & help.
+<strong>Paid support is available for quick help, new features etc.
  
 For paid support, please write mail to youtube-uploader@datascraping.pp.ua</strong>
 
@@ -147,7 +142,7 @@ comment(credentials, [comment1], {headless:false}).then(console.log)
 ```  
   
 ### Contributors 🎉:
-- [Pierre Miniggio( @pierreminiggio )](https://ggio.link/twitter) - For Adding [Youtube UI English Language Support](https://github.com/fawazahmed0/youtube-uploader/pull/16), [JSDoc](https://github.com/fawazahmed0/youtube-uploader/pull/18), [debug message](https://github.com/fawazahmed0/youtube-uploader/pull/34) and [Cleanup](https://github.com/fawazahmed0/youtube-uploader/pull/67)
+- [Pierre Miniggio( @pierreminiggio )](https://ggio.link/twitter) - For Adding [Youtube UI English Language Support](https://github.com/fawazahmed0/youtube-uploader/pull/16), [JSDoc](https://github.com/fawazahmed0/youtube-uploader/pull/18), [debug message](https://github.com/fawazahmed0/youtube-uploader/pull/34), [Cleanup](https://github.com/fawazahmed0/youtube-uploader/pull/67) and [shorts link refactor](https://github.com/fawazahmed0/youtube-uploader/pull/140)
 - [TentacleSama4254 ](https://github.com/TentacleSama4254) - For Adding [Thumbnail option](https://github.com/fawazahmed0/youtube-uploader/pull/22), fixing [tags error](https://github.com/fawazahmed0/youtube-uploader/pull/23), [TypeScript Rewrite, storing login session](https://github.com/fawazahmed0/youtube-uploader/pull/51), [video metadata update feature](https://github.com/fawazahmed0/youtube-uploader/pull/53) and [comments option](https://github.com/fawazahmed0/youtube-uploader/pull/58)
 - [Sai Charan](https://github.com/charan0017) - For [onSuccess Option](https://github.com/fawazahmed0/youtube-uploader/pull/32)
 - [Tue Nguyen](https://github.com/TueNguyen2911) - For [Better error messages](https://github.com/fawazahmed0/youtube-uploader/pull/46)
@@ -159,8 +154,9 @@ comment(credentials, [comment1], {headless:false}).then(console.log)
 - [Dement6d](https://github.com/dement6d) - For [Better error messages](https://github.com/fawazahmed0/youtube-uploader/pull/99) & [handling 2FA](https://github.com/fawazahmed0/youtube-uploader/pull/101)
 - [coooo77](https://github.com/coooo77) - For [uploading videos as draft option](https://github.com/fawazahmed0/youtube-uploader/pull/105)
 - [L1teleau](https://github.com/L1teleau) - For [upload limit reached message](https://github.com/fawazahmed0/youtube-uploader/pull/115)
-- [Sacredrel1c](https://github.com/sacredrel1c) - For [channel stuck due to no drop down menu](https://github.com/fawazahmed0/youtube-uploader/pull/118) and [upload endless wait fix](https://github.com/fawazahmed0/youtube-uploader/pull/125)
+- [Sacredrel1c](https://github.com/sacredrel1c) - For [channel stuck due to no drop down menu](https://github.com/fawazahmed0/youtube-uploader/pull/118), [upload endless wait fix](https://github.com/fawazahmed0/youtube-uploader/pull/125) and [click fix](https://github.com/fawazahmed0/youtube-uploader/pull/133)
 - [Chipped1](https://github.com/Chipped1) - For [Google login fix](https://github.com/fawazahmed0/youtube-uploader/pull/127)
+- [Jared L](https://github.com/lhjt) - For [customSelectorUrl config option](https://github.com/fawazahmed0/youtube-uploader/pull/139)
   
 ### Donate ❤️:
 - [Custom Page](https://fawazahmed0.github.io/donate)
