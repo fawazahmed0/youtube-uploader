@@ -1,4 +1,4 @@
-import { Credentials, Video, VideoToEdit, Comment, VideoProgress, ProgressEnum } from './types'
+import { Credentials, Video, VideoToEdit, Comment, VideoProgress, ProgressEnum, MessageTransport } from './types'
 import puppeteer, { PuppeteerExtra } from 'puppeteer-extra'
 import { Puppeteer, PuppeteerNode, PuppeteerNodeLaunchOptions, Browser, Page, errors, PuppeteerErrors } from 'puppeteer'
 import fs from 'fs-extra'
@@ -32,6 +32,12 @@ const invalidCharacters = [ '<', '>' ]
 
 const uploadURL = 'https://www.youtube.com/upload'
 const homePageURL = 'https://www.youtube.com'
+
+const defaultMessageTransport: MessageTransport = {
+    log: console.log,
+    userAction: console.log
+}
+
 /**
  * import { upload } from 'youtube-videos-uploader'
  * or
@@ -40,7 +46,8 @@ const homePageURL = 'https://www.youtube.com'
 export const upload = async (
     credentials: Credentials,
     videos: Video[],
-    puppeteerLaunch?: PuppeteerNodeLaunchOptions
+    puppeteerLaunch?: PuppeteerNodeLaunchOptions,
+    messageTransport: MessageTransport = defaultMessageTransport
 ) => {
     cookiesDirPath = path.join('.', 'yt-auth')
     cookiesFilePath = path.join(
@@ -51,12 +58,12 @@ export const upload = async (
     )
 
     await launchBrowser(puppeteerLaunch)
-    await loadAccount(credentials)
+    await loadAccount(credentials, messageTransport)
 
     const uploadedYTLink: string[] = []
 
     for (const video of videos) {
-        const link = await uploadVideo(video)
+        const link = await uploadVideo(video, messageTransport)
 
         const { onSuccess } = video
         if (typeof onSuccess === 'function') {
@@ -72,7 +79,7 @@ export const upload = async (
 }
 
 // `videoJSON = {}`, avoid `videoJSON = undefined` throw error.
-async function uploadVideo(videoJSON: Video) {
+async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport) {
     const pathToFile = videoJSON.path
     if (!pathToFile) {
         throw new Error("function `upload`'s second param `videos`'s item `video` must include `path` property.")
@@ -118,8 +125,8 @@ async function uploadVideo(videoJSON: Video) {
             break
         } catch (error) {
             const nextText = i === 0 ? ' trying again' : ' failed again'
-            console.log('Failed to find the select files button', nextText)
-            console.error(error)
+            messageTransport.log('Failed to find the select files button' + nextText)
+            messageTransport.log(error)
             await page.evaluate(() => {
                 window.onbeforeunload = null
             })
@@ -162,7 +169,7 @@ async function uploadVideo(videoJSON: Video) {
     }
     // Check if daily upload limit is reached
     await page.waitForXPath('//*[contains(text(),"Daily upload limit reached")]', { timeout: 500 }).then(() => {
-        console.log("Daily upload limit reached.");
+        messageTransport.log("Daily upload limit reached.");
         browser.close();
     }).catch(() => {});
     
@@ -343,7 +350,8 @@ async function uploadVideo(videoJSON: Video) {
 export const update = async (
     credentials: Credentials,
     videos: VideoToEdit[],
-    puppeteerLaunch?: PuppeteerNodeLaunchOptions
+    puppeteerLaunch?: PuppeteerNodeLaunchOptions,
+    messageTransport: MessageTransport = defaultMessageTransport
 ) => {
     cookiesDirPath = path.join('.', 'yt-auth')
     cookiesFilePath = path.join(
@@ -354,12 +362,12 @@ export const update = async (
     )
 
     await launchBrowser(puppeteerLaunch)
-    if (!fs.existsSync(cookiesFilePath)) await loadAccount(credentials)
+    if (!fs.existsSync(cookiesFilePath)) await loadAccount(credentials, messageTransport)
     const updatedYTLink = []
 
     for (const video of videos) {
-        console.log(video)
-        const link = await updateVideoInfo(video)
+        messageTransport.log(video)
+        const link = await updateVideoInfo(video, messageTransport)
 
         const { onSuccess } = video
         if (typeof onSuccess === 'function') {
@@ -375,7 +383,8 @@ export const update = async (
 export const comment = async (
     credentials: Credentials,
     comments: Comment[],
-    puppeteerLaunch?: PuppeteerNodeLaunchOptions
+    puppeteerLaunch?: PuppeteerNodeLaunchOptions,
+    messageTransport: MessageTransport = defaultMessageTransport
 ) => {
     cookiesDirPath = path.join('.', 'yt-auth')
     cookiesFilePath = path.join(
@@ -386,13 +395,13 @@ export const comment = async (
     )
 
     await launchBrowser(puppeteerLaunch)
-    if (!fs.existsSync(cookiesFilePath)) await loadAccount(credentials)
+    if (!fs.existsSync(cookiesFilePath)) await loadAccount(credentials, messageTransport)
     const commentsS = []
 
     for (const comment of comments) {
         let result
-        console.log(comment)
-        if (comment.live) result = await publishLiveComment(comment)
+        messageTransport.log(comment)
+        if (comment.live) result = await publishLiveComment(comment, messageTransport)
         else result = await publishComment(comment)
 
         const { onSuccess } = comment
@@ -429,7 +438,7 @@ const publishComment = async (comment: Comment) => {
     }
 }
 
-const publishLiveComment = async (comment: Comment) => {
+const publishLiveComment = async (comment: Comment, messageTransport: MessageTransport) => {
     const videoUrl = comment.link
     const cmt = comment.comment
     if (!videoUrl) {
@@ -441,7 +450,7 @@ const publishLiveComment = async (comment: Comment) => {
     try {
         await page.focus(`#label`)
     } catch (err) {
-        console.log(err)
+        messageTransport.log(err)
         throw new Error('Video may not be Live')
     }
 
@@ -460,7 +469,7 @@ const publishLiveComment = async (comment: Comment) => {
     }
 }
 
-const updateVideoInfo = async (videoJSON: VideoToEdit) => {
+const updateVideoInfo = async (videoJSON: VideoToEdit, messageTransport: MessageTransport) => {
     const videoUrl = videoJSON.link
     if (!videoUrl) {
         throw new Error('The link of the  video is a required parameter')
@@ -516,7 +525,7 @@ const updateVideoInfo = async (videoJSON: VideoToEdit) => {
     if (thumb) {
         const [thumbChooser] = await Promise.all([
             page.waitForFileChooser({ timeout: 500 }).catch(async () => {
-                console.log('replacing previous thumbanail')
+                messageTransport.log('replacing previous thumbanail')
                 await page.click('#still-1 > button')
                 await page.waitForSelector('#save > div')
                 await page.click(`#save > div`)
@@ -631,7 +640,7 @@ const updateVideoInfo = async (videoJSON: VideoToEdit) => {
                     break
             }
         } catch (err) {
-            console.log('already selected')
+            messageTransport.log('already selected')
             await page.keyboard.press('Escape')
         }
         await page.click(`#save-button`)
@@ -645,16 +654,16 @@ const updateVideoInfo = async (videoJSON: VideoToEdit) => {
         await page.click(`#save > div`)
         await page.waitForXPath("//*[normalize-space(text())='Save']/parent::*[@disabled]")
     } catch (err) {
-        console.log(err)
+        messageTransport.log(err)
         throw new Error('Probably nothing was changed ...')
     }
     //#overflow-menu-button
-    return console.log('successfully edited')
+    return messageTransport.log('successfully edited')
 }
 
-async function loadAccount(credentials: Credentials) {
+async function loadAccount(credentials: Credentials, messageTransport: MessageTransport) {
     try {
-        if (!fs.existsSync(cookiesFilePath)) await login(page, credentials)
+        if (!fs.existsSync(cookiesFilePath)) await login(page, credentials, messageTransport)
     } catch (error: any) {
         if (error.message === 'Recapcha found') {
             if (browser) {
@@ -665,7 +674,7 @@ async function loadAccount(credentials: Credentials) {
 
         // Login failed trying again to login
         try {
-            await login(page, credentials)
+            await login(page, credentials, messageTransport)
         } catch (error) {
             if (browser) {
                 await browser.close()
@@ -676,8 +685,8 @@ async function loadAccount(credentials: Credentials) {
     try {
         await changeHomePageLangIfNeeded(page)
     } catch (error) {
-        console.error(error)
-        await login(page, credentials)
+        messageTransport.log(error)
+        await login(page, credentials, messageTransport)
     }
 }
 
@@ -801,7 +810,7 @@ async function launchBrowser(puppeteerLaunch?: PuppeteerNodeLaunchOptions) {
     await page.setBypassCSP(true)
 }
 
-async function login(localPage: Page, credentials: Credentials) {
+async function login(localPage: Page, credentials: Credentials, messageTransport: MessageTransport) {
     await localPage.goto(uploadURL)
 
     await changeLoginPageLangIfNeeded(localPage)
@@ -824,7 +833,7 @@ async function login(localPage: Page, credentials: Credentials) {
     if (isOnGoogleAppAuthPage) {
         const codeElement = await localPage.$('samp')
         const code = (await codeElement?.getProperty('textContent'))?.toString().replace('JSHandle:', '')
-        code && console.log('Press ' + code + ' on your phone to login')
+        code && messageTransport.userAction('Press ' + code + ' on your phone to login')
     }
     // password isnt required in the case that a code was sent via google auth
     else {
@@ -870,13 +879,13 @@ async function login(localPage: Page, credentials: Credentials) {
         await localPage.click('#create-channel-button');
         await localPage.waitForTimeout(3000);
     } catch (error) {
-        console.log('Channel already exists or there was an error creating the channel.');
+        messageTransport.log('Channel already exists or there was an error creating the channel.');
     }
     try {
         const uploadPopupSelector = 'ytcp-uploads-dialog'
         await localPage.waitForSelector(uploadPopupSelector, { timeout: 70000 })
     } catch (error) {
-        if (credentials.recoveryemail) await securityBypass(localPage, credentials.recoveryemail)
+        if (credentials.recoveryemail) await securityBypass(localPage, credentials.recoveryemail, messageTransport)
     }
 
     const cookiesObject = await localPage.cookies()
@@ -884,14 +893,14 @@ async function login(localPage: Page, credentials: Credentials) {
     // Write cookies to temp file to be used in other profile pages
     await fs.writeFile(cookiesFilePath, JSON.stringify(cookiesObject), function (err) {
         if (err) {
-            console.log('The file could not be written.', err)
+            messageTransport.log('The file could not be written. ' + err.message)
         }
-        console.log('Session has been successfully saved')
+        messageTransport.log('Session has been successfully saved')
     })
 }
 
 // Login bypass with recovery email
-async function securityBypass(localPage: Page, recoveryemail: string) {
+async function securityBypass(localPage: Page, recoveryemail: string, messageTransport: MessageTransport) {
     try {
         const confirmRecoveryXPath = "//*[normalize-space(text())='Confirm your recovery email']"
         await localPage.waitForXPath(confirmRecoveryXPath)
@@ -899,7 +908,7 @@ async function securityBypass(localPage: Page, recoveryemail: string) {
         const confirmRecoveryBtn = await localPage.$x(confirmRecoveryXPath)
         await localPage.evaluate((el: any) => el.click(), confirmRecoveryBtn[0])
     } catch (error) {
-        console.error(error)
+        messageTransport.log(error)
     }
 
     await localPage.waitForNavigation({
