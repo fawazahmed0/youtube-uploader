@@ -14,6 +14,11 @@ export interface Video {
     uploadAsDraft?: boolean
 }
 
+export interface MessageTransport {
+    log: (message: any) => void,
+    userAction: (message: string) => void
+}
+
 export enum ProgressEnum {
     Uploading,
     Processing,
