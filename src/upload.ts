@@ -265,8 +265,13 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
     }
     // Add tags
     if (tags) {
-        await page.focus(`[aria-label="Tags"]`)
-        await page.type(`[aria-label="Tags"]`, tags.join(', ').substring(0, 495) + ', ')
+        const ariaTagsSelector = `[aria-label="Tags"]`;
+        if(await !page.$(ariaTagsSelector)){
+            const showMoreBtn = await page.$x(`//*[@id="toggle-button"]/div`)
+            await page.evaluate((el) => el.click(),showMoreBtn)
+        }
+        await page.focus(ariaTagsSelector)
+        await page.type(ariaTagsSelector, tags.join(', ').substring(0, 495) + ', ')
     }
 
     // Selecting video language
