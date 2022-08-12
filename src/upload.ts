@@ -3,14 +3,7 @@ import puppeteer, { PuppeteerExtra } from 'puppeteer-extra'
 import { Puppeteer, PuppeteerNode, PuppeteerNodeLaunchOptions, Browser, Page, errors, PuppeteerErrors } from 'puppeteer'
 import fs from 'fs-extra'
 import path from 'path'
-
-import readline from 'readline'
-const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-    terminal: false
-});
-const prompt = (query: string) => new Promise<string>((resolve) => rl.question(query, resolve));
+const readline = require('node:readline/promises');
 
 const StealthPlugin = require('puppeteer-extra-plugin-stealth')()
 StealthPlugin.enabledEvasions.delete('iframe.contentWindow')
@@ -856,9 +849,14 @@ async function login(localPage: Page, credentials: Credentials, messageTransport
             smsAuthSelector
         )
         if (isOnSmsAuthPage) {
-            const code = await prompt('Enter the code that was sent to you via SMS: ')
-            await localPage.type(smsAuthSelector, code)
+            const rl = readline.createInterface({
+                input: process.stdin,
+                output: process.stdout
+            });
+            let code = await rl.question('Enter the code that was sent to you via SMS: ');
+            await localPage.type(smsAuthSelector, code.trim())
             await localPage.keyboard.press('Enter')
+            rl.close()
         }
     } catch (error: any) {
         const recaptchaInputSelector = 'input[aria-label="Type the text you hear or see"]'
