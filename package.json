@@ -47,6 +47,7 @@
   "homepage": "https://github.com/fawazahmed0/youtube-uploader#readme",
   "devDependencies": {
     "@types/fs-extra": "^9.0.13",
+    "@types/node": "^18.7.2",
     "typescript": "^4.4.4"
   }
 }
