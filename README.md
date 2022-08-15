@@ -5,6 +5,12 @@
 
 [![npm version](https://img.shields.io/npm/v/youtube-videos-uploader.svg?style=flat)](https://www.npmjs.com/package/youtube-videos-uploader)
 
+------------
+
+ **Note:** If you would like to scrape data from web, automate a task, build out a website or consult on something
+
+Then please write mail to pingyt@datascraping.pp.ua
+
 ------------ 
 
 <strong>Paid support is available for quick help, new features etc.
