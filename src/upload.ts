@@ -3,7 +3,7 @@ import puppeteer, { PuppeteerExtra } from 'puppeteer-extra'
 import { Puppeteer, PuppeteerNode, PuppeteerNodeLaunchOptions, Browser, Page, errors, PuppeteerErrors } from 'puppeteer'
 import fs from 'fs-extra'
 import path from 'path'
-const readline = require('node:readline/promises');
+import * as readline from 'node:readline/promises';
 
 const StealthPlugin = require('puppeteer-extra-plugin-stealth')()
 StealthPlugin.enabledEvasions.delete('iframe.contentWindow')
