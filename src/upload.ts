@@ -165,11 +165,18 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
         messageTransport.log("Daily upload limit reached.");
         browser.close();
     }).catch(() => {});
+
+    const errorMessage = await page.evaluate(() => (document.querySelector('.error-area.style-scope.ytcp-uploads-dialog') as HTMLElement)?.innerText.trim())
+
+    if (errorMessage) {
+        await browser.close()
+        throw new Error('Youtube returned an error : ' + errorMessage)
+    }
     
-  // Wait for upload to complete
-  await page.waitForXPath('//*[contains(text(),"Upload complete")]', { timeout: 0 })
-  // Wait for upload to go away and processing to start
-  await page.waitForXPath('//*[contains(text(),"Upload complete")]', { hidden: true, timeout: 0 })
+    // Wait for upload to complete
+    await page.waitForXPath('//*[contains(text(),"Upload complete")]', { timeout: 0 })
+    // Wait for upload to go away and processing to start
+    await page.waitForXPath('//*[contains(text(),"Upload complete")]', { hidden: true, timeout: 0 })
 
     if (videoJSON.onProgress) {
         progress = { progress: 0, stage: ProgressEnum.Processing }
