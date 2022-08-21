@@ -24,7 +24,7 @@ Please star this repo by clicking on [:star: button](#) above [:arrow_upper_righ
 - Free & Easy to use
 
 ### Prerequisite:
-- Install [Nodejs](https://nodejs.org/en/)
+- Install [Nodejs Current Version](https://nodejs.org/en/)
   
 ### Installation:
 ```js
