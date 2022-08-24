@@ -137,6 +137,7 @@ comment(credentials, [comment1], {headless:false}).then(console.log)
 - [Sacredrel1c](https://github.com/sacredrel1c) - For [channel stuck due to no drop down menu](https://github.com/fawazahmed0/youtube-uploader/pull/118), [upload endless wait fix](https://github.com/fawazahmed0/youtube-uploader/pull/125), [click fix](https://github.com/fawazahmed0/youtube-uploader/pull/133) and [Recursive lang change](https://github.com/fawazahmed0/youtube-uploader/pull/137)
 - [Chipped1](https://github.com/Chipped1) - For [Google login fix](https://github.com/fawazahmed0/youtube-uploader/pull/127)
 - [Jared L](https://github.com/lhjt) - For [customSelectorUrl config option](https://github.com/fawazahmed0/youtube-uploader/pull/139)
+- [Tiago Severino](https://github.com/TiagoSeverino) - For [Replacing readline](https://github.com/fawazahmed0/youtube-uploader/pull/157)
   
 ### Donate ❤️:
 - [Custom Page](https://fawazahmed0.github.io/donate)
