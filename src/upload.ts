@@ -3,7 +3,6 @@ import puppeteer, { PuppeteerExtra } from 'puppeteer-extra'
 import { Puppeteer, PuppeteerNode, PuppeteerNodeLaunchOptions, Browser, Page, errors, PuppeteerErrors } from 'puppeteer'
 import fs from 'fs-extra'
 import path from 'path'
-import * as readline from 'node:readline/promises';
 
 const StealthPlugin = require('puppeteer-extra-plugin-stealth')()
 StealthPlugin.enabledEvasions.delete('iframe.contentWindow')
@@ -856,14 +855,20 @@ async function login(localPage: Page, credentials: Credentials, messageTransport
             smsAuthSelector
         )
         if (isOnSmsAuthPage) {
-            const rl = readline.createInterface({
-                input: process.stdin,
-                output: process.stdout
-            });
-            let code = await rl.question('Enter the code that was sent to you via SMS: ');
-            await localPage.type(smsAuthSelector, code.trim())
-            await localPage.keyboard.press('Enter')
-            rl.close()
+            try {
+                if (!messageTransport.onSmsVerificationCodeSent)
+                    throw new Error('onSmsVerificationCodeSent not implemented')
+
+                let code = await messageTransport.onSmsVerificationCodeSent()
+
+                if (!code) throw new Error('Invalid SMS Code')
+
+                await localPage.type(smsAuthSelector, code.trim())
+                await localPage.keyboard.press('Enter')
+            } catch (error) {
+                await browser.close()
+                throw error
+            }
         }
     } catch (error: any) {
         const recaptchaInputSelector = 'input[aria-label="Type the text you hear or see"]'

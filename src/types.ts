@@ -15,8 +15,9 @@ export interface Video {
 }
 
 export interface MessageTransport {
-    log: (message: any) => void,
+    log: (message: any) => void
     userAction: (message: string) => void
+    onSmsVerificationCodeSent?: () => Promise<string | undefined>
 }
 
 export enum ProgressEnum {
