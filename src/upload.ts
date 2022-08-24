@@ -855,10 +855,20 @@ async function login(localPage: Page, credentials: Credentials, messageTransport
             smsAuthSelector
         )
         if (isOnSmsAuthPage) {
-            if (!messageTransport.prompt) throw new Error('Prompt Method Required to Receive SMS')
-            let code = await messageTransport.prompt('Enter the code that was sent to you via SMS: ')
-            await localPage.type(smsAuthSelector, code.trim())
-            await localPage.keyboard.press('Enter')
+            try {
+                if (!messageTransport.onSmsVerificationCodeSent)
+                    throw new Error('onSmsVerificationCodeSent not implemented')
+
+                let code = await messageTransport.onSmsVerificationCodeSent()
+
+                if (!code) throw new Error('Invalid SMS Code')
+
+                await localPage.type(smsAuthSelector, code.trim())
+                await localPage.keyboard.press('Enter')
+            } catch (error) {
+                await browser.close()
+                throw error
+            }
         }
     } catch (error: any) {
         const recaptchaInputSelector = 'input[aria-label="Type the text you hear or see"]'
