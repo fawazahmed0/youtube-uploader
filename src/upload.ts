@@ -160,7 +160,7 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
         }, 500)
     }
     // Check if daily upload limit is reached
-    await page.waitForXPath('//*[contains(text(),"Daily upload limit reached")]', { timeout: 500 }).then(() => {
+    await page.waitForXPath('//*[contains(text(),"Daily upload limit reached")]', { timeout: 5000 }).then(() => {
         messageTransport.log("Daily upload limit reached.");
         browser.close();
     }).catch(() => {});
