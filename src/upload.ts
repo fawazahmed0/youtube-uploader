@@ -174,20 +174,18 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
     
     // Wait for upload to complete
     await page.waitForXPath('//*[contains(text(),"Upload complete")]', { timeout: 0 })
-    // Wait for upload to go away and processing to start
-    await page.waitForXPath('//*[contains(text(),"Upload complete")]', { hidden: true, timeout: 0 })
-
-    if (videoJSON.onProgress) {
-        progress = { progress: 0, stage: ProgressEnum.Processing }
-        videoJSON.onProgress(progress)
-    }
-
     // Wait for upload to go away and processing to start, skip the wait if the user doesn't want it.
     if (!videoJSON.skipProcessingWait) {
         await page.waitForXPath('//*[contains(text(),"Upload complete")]', { hidden: true, timeout: 0 })
     } else {
         await sleep(5000)
     }
+
+    if (videoJSON.onProgress) {
+        progress = { progress: 0, stage: ProgressEnum.Processing }
+        videoJSON.onProgress(progress)
+    }
+
     if (videoJSON.onProgress) {
         clearInterval(progressChecker)
         progressChecker = undefined
