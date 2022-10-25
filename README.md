@@ -36,7 +36,7 @@ For paid support, please write mail to youtube-uploader@datascraping.pp.ua</stro
 
 ------------
 
-**In the name of God, who have guided me to do this work**
+**In the name of God, who has guided me to do this work**
 
 **Note1:** In case you find any issue, please raise an [issue](https://github.com/fawazahmed0/youtube-uploader/issues/new/choose), So that I can fix it.<br>
   
