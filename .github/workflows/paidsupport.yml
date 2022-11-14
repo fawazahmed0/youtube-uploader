@@ -4,7 +4,6 @@ name: paidsupport
 # events but only for branch 1 and on start directory, command.txt file changes or by manually running the workflow from actions tab
 on:
   issues:
-    types: [opened]
 
 jobs:
   createComment:
