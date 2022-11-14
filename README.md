@@ -7,35 +7,6 @@
 
 ------------
 
-
-<div style="display: flex">
-  <div>
-    <div align="center">
-      <a href="https://sendletter.org/?r=cur"
-        ><img
-          src="https://sendletter.org/original-icon.svg"
-          width="150"
-          alt="SendLetter Brand Image" /></a
-      >
-    </div>
-  </div>
-</div>
-
-**Note:**  I would like to tell you about [SendLetter.org](https://sendletter.org/?r=cur), you can use it to Snail Mail 🐌 Forms, Documents, Letters 📄, Invoices, Statements, Invitations, Posters, Flyers, to anywhere in the world.
-Have Documents Printed 🖨, Folded and Mailed by them 📮, starting at $1
-
-Visit [SendLetter.org](https://sendletter.org/?r=cur) to know more
-
-
-
------------- 
-
-<strong>Paid support is available for quick help, new features etc.
- 
-For paid support, please write mail to youtube-uploader@datascraping.pp.ua</strong>
-
-------------
-
 **In the name of God, who has guided me to do this work**
 
 **Note1:** In case you find any issue, please raise an [issue](https://github.com/fawazahmed0/youtube-uploader/issues/new/choose), So that I can fix it.<br>
@@ -162,10 +133,6 @@ comment(credentials, [comment1], {headless:false}).then(console.log)
 - [Jared L](https://github.com/lhjt) - For [customSelectorUrl config option](https://github.com/fawazahmed0/youtube-uploader/pull/139)
 - [Tiago Severino](https://github.com/TiagoSeverino) - For [Replacing readline](https://github.com/fawazahmed0/youtube-uploader/pull/157) and [Daily limit issue](https://github.com/fawazahmed0/youtube-uploader/pull/160)
 - [PeterStegarus](https://github.com/PeterStegarus) - For [Daily upload error message](https://github.com/fawazahmed0/youtube-uploader/pull/163)
-  
-### Donate ❤️:
-- [Custom Page](https://fawazahmed0.github.io/donate)
-- [Github Sponsors](https://github.com/sponsors/fawazahmed0)
 
 
 <br>
