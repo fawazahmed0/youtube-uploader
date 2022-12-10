@@ -1,6 +1,6 @@
 import { Credentials, Video, VideoToEdit, Comment, VideoProgress, ProgressEnum, MessageTransport } from './types'
-import puppeteer, { PuppeteerExtra } from 'puppeteer-extra'
-import { Puppeteer, PuppeteerNode, PuppeteerNodeLaunchOptions, Browser, Page, errors, PuppeteerErrors } from 'puppeteer'
+import puppeteer from 'puppeteer-extra'
+import { PuppeteerNodeLaunchOptions, Browser, Page } from 'puppeteer'
 import fs from 'fs-extra'
 import path from 'path'
 
@@ -102,11 +102,11 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
     const saveCloseBtnXPath = '//*[@aria-label="Save and close"]/tp-yt-iron-icon'
     const createBtnXPath = '//*[@id="create-icon"]/tp-yt-iron-icon'
     const addVideoBtnXPath = '//*[@id="text-item-0"]/ytcp-ve/div/div/yt-formatted-string'
-    if ((await page.waitForXPath(createBtnXPath).catch(() => null))) {
+    if ((await page.waitForXPath(createBtnXPath, { timeout: 5000 }).catch(() => null))) {
         const createBtn = await page.$x(createBtnXPath);
         await createBtn[0].click();
     }
-    if ((await page.waitForXPath(addVideoBtnXPath).catch(() => null))) {
+    if ((await page.waitForXPath(addVideoBtnXPath, { timeout: 5000 }).catch(() => null))) {
         const addVideoBtn = await page.$x(addVideoBtnXPath);
         await addVideoBtn[0].click();
     }
@@ -137,7 +137,6 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
         selectBtn[0].click() // button that triggers file selection
     ])
     await fileChooser.accept([pathToFile])
-
     // Setup onProgress
     let progressChecker: any
     let progress: VideoProgress = { progress: 0, stage: ProgressEnum.Uploading };
@@ -161,38 +160,33 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
     }
 
     const errorMessage = await page.evaluate(() => (document.querySelector('.error-area.style-scope.ytcp-uploads-dialog') as HTMLElement)?.innerText.trim())
-
     if (errorMessage) {
         await browser.close()
         throw new Error('Youtube returned an error : ' + errorMessage)
     }
 
     // Wait for upload to complete
-    const uploadCompletePromise = page.waitForXPath('//*[contains(text(),"Upload complete")]', { timeout: 0 }).then(() => 'uploadComplete')
+    const uploadCompletePromise = page.waitForXPath('//tp-yt-paper-progress[contains(@class,"ytcp-video-upload-progress-hover") and @value="100"]', { timeout: 0 }).then(() => 'uploadComplete')
 
     // Check if daily upload limit is reached
-    const dailyUploadPromise = page.waitForXPath('//*[contains(text(),"Daily upload limit reached")]', { timeout: 0 }).then(() => 'dailyUploadReached');
-
+    const dailyUploadPromise = page.waitForXPath('//div[contains(text(),"Daily upload limit reached")]', { timeout: 0 }).then(() => 'dailyUploadReached');
     const uploadResult = await Promise.any([uploadCompletePromise, dailyUploadPromise])
     if (uploadResult === 'dailyUploadReached') {
-        await browser.close();
+        browser.close();
         throw new Error('Daily upload limit reached');
     }
-    console.log("popup2")
+
     // Wait for upload to go away and processing to start, skip the wait if the user doesn't want it.
     if (!videoJSON.skipProcessingWait) {
-        await page.waitForXPath('//*[contains(text(),"Upload complete")]', { hidden: true, timeout: 0 })
+        await page.waitForXPath('//*[contains(text(),"Video upload complete")]', { hidden: true, timeout: 0 })
     } else {
         await sleep(5000)
     }
-    /// select for  children if exist
-    console.log("popup3")
-    page.click("")
+
     if (videoJSON.onProgress) {
         progress = { progress: 0, stage: ProgressEnum.Processing }
         videoJSON.onProgress(progress)
     }
-    console.log("popup4")
     if (videoJSON.onProgress) {
         clearInterval(progressChecker)
         progressChecker = undefined
@@ -200,7 +194,15 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
         videoJSON.onProgress(progress)
     }
 
-    console.log("poppppup")
+    try {
+        if (videoJSON.forKid) {
+            await page.click("tp-yt-paper-radio-button[name='VIDEO_MADE_FOR_KIDS_MFK']")
+        } else {
+            await page.click("tp-yt-paper-radio-button[name='VIDEO_MADE_FOR_KIDS_NOT_MFK']")
+        }
+    } catch {
+    }
+
     // Wait until title & description box pops up
     if (thumb) {
         let thumbnailChooserXpath = xpathTextSelector("upload thumbnail")
@@ -212,20 +214,21 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
         ])
         await thumbChooser.accept([thumb])
     }
-
     await page.waitForFunction('document.querySelectorAll(\'[id="textbox"]\').length > 1')
     const textBoxes = await page.$x('//*[@id="textbox"]')
     await page.bringToFront()
     // Add the title value
     await textBoxes[0].focus()
     await page.waitForTimeout(1000)
+    await textBoxes[0].evaluate(e => (e as any).__shady_native_textContent = "")
     await textBoxes[0].type(title.substring(0, maxTitleLen))
     // Add the Description content
+    await textBoxes[0].evaluate(e => (e as any).__shady_native_textContent = "")
     await textBoxes[1].type(description.substring(0, maxDescLen))
+
 
     const childOption = await page.$x('//*[contains(text(),"No, it\'s")]')
     await childOption[0].click()
-
     const moreOption = await page.$x("//*[normalize-space(text())='Show more']")
     await moreOption[0].click()
     const playlist = await page.$x("//*[normalize-space(text())='Select']")
@@ -268,10 +271,16 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
             }
         }
     }
+    await page.click("#toggle-button")
     // Add tags
     if (tags) {
-        await page.focus(`[aria-label="Tags"]`)
-        await page.type(`[aria-label="Tags"]`, tags.join(', ').substring(0, 495) + ', ')
+        //show more
+        try {
+            await page.focus(`[aria-label="Tags"]`)
+            await page.type(`[aria-label="Tags"]`, tags.join(', ').substring(0, 495) + ', ')
+        } catch (err) {
+
+        }
     }
 
     // Selecting video language
@@ -296,7 +305,6 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
     // click next button
     next = await page.$x(nextBtnXPath)
     await next[0].click()
-
     await page.waitForXPath(nextBtnXPath)
     // click next button
     next = await page.$x(nextBtnXPath)
@@ -512,19 +520,21 @@ const updateVideoInfo = async (videoJSON: VideoToEdit, messageTransport: Message
     await page.waitForTimeout(1000)
     await sleep(1000)
     if (title) {
-        await page.keyboard.down('Control')
-        await page.keyboard.press('A')
-        await page.keyboard.up('Control')
-        await page.keyboard.press('Backspace')
+        // await page.keyboard.down('Control')
+        // await page.keyboard.press('A')
+        // await page.keyboard.up('Control')
+        // await page.keyboard.press('Backspace')
+        await textBoxes[0].evaluate(e => (e as any).__shady_native_textContent = "")
         await textBoxes[0].type(title.substring(0, maxTitleLen))
     }
     // Edit the Description content (if)
     if (description) {
-        await textBoxes[1].focus()
-        await page.keyboard.down('Control')
-        await page.keyboard.press('A')
-        await page.keyboard.up('Control')
-        await page.keyboard.press('Backspace')
+        // await textBoxes[1].focus()
+        // await page.keyboard.down('Control')
+        // await page.keyboard.press('A')
+        // await page.keyboard.up('Control')
+        // await page.keyboard.press('Backspace')
+        await textBoxes[1].evaluate(e => (e as any).__shady_native_textContent = "")
         await textBoxes[1].type(description.substring(0, maxDescLen))
     }
     if (thumb) {
