@@ -12,6 +12,7 @@ export interface Video {
     onProgress?: (arg0: VideoProgress) => void
     channelName?: string
     uploadAsDraft?: boolean
+    isForKid?: boolean
 }
 
 export interface MessageTransport {
