@@ -12,7 +12,8 @@ export interface Video {
     onProgress?: (arg0: VideoProgress) => void
     channelName?: string
     uploadAsDraft?: boolean
-    forKid?: boolean
+    isRestriction?: boolean
+    isKid?: boolean
 }
 
 export interface MessageTransport {
@@ -45,6 +46,8 @@ export interface VideoToEdit {
     publishType?: 'private' | 'unlisted' | 'public' | 'public&premiere'
     onSuccess?: Function
     channelName: string
+    isRestriction?: boolean
+    isKid?: boolean
 }
 
 export interface Comment {

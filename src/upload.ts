@@ -194,13 +194,14 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
         videoJSON.onProgress(progress)
     }
 
-    try {
-        if (videoJSON.forKid) {
-            await page.click("tp-yt-paper-radio-button[name='VIDEO_MADE_FOR_KIDS_MFK']")
-        } else {
-            await page.click("tp-yt-paper-radio-button[name='VIDEO_MADE_FOR_KIDS_NOT_MFK']")
-        }
-    } catch {
+    if (!videoJSON.isKid) {
+        await page.click("tp-yt-paper-radio-button[name='VIDEO_MADE_FOR_KIDS_MFK']").catch()
+    } else {
+        await page.click("tp-yt-paper-radio-button[name='VIDEO_MADE_FOR_KIDS_NOT_MFK']").catch()
+    }
+
+    if (!videoJSON.isRestriction) {
+        await page.click("tp-yt-paper-radio-button[name='VIDEO_AGE_RESTRICTION_SELF']").catch()
     }
 
     // Wait until title & description box pops up
@@ -519,6 +520,15 @@ const updateVideoInfo = async (videoJSON: VideoToEdit, messageTransport: Message
     await textBoxes[0].focus()
     await page.waitForTimeout(1000)
     await sleep(1000)
+    if (!videoJSON.isKid) {
+        await page.click("tp-yt-paper-radio-button[name='VIDEO_MADE_FOR_KIDS_MFK']").catch()
+    } else {
+        await page.click("tp-yt-paper-radio-button[name='VIDEO_MADE_FOR_KIDS_NOT_MFK']").catch()
+    }
+
+    if (!videoJSON.isRestriction) {
+        await page.click("tp-yt-paper-radio-button[name='VIDEO_AGE_RESTRICTION_SELF']").catch()
+    }
     if (title) {
         // await page.keyboard.down('Control')
         // await page.keyboard.press('A')
