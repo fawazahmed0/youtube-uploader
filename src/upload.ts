@@ -1,6 +1,6 @@
 import { Credentials, Video, VideoToEdit, Comment, VideoProgress, ProgressEnum, MessageTransport } from './types'
-import puppeteer, { PuppeteerExtra } from 'puppeteer-extra'
-import { Puppeteer, PuppeteerNode, PuppeteerNodeLaunchOptions, Browser, Page, errors, PuppeteerErrors } from 'puppeteer'
+import puppeteer from 'puppeteer-extra'
+import { PuppeteerNodeLaunchOptions, Browser, Page } from 'puppeteer'
 import fs from 'fs-extra'
 import path from 'path'
 
@@ -20,7 +20,7 @@ let browser: Browser, page: Page
 let cookiesDirPath: string
 let cookiesFilePath: string
 
-const invalidCharacters = [ '<', '>' ]
+const invalidCharacters = ['<', '>']
 
 const uploadURL = 'https://www.youtube.com/upload'
 const homePageURL = 'https://www.youtube.com'
@@ -81,7 +81,7 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
             throw new Error(`"${videoJSON.title}" includes a character not allowed in youtube titles (${invalidCharacters[i]})`)
 
     if (videoJSON.channelName) {
-      await changeChannel(videoJSON.channelName);
+        await changeChannel(videoJSON.channelName);
     }
 
     const title = videoJSON.title
@@ -102,14 +102,14 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
     const saveCloseBtnXPath = '//*[@aria-label="Save and close"]/tp-yt-iron-icon'
     const createBtnXPath = '//*[@id="create-icon"]/tp-yt-iron-icon'
     const addVideoBtnXPath = '//*[@id="text-item-0"]/ytcp-ve/div/div/yt-formatted-string'
-        if((await page.waitForXPath(createBtnXPath).catch(() => null))){
-            const createBtn = await page.$x(createBtnXPath);
-            await createBtn[0].click();
-        }
-        if((await page.waitForXPath(addVideoBtnXPath).catch(() => null))){
-            const addVideoBtn =await page.$x(addVideoBtnXPath);
-            await addVideoBtn[0].click();
-        }
+    if ((await page.waitForXPath(createBtnXPath, { timeout: 5000 }).catch(() => null))) {
+        const createBtn = await page.$x(createBtnXPath);
+        await createBtn[0].click();
+    }
+    if ((await page.waitForXPath(addVideoBtnXPath, { timeout: 5000 }).catch(() => null))) {
+        const addVideoBtn = await page.$x(addVideoBtnXPath);
+        await addVideoBtn[0].click();
+    }
     for (let i = 0; i < 2; i++) {
         try {
             await page.waitForXPath(selectBtnXPath)
@@ -137,7 +137,6 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
         selectBtn[0].click() // button that triggers file selection
     ])
     await fileChooser.accept([pathToFile])
-
     // Setup onProgress
     let progressChecker: any
     let progress: VideoProgress = { progress: 0, stage: ProgressEnum.Uploading };
@@ -154,34 +153,32 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
             if (progressChecker == undefined || !curProgress) return
             curProgress = curProgress.split(" ").find((txt: string) => txt.indexOf("%") != -1)
             let newProgress = curProgress ? parseInt(curProgress.slice(0, -1)) : 0
-            if ( progress.progress == newProgress ) return
+            if (progress.progress == newProgress) return
             progress.progress = newProgress
             videoJSON.onProgress!(progress)
         }, 500)
     }
 
     const errorMessage = await page.evaluate(() => (document.querySelector('.error-area.style-scope.ytcp-uploads-dialog') as HTMLElement)?.innerText.trim())
-
     if (errorMessage) {
         await browser.close()
         throw new Error('Youtube returned an error : ' + errorMessage)
     }
 
     // Wait for upload to complete
-    const uploadCompletePromise = page.waitForXPath('//*[contains(text(),"Upload complete")]', { timeout: 0 }).then(() => 'uploadComplete')
+    const uploadCompletePromise = page.waitForXPath('//tp-yt-paper-progress[contains(@class,"ytcp-video-upload-progress-hover") and @value="100"]', { timeout: 0 }).then(() => 'uploadComplete')
 
     // Check if daily upload limit is reached
-    const dailyUploadPromise = page.waitForXPath('//*[contains(text(),"Daily upload limit reached")]', { timeout: 0 }).then(() => 'dailyUploadReached');
-
+    const dailyUploadPromise = page.waitForXPath('//div[contains(text(),"Daily upload limit reached")]', { timeout: 0 }).then(() => 'dailyUploadReached');
     const uploadResult = await Promise.any([uploadCompletePromise, dailyUploadPromise])
     if (uploadResult === 'dailyUploadReached') {
-        await browser.close();
+        browser.close();
         throw new Error('Daily upload limit reached');
     }
 
     // Wait for upload to go away and processing to start, skip the wait if the user doesn't want it.
     if (!videoJSON.skipProcessingWait) {
-        await page.waitForXPath('//*[contains(text(),"Upload complete")]', { hidden: true, timeout: 0 })
+        await page.waitForXPath('//*[contains(text(),"Video upload complete")]', { hidden: true, timeout: 0 })
     } else {
         await sleep(5000)
     }
@@ -190,7 +187,6 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
         progress = { progress: 0, stage: ProgressEnum.Processing }
         videoJSON.onProgress(progress)
     }
-
     if (videoJSON.onProgress) {
         clearInterval(progressChecker)
         progressChecker = undefined
@@ -209,20 +205,21 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
         ])
         await thumbChooser.accept([thumb])
     }
-
     await page.waitForFunction('document.querySelectorAll(\'[id="textbox"]\').length > 1')
     const textBoxes = await page.$x('//*[@id="textbox"]')
     await page.bringToFront()
     // Add the title value
     await textBoxes[0].focus()
     await page.waitForTimeout(1000)
+    await textBoxes[0].evaluate(e => (e as any).__shady_native_textContent = "")
     await textBoxes[0].type(title.substring(0, maxTitleLen))
     // Add the Description content
+    await textBoxes[0].evaluate(e => (e as any).__shady_native_textContent = "")
     await textBoxes[1].type(description.substring(0, maxDescLen))
+
 
     const childOption = await page.$x('//*[contains(text(),"No, it\'s")]')
     await childOption[0].click()
-
     const moreOption = await page.$x("//*[normalize-space(text())='Show more']")
     await moreOption[0].click()
     const playlist = await page.$x("//*[normalize-space(text())='Select']")
@@ -265,10 +262,24 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
             }
         }
     }
+    if (!videoJSON.isNotForKid) {
+        await page.click("tp-yt-paper-radio-button[name='VIDEO_MADE_FOR_KIDS_MFK']").catch(()=>{})
+    } else if (videoJSON.isAgeRestriction) {
+        await page.$eval(`tp-yt-paper-radio-button[name='VIDEO_AGE_RESTRICTION_SELF']`, (e :any) => e.click());
+    }else {
+        await page.click("tp-yt-paper-radio-button[name='VIDEO_MADE_FOR_KIDS_NOT_MFK']").catch(()=>{})
+    }
+    // await page.waitForXPath('//ytcp-badge[contains(@class,"draft-badge")]//div[contains(text(),"Saved as private")]', { timeout: 0})
+    await page.click("#toggle-button")
     // Add tags
     if (tags) {
-        await page.focus(`[aria-label="Tags"]`)
-        await page.type(`[aria-label="Tags"]`, tags.join(', ').substring(0, 495) + ', ')
+        //show more
+        try {
+            await page.focus(`[aria-label="Tags"]`)
+            await page.type(`[aria-label="Tags"]`, tags.join(', ').substring(0, 495) + ', ')
+        } catch (err) {
+
+        }
     }
 
     // Selecting video language
@@ -278,8 +289,8 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
         // translate(text(),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')
         const langName = await page.$x(
             '//*[normalize-space(translate(text(),"ABCDEFGHIJKLMNOPQRSTUVWXYZ","abcdefghijklmnopqrstuvwxyz"))=\'' +
-                videoLang.toLowerCase() +
-                "']"
+            videoLang.toLowerCase() +
+            "']"
         )
         await page.evaluate((el) => el.click(), langName[langName.length - 1])
     }
@@ -293,7 +304,6 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
     // click next button
     next = await page.$x(nextBtnXPath)
     await next[0].click()
-
     await page.waitForXPath(nextBtnXPath)
     // click next button
     next = await page.$x(nextBtnXPath)
@@ -320,7 +330,7 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
         uploadedLink = await page.evaluate((e) => e.getAttribute('href'), uploadedLinkHandle)
     } while (uploadedLink === videoBaseLink || uploadedLink === shortVideoBaseLink)
 
-    const closeDialogXPath = uploadAsDraft ? saveCloseBtnXPath : publishXPath    
+    const closeDialogXPath = uploadAsDraft ? saveCloseBtnXPath : publishXPath
     let closeDialog
     for (let i = 0; i < 10; i++) {
         try {
@@ -507,21 +517,29 @@ const updateVideoInfo = async (videoJSON: VideoToEdit, messageTransport: Message
     // Edit the title value (if)
     await textBoxes[0].focus()
     await page.waitForTimeout(1000)
-    await sleep(1000)
+    if (!videoJSON.isNotForKid) {
+        await page.click("tp-yt-paper-radio-button[name='VIDEO_MADE_FOR_KIDS_MFK']").catch(()=>{})
+    } else if (videoJSON.isAgeRestriction) {
+        await page.$eval(`tp-yt-paper-radio-button[name='VIDEO_AGE_RESTRICTION_SELF']`, (e :any) => e.click());
+    }else {
+        await page.click("tp-yt-paper-radio-button[name='VIDEO_MADE_FOR_KIDS_NOT_MFK']").catch(()=>{})
+    }
     if (title) {
-        await page.keyboard.down('Control')
-        await page.keyboard.press('A')
-        await page.keyboard.up('Control')
-        await page.keyboard.press('Backspace')
+        // await page.keyboard.down('Control')
+        // await page.keyboard.press('A')
+        // await page.keyboard.up('Control')
+        // await page.keyboard.press('Backspace')
+        await textBoxes[0].evaluate(e => (e as any).__shady_native_textContent = "")
         await textBoxes[0].type(title.substring(0, maxTitleLen))
     }
     // Edit the Description content (if)
     if (description) {
-        await textBoxes[1].focus()
-        await page.keyboard.down('Control')
-        await page.keyboard.press('A')
-        await page.keyboard.up('Control')
-        await page.keyboard.press('Backspace')
+        // await textBoxes[1].focus()
+        // await page.keyboard.down('Control')
+        // await page.keyboard.press('A')
+        // await page.keyboard.up('Control')
+        // await page.keyboard.press('Backspace')
+        await textBoxes[1].evaluate(e => (e as any).__shady_native_textContent = "")
         await textBoxes[1].type(description.substring(0, maxDescLen))
     }
     if (thumb) {
@@ -595,8 +613,8 @@ const updateVideoInfo = async (videoJSON: VideoToEdit, messageTransport: Message
         await page.evaluate((el) => el.click(), langHandler[0])
         const langName = await page.$x(
             '//*[normalize-space(translate(text(),"ABCDEFGHIJKLMNOPQRSTUVWXYZ","abcdefghijklmnopqrstuvwxyz"))=\'' +
-                videoLang.toLowerCase() +
-                "']"
+            videoLang.toLowerCase() +
+            "']"
         )
         await page.evaluate((el) => el.click(), langName[langName.length - 1])
     }
@@ -843,7 +861,7 @@ async function login(localPage: Page, credentials: Credentials, messageTransport
         await localPage.waitForSelector(passwordInputSelector)
         await localPage.waitForTimeout(3000)
         await localPage.type(passwordInputSelector, credentials.pass, { delay: 50 })
-    
+
         await localPage.keyboard.press('Enter')
     }
 
@@ -979,35 +997,35 @@ async function scrollTillVeiw(page: Page, element: string) {
 }
 
 async function changeChannel(channelName: string) {
-  await page.goto("https://www.youtube.com/channel_switcher");
+    await page.goto("https://www.youtube.com/channel_switcher");
 
-  const channelNameXPath =
-    `//*[normalize-space(text())='${channelName}']`;
-  const element = await page.waitForXPath(channelNameXPath);
+    const channelNameXPath =
+        `//*[normalize-space(text())='${channelName}']`;
+    const element = await page.waitForXPath(channelNameXPath);
 
-  await element!.click()
+    await element!.click()
 
-  await page.waitForNavigation({
-    waitUntil: "networkidle0"
-  });
+    await page.waitForNavigation({
+        waitUntil: "networkidle0"
+    });
 }
 
 function escapeQuotesForXPath(str: string) {
     // If the value contains only single or double quotes, construct
     // an XPath literal
-    if (!str.includes('"')){
+    if (!str.includes('"')) {
         return '"' + str + '"';
     }
     if (!str.includes("'")) {
         return "'" + str + "'";
     }
-    // If the value contains both single and double quotes, construct an 
+    // If the value contains both single and double quotes, construct an
     // expression that concatenates all non-double-quote substrings with
     // the quotes, e.g.:
     //
     //    concat("foo",'"',"bar")
 
-    const parts : string[] = [];
+    const parts: string[] = [];
     // First, put a '"' after each component in the string.
     for (const part of str.split('"')) {
         if (part.length > 0) {
@@ -1015,23 +1033,23 @@ function escapeQuotesForXPath(str: string) {
         }
         parts.push("'\"'");
     }
-     // Then remove the extra '"' after the last component.
+    // Then remove the extra '"' after the last component.
     parts.pop();
     // Finally, put it together into a concat() function call.
-    
+
     return "concat(" + parts.join(",") + ")";
 }
 
-function xpathTextSelector( text: string, caseSensitive?: boolean, nthElement?: number ){
+function xpathTextSelector(text: string, caseSensitive?: boolean, nthElement?: number) {
     let xpathSelector = ''
-    if(caseSensitive)
-    xpathSelector = `//*[contains(normalize-space(text()),"${text}")]`
-    else{
-    let uniqueText = [...new Set(text.split(''))].join('')
-    xpathSelector = `//*[contains(translate(normalize-space(text()),'${uniqueText.toUpperCase()}','${uniqueText.toLowerCase()}'),"${text.toLowerCase().replace(/\s\s+/g, " ")}")]`
+    if (caseSensitive)
+        xpathSelector = `//*[contains(normalize-space(text()),"${text}")]`
+    else {
+        let uniqueText = [...new Set(text.split(''))].join('')
+        xpathSelector = `//*[contains(translate(normalize-space(text()),'${uniqueText.toUpperCase()}','${uniqueText.toLowerCase()}'),"${text.toLowerCase().replace(/\s\s+/g, " ")}")]`
     }
-    if(nthElement)
-    xpathSelector = `(${xpathSelector})[${nthElement+1}]`
-    
+    if (nthElement)
+        xpathSelector = `(${xpathSelector})[${nthElement + 1}]`
+
     return xpathSelector
-    }
+}
