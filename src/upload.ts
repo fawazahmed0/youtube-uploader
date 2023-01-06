@@ -194,15 +194,6 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
         videoJSON.onProgress(progress)
     }
 
-    if (!videoJSON.isNotForKid) {
-        await page.click("tp-yt-paper-radio-button[name='VIDEO_MADE_FOR_KIDS_MFK']").catch(()=>{})
-    } else {
-        await page.click("tp-yt-paper-radio-button[name='VIDEO_MADE_FOR_KIDS_NOT_MFK']").catch(()=>{})
-        if (videoJSON.isAgeRestriction) {
-            await page.click("tp-yt-paper-radio-button[name='VIDEO_AGE_RESTRICTION_SELF']").catch(()=>{})
-        }
-    }
-
     // Wait until title & description box pops up
     if (thumb) {
         let thumbnailChooserXpath = xpathTextSelector("upload thumbnail")
@@ -271,6 +262,14 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
             }
         }
     }
+    if (!videoJSON.isNotForKid) {
+        await page.click("tp-yt-paper-radio-button[name='VIDEO_MADE_FOR_KIDS_MFK']").catch(()=>{})
+    } else if (videoJSON.isAgeRestriction) {
+        await page.$eval(`tp-yt-paper-radio-button[name='VIDEO_AGE_RESTRICTION_SELF']`, (e :any) => e.click());
+    }else {
+        await page.click("tp-yt-paper-radio-button[name='VIDEO_MADE_FOR_KIDS_NOT_MFK']").catch(()=>{})
+    }
+    // await page.waitForXPath('//ytcp-badge[contains(@class,"draft-badge")]//div[contains(text(),"Saved as private")]', { timeout: 0})
     await page.click("#toggle-button")
     // Add tags
     if (tags) {
@@ -518,14 +517,12 @@ const updateVideoInfo = async (videoJSON: VideoToEdit, messageTransport: Message
     // Edit the title value (if)
     await textBoxes[0].focus()
     await page.waitForTimeout(1000)
-    await sleep(1000)
     if (!videoJSON.isNotForKid) {
         await page.click("tp-yt-paper-radio-button[name='VIDEO_MADE_FOR_KIDS_MFK']").catch(()=>{})
-    } else {
+    } else if (videoJSON.isAgeRestriction) {
+        await page.$eval(`tp-yt-paper-radio-button[name='VIDEO_AGE_RESTRICTION_SELF']`, (e :any) => e.click());
+    }else {
         await page.click("tp-yt-paper-radio-button[name='VIDEO_MADE_FOR_KIDS_NOT_MFK']").catch(()=>{})
-        if (videoJSON.isAgeRestriction) {
-            await page.click("tp-yt-paper-radio-button[name='VIDEO_AGE_RESTRICTION_SELF']").catch(()=>{})
-        }
     }
     if (title) {
         // await page.keyboard.down('Control')
