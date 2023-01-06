@@ -54,7 +54,7 @@ const onVideoUploadSuccess = (videoUrl) => {
     // ..do something..
 }
 // Extra options like tags, thumbnail, language, playlist etc
-const video2 = { path: 'video2.mp4', title: 'title 2', description: 'description 2', thumbnail:'thumbnail.png', language: 'english', tags: ['video', 'github'], playlist: 'playlist name', channelName: 'Channel Name', onSuccess:onVideoUploadSuccess, skipProcessingWait: true, onProgress: (progress) => { console.log('progress', progress) } }
+const video2 = { path: 'video2.mp4', title: 'title 2', description: 'description 2', thumbnail:'thumbnail.png', language: 'english', tags: ['video', 'github'], playlist: 'playlist name', channelName: 'Channel Name', onSuccess:onVideoUploadSuccess, skipProcessingWait: true, onProgress: (progress) => { console.log('progress', progress) }, uploadAsDraft: false, isAgeRestriction: false, isNotForKid: false }
 
 
 // Returns uploaded video links in array
@@ -133,6 +133,7 @@ comment(credentials, [comment1], {headless:false}).then(console.log)
 - [Jared L](https://github.com/lhjt) - For [customSelectorUrl config option](https://github.com/fawazahmed0/youtube-uploader/pull/139)
 - [Tiago Severino](https://github.com/TiagoSeverino) - For [Replacing readline](https://github.com/fawazahmed0/youtube-uploader/pull/157) and [Daily limit issue](https://github.com/fawazahmed0/youtube-uploader/pull/160)
 - [PeterStegarus](https://github.com/PeterStegarus) - For [Daily upload error message](https://github.com/fawazahmed0/youtube-uploader/pull/163)
+- [Kudou Sterain](https://github.com/hotrungnhan) - For [isAgeRestriction, isNotForKid option and other fixes](https://github.com/fawazahmed0/youtube-uploader/pull/175)
 
 
 <br>
