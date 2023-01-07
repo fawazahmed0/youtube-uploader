@@ -282,8 +282,7 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
         throw `uploadVideo - Toggle button not found.`
     else {
         // console.log( "Show more start." )
-        let moreInformation: ElementHandle
-        while ( ( moreInformation = await page.$( "ytcp-video-metadata-editor-advanced" ) ) == undefined )
+        while ( (  await page.$( "ytcp-video-metadata-editor-advanced" )  ) == undefined )
         {
             // console.log( "Show more while." )
             await showMoreButton.click()
