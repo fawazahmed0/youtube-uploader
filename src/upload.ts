@@ -1,6 +1,6 @@
 import { Credentials, Video, VideoToEdit, Comment, VideoProgress, ProgressEnum, MessageTransport } from './types'
 import puppeteer from 'puppeteer-extra'
-import { PuppeteerNodeLaunchOptions, Browser, Page } from 'puppeteer'
+import { PuppeteerNodeLaunchOptions, Browser, Page, ElementHandle } from 'puppeteer'
 import fs from 'fs-extra'
 import path from 'path'
 
@@ -217,11 +217,13 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
     await textBoxes[0].evaluate(e => (e as any).__shady_native_textContent = "")
     await textBoxes[1].type(description.substring(0, maxDescLen))
 
-
     const childOption = await page.$x('//*[contains(text(),"No, it\'s")]')
     await childOption[0].click()
-    const moreOption = await page.$x("//*[normalize-space(text())='Show more']")
-    await moreOption[0].click()
+    
+    // There is no reason for this to be called. Also you should be using #toggle-button not going by the text...
+    // const moreOption = await page.$x("//*[normalize-space(text())='Show more']")
+    // await moreOption[0]?.click()
+
     const playlist = await page.$x("//*[normalize-space(text())='Select']")
     let createplaylistdone
     if (playlistName) {
@@ -262,6 +264,7 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
             }
         }
     }
+
     if (!videoJSON.isNotForKid) {
         await page.click("tp-yt-paper-radio-button[name='VIDEO_MADE_FOR_KIDS_MFK']").catch(()=>{})
     } else if (videoJSON.isAgeRestriction) {
@@ -270,7 +273,25 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
         await page.click("tp-yt-paper-radio-button[name='VIDEO_MADE_FOR_KIDS_NOT_MFK']").catch(()=>{})
     }
     // await page.waitForXPath('//ytcp-badge[contains(@class,"draft-badge")]//div[contains(text(),"Saved as private")]', { timeout: 0})
-    await page.click("#toggle-button")
+
+    // await page.click("#toggle-button")
+    // Was having issues because of await page.$x("//*[normalize-space(text())='Show more']").click(), so I started messing with the line above.
+    // The issue was obviously not the line above but I either way created code to ensure that Show more has been pressed before proceeding.
+    let showMoreButton = await page.$( "#toggle-button" )
+    if ( showMoreButton == undefined )
+        throw `uploadVideo - Toggle button not found.`
+    else {
+        // console.log( "Show more start." )
+        let moreInformation: ElementHandle
+        while ( ( moreInformation = await page.$( "ytcp-video-metadata-editor-advanced" ) ) == undefined )
+        {
+            // console.log( "Show more while." )
+            await showMoreButton.click()
+            await sleep( 1000 )
+        }
+        // console.log( "Show more finished." )
+    }
+    
     // Add tags
     if (tags) {
         //show more
