@@ -90,7 +90,7 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
     // For backward compatablility playlist.name is checked first
     const playlistName = videoJSON.playlist
     const videoLang = videoJSON.language
-    const gameTitle = videoJSON.gameTitle
+    const gameTitleSearch = videoJSON.gameTitleSearch
     const thumb = videoJSON.thumbnail
     const uploadAsDraft = videoJSON.uploadAsDraft
     await page.evaluate(() => {
@@ -317,8 +317,8 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
     }
 
 	// Setting Game Title ( Will also set Category to gaming )
-	if ( gameTitle ) {
-		await selectGame( page, gameTitle, videoJSON.gameSelector )
+	if ( gameTitleSearch ) {
+		await selectGame( page, gameTitleSearch, videoJSON.gameSelector )
 	}
 
     // click next button
@@ -524,7 +524,7 @@ const updateVideoInfo = async (videoJSON: VideoToEdit, messageTransport: Message
     const Rtags = videoJSON.replaceTags
     const playlistName = videoJSON.playlist
     const videoLang = videoJSON.language
-    const gameTitle = videoJSON.gameTitle
+    const gameTitleSearch = videoJSON.gameTitleSearch
     const thumb = videoJSON.thumbnail
     const publish = videoJSON.publishType
     await page.goto(videoUrl)
@@ -647,8 +647,8 @@ const updateVideoInfo = async (videoJSON: VideoToEdit, messageTransport: Message
         await page.evaluate((el) => el.click(), langName[langName.length - 1])
     }
 	// Setting Game Title ( Will also set Category to gaming )
-	if ( gameTitle ) {
-		await selectGame( page, gameTitle, videoJSON.gameSelector )
+	if ( gameTitleSearch ) {
+		await selectGame( page, gameTitleSearch, videoJSON.gameSelector )
 	}
 
     await page.focus(`#content`)

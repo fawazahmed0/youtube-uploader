@@ -14,7 +14,7 @@ export interface Video {
     uploadAsDraft?: boolean
     isAgeRestriction?: boolean
     isNotForKid?: boolean
-	gameTitle?: string
+	gameTitleSearch?: string
 	gameSelector?: ( arg0: GameData ) => Promise<boolean> | null
 }
 
@@ -50,7 +50,7 @@ export interface VideoToEdit {
     channelName: string
     isAgeRestriction?: boolean
     isNotForKid?: boolean
-	gameTitle?: string
+	gameTitleSearch?: string
 	gameSelector?: ( arg0: GameData ) => Promise<boolean> | null
 }
 
