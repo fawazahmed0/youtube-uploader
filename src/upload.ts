@@ -1,4 +1,4 @@
-import { Credentials, Video, VideoToEdit, Comment, VideoProgress, ProgressEnum, MessageTransport } from './types'
+import { Credentials, Video, VideoToEdit, Comment, VideoProgress, ProgressEnum, MessageTransport, GameData } from './types'
 import puppeteer from 'puppeteer-extra'
 import { PuppeteerNodeLaunchOptions, Browser, Page, ElementHandle } from 'puppeteer'
 import fs from 'fs-extra'
@@ -90,6 +90,7 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
     // For backward compatablility playlist.name is checked first
     const playlistName = videoJSON.playlist
     const videoLang = videoJSON.language
+    const gameTitle = videoJSON.gameTitle
     const thumb = videoJSON.thumbnail
     const uploadAsDraft = videoJSON.uploadAsDraft
     await page.evaluate(() => {
@@ -314,6 +315,12 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
         )
         await page.evaluate((el) => el.click(), langName[langName.length - 1])
     }
+
+	// Setting Game Title ( Will also set Category to gaming )
+	if ( gameTitle ) {
+		await selectGame( page, gameTitle, videoJSON.gameSelector )
+	}
+
     // click next button
     const nextBtnXPath = "//*[normalize-space(text())='Next']/parent::*[not(@disabled)]"
     await page.waitForXPath(nextBtnXPath)
@@ -517,6 +524,7 @@ const updateVideoInfo = async (videoJSON: VideoToEdit, messageTransport: Message
     const Rtags = videoJSON.replaceTags
     const playlistName = videoJSON.playlist
     const videoLang = videoJSON.language
+    const gameTitle = videoJSON.gameTitle
     const thumb = videoJSON.thumbnail
     const publish = videoJSON.publishType
     await page.goto(videoUrl)
@@ -638,6 +646,10 @@ const updateVideoInfo = async (videoJSON: VideoToEdit, messageTransport: Message
         )
         await page.evaluate((el) => el.click(), langName[langName.length - 1])
     }
+	// Setting Game Title ( Will also set Category to gaming )
+	if ( gameTitle ) {
+		await selectGame( page, gameTitle, videoJSON.gameSelector )
+	}
 
     await page.focus(`#content`)
     if (publish) {
@@ -1072,4 +1084,76 @@ function xpathTextSelector(text: string, caseSensitive?: boolean, nthElement?: n
         xpathSelector = `(${xpathSelector})[${nthElement + 1}]`
 
     return xpathSelector
+}
+
+async function selectGame( page: Page, gameTitle: string, gameSelector?: ( arg0: GameData ) => Promise<boolean> | null ) {
+	const categoryDiv = await page.$( "#category-container" )
+	if ( categoryDiv == null )
+	{
+		console.error( `selectGame: categoryDiv is null.` )
+		return
+	}
+	
+	// Press drop down to populate choices.
+	const categoryDropdownToggle = await categoryDiv.$( "#category > ytcp-select > ytcp-text-dropdown-trigger" )
+	await categoryDropdownToggle?.click()
+	await sleep( 1000 )
+	
+	const gamingCategoryButton = await page.$( "[test-id='CREATOR_VIDEO_CATEGORY_GADGETS']" )
+	if ( !gamingCategoryButton )
+		return
+
+	await gamingCategoryButton.click()
+	await sleep( 500 )
+
+	// Wait for input.
+	const gameTitleBox = await categoryDiv.$( ".ytcp-form-gaming input" )
+	if ( gameTitleBox == null )
+	{
+		console.error( `selectGame: gameTitleBox is null.` )
+		return
+	}
+
+	// Type and call the game selector delegate.
+	await gameTitleBox.focus()
+	await gameTitleBox.type( gameTitle )
+	
+	// Wait for options.
+	const optionsSelectorHost = "#search-results > tp-yt-paper-dialog:not([aria-hidden='true'])";
+	const optionsPopupHost = await page.waitForSelector( optionsSelectorHost )
+	if ( optionsPopupHost == null )
+	{
+		console.error( `selectGame: optionsPopupHost is null.` )
+		return
+	}
+
+	const buttonOptions = await optionsPopupHost.$$( ".selectable-item" )
+
+	// Check if we should select the option.
+	let pressed = false;
+	for ( let i = 0; i < buttonOptions.length; i++ ) {
+		const button = buttonOptions[i]
+		
+		let testId = await button.evaluate( ( el: Element ) => el.getAttribute( "test-id" ) )
+		if ( testId == null || !testId.startsWith( `{"title"` ) )
+			continue
+
+		// Parse the JSON.
+		// console.log( `Game option: ${gameData.title}, ${gameData.year}` )
+		let gameData = JSON.parse( testId ) as GameData
+		if ( gameSelector !== undefined && gameSelector !== null && !( await gameSelector( gameData ) ) )
+			continue
+
+		// console.log( `Selected ${gameData.title}, ${gameData.year}` )
+		await button.click()
+		pressed = true
+		break
+	}
+	
+	if ( !pressed && buttonOptions.length != 0 )
+	{
+		// Just select none.
+		// console.log( `Defaulted to selecting none` )
+		await buttonOptions[0].click()
+	}
 }

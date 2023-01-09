@@ -14,6 +14,8 @@ export interface Video {
     uploadAsDraft?: boolean
     isAgeRestriction?: boolean
     isNotForKid?: boolean
+	gameTitle?: string
+	gameSelector?: ( arg0: GameData ) => Promise<boolean> | null
 }
 
 export interface MessageTransport {
@@ -48,6 +50,8 @@ export interface VideoToEdit {
     channelName: string
     isAgeRestriction?: boolean
     isNotForKid?: boolean
+	gameTitle?: string
+	gameSelector?: ( arg0: GameData ) => Promise<boolean> | null
 }
 
 export interface Comment {
@@ -61,4 +65,10 @@ export interface Credentials {
     email: string
     pass: string
     recoveryemail?: string | undefined
+}
+
+export interface GameData {
+	title: string
+	year?: string
+	mid?: string
 }
