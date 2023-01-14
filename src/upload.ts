@@ -454,27 +454,104 @@ export const comment = async (
     return commentsS
 }
 
-const publishComment = async (comment: Comment) => {
+const publishComment = (comment: Comment) => {
     const videoUrl = comment.link
     if (!videoUrl) {
         throw new Error('The link of the  video is a required parameter')
     }
-    try {
-        const cmt = comment.comment
-        await page.goto(videoUrl)
-        await sleep(2000)
-        await scrollTillVeiw(page, `#placeholder-area`)
+    return new Promise(async (resolve) => {
+        try {
+            const cmt = comment.comment
+            await page.goto(videoUrl)
+            await sleep(2000)
+            await scrollTillVeiw(page, `#placeholder-area`)
 
-        await page.focus(`#placeholder-area`)
-        const commentBox = await page.$x('//*[@id="placeholder-area"]')
-        await commentBox[0].focus()
-        await commentBox[0].click()
-        await commentBox[0].type(cmt.substring(0, 10000))
-        await page.click('#submit-button')
-        return { err: false, data: 'sucess' }
-    } catch (err) {
-        return { err: true, data: err }
-    }
+            await page.focus(`#placeholder-area`)
+            const commentBox = await page.$x('//*[@id="placeholder-area"]')
+            await commentBox[0].focus()
+            await commentBox[0].click()
+            await commentBox[0].type(cmt.substring(0, 10000))
+
+            page.exposeFunction('commentResolve', resolve)
+
+            if (comment.pin) {
+                // Select the comment list
+                const [commentList] = await page.$x(
+                    `//ytd-comments[@id="comments"]//ytd-item-section-renderer[@section-identifier="comment-item-section"]/div[@id="contents"]`
+                )
+
+                // Register mutation observer for comment list
+                await commentList.evaluateHandle((commentList) => {
+                    const observer = new MutationObserver((mutations) => {
+                        mutations.forEach(async (mutation) => {
+                            if (mutation.addedNodes.length > 0) {
+                                try {
+                                    // Get the recently added comment node
+                                    const comment = mutation.addedNodes[0]
+
+                                    // Finds three dot menu inside comment
+                                    // Evaluate XPath relative to the added comment.
+                                    // It'd be nice to use Puppeteer's helpers but the MutationObserver returns DOM nodes
+                                    const menu = document.evaluate(
+                                        `.//div[@id="action-menu"]/ytd-menu-renderer/yt-icon-button`,
+                                        comment,
+                                        null,
+                                        XPathResult.FIRST_ORDERED_NODE_TYPE
+                                    ).singleNodeValue
+                                    // Expand three dot menu
+                                    menu && (menu as HTMLButtonElement).click()
+
+                                    // Wait for menu to expand
+                                    await new Promise((resolve) => setTimeout(resolve, 100))
+
+                                    // Select pin button
+                                    const pinButton = document.evaluate(
+                                        `.//tp-yt-paper-item//*[text()="Pin"]/ancestor::tp-yt-paper-item`,
+                                        document,
+                                        null,
+                                        XPathResult.FIRST_ORDERED_NODE_TYPE
+                                    ).singleNodeValue
+                                    // Click pin button
+                                    pinButton && (pinButton as HTMLButtonElement).click()
+
+                                    // Wait for confirmation dialog
+                                    await new Promise((resolve) => setTimeout(resolve, 100))
+
+                                    // Confirm pin
+                                    const confirmButton = document.querySelector(
+                                        '#confirm-button>yt-button-shape>button'
+                                    )
+                                    confirmButton && (confirmButton as HTMLButtonElement).click()
+
+                                    // Disconnect observer
+                                    observer.disconnect()
+
+                                    // Resolve promise
+                                    // @ts-expect-error - commentResolve is exposed to the page on L745
+                                    window.commentResolve({ err: false, data: 'sucess' })
+                                } catch (err) {
+                                    // @ts-expect-error - commentResolve is exposed to the page on L745
+                                    window.commentResolve({ err: true, data: err })
+                                }
+                            }
+                        })
+                    })
+
+                    observer.observe(commentList, { childList: true })
+                })
+            }
+
+            await page.click('#submit-button')
+
+            if (comment.pin) {
+                // Let mutation observer resolve promise after pinning comment
+            } else {
+                resolve({ err: false, data: 'sucess' })
+            }
+        } catch (err) {
+            resolve({ err: true, data: err })
+        }
+    })
 }
 
 const publishLiveComment = async (comment: Comment, messageTransport: MessageTransport) => {
@@ -1157,3 +1234,4 @@ async function selectGame( page: Page, gameTitle: string, gameSelector?: ( arg0:
         await buttonOptions[0].click()
     }
 }
+
