@@ -527,10 +527,10 @@ const publishComment = (comment: Comment) => {
                                     observer.disconnect()
 
                                     // Resolve promise
-                                    // @ts-expect-error - commentResolve is exposed to the page on L745
+                                    // @ts-expect-error - commentResolve is exposed to the page
                                     window.commentResolve({ err: false, data: 'sucess' })
                                 } catch (err) {
-                                    // @ts-expect-error - commentResolve is exposed to the page on L745
+                                    // @ts-expect-error - commentResolve is exposed to the page
                                     window.commentResolve({ err: true, data: err })
                                 }
                             }
