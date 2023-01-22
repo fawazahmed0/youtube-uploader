@@ -107,7 +107,7 @@ const { comment } = require('youtube-videos-uploader'); //vanilla javascript
   
 const credentials = { email: 'Your Email', pass: 'Your Password', recoveryemail: 'Your Recovery Email' }
    
-const comment1 = { link: 'https://www.youtube.com/watch?v=jEevRjRglFY', comment: 'Your comment' }
+const comment1 = { link: 'https://www.youtube.com/watch?v=jEevRjRglFY', comment: 'Your comment', pin: false }
 
 comment(credentials, [comment1]).then(console.log)  
 //OR
@@ -134,6 +134,7 @@ comment(credentials, [comment1], {headless:false}).then(console.log)
 - [Tiago Severino](https://github.com/TiagoSeverino) - For [Replacing readline](https://github.com/fawazahmed0/youtube-uploader/pull/157) and [Daily limit issue](https://github.com/fawazahmed0/youtube-uploader/pull/160)
 - [PeterStegarus](https://github.com/PeterStegarus) - For [Daily upload error message](https://github.com/fawazahmed0/youtube-uploader/pull/163)
 - [Kudou Sterain](https://github.com/hotrungnhan) - For [isAgeRestriction, isNotForKid option and other fixes](https://github.com/fawazahmed0/youtube-uploader/pull/175)
+- [Andrew Glago](https://github.com/a11rew) - For [pinning option for comments](https://github.com/fawazahmed0/youtube-uploader/pull/186/files)
 
 
 <br>
