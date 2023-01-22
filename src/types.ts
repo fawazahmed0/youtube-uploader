@@ -59,6 +59,7 @@ export interface Comment {
     comment: string
     live?: boolean
     onSuccess?: Function
+    pin?: boolean
 }
 
 export interface Credentials {
