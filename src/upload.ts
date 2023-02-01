@@ -22,8 +22,8 @@ let cookiesFilePath: string
 
 const invalidCharacters = ['<', '>']
 
-const uploadURL = 'https://www.youtube.com/upload'
-const homePageURL = 'https://www.youtube.com'
+const uploadURL = 'https://www.youtube.com/upload?persist_gl=1&gl=US&persist_hl=1&hl=en'
+const homePageURL = 'https://www.youtube.com/?persist_gl=1&gl=US&persist_hl=1&hl=en'
 
 const defaultMessageTransport: MessageTransport = {
     log: console.log,
