@@ -134,7 +134,8 @@ comment(credentials, [comment1], {headless:false}).then(console.log)
 - [Tiago Severino](https://github.com/TiagoSeverino) - For [Replacing readline](https://github.com/fawazahmed0/youtube-uploader/pull/157) and [Daily limit issue](https://github.com/fawazahmed0/youtube-uploader/pull/160)
 - [PeterStegarus](https://github.com/PeterStegarus) - For [Daily upload error message](https://github.com/fawazahmed0/youtube-uploader/pull/163)
 - [Kudou Sterain](https://github.com/hotrungnhan) - For [isAgeRestriction, isNotForKid option and other fixes](https://github.com/fawazahmed0/youtube-uploader/pull/175)
-- [Andrew Glago](https://github.com/a11rew) - For [pinning option for comments](https://github.com/fawazahmed0/youtube-uploader/pull/186/files)
+- [Andrew Glago](https://github.com/a11rew) - For [pinning option for comments](https://github.com/fawazahmed0/youtube-uploader/pull/186)
+- [nhantamz](https://github.com/nhantamz) - For [setting english as default language](https://github.com/fawazahmed0/youtube-uploader/pull/191)
 
 
 <br>
