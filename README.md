@@ -136,6 +136,7 @@ comment(credentials, [comment1], {headless:false}).then(console.log)
 - [Kudou Sterain](https://github.com/hotrungnhan) - For [isAgeRestriction, isNotForKid option and other fixes](https://github.com/fawazahmed0/youtube-uploader/pull/175)
 - [Andrew Glago](https://github.com/a11rew) - For [pinning option for comments](https://github.com/fawazahmed0/youtube-uploader/pull/186)
 - [nhantamz](https://github.com/nhantamz) - For [setting english as default language](https://github.com/fawazahmed0/youtube-uploader/pull/191)
+- [Damian](https://github.com/ClassAxion) - For [publish type support](https://github.com/fawazahmed0/youtube-uploader/pull/198)
 
 
 <br>
