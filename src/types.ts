@@ -7,6 +7,7 @@ export interface Video {
     playlist?: string
     function?: any
     thumbnail?: string
+    publishType?: 'PRIVATE' | 'UNLISTED' | 'PUBLIC'
     onSuccess?: (url: string) => void
     skipProcessingWait?: boolean
     onProgress?: (arg0: VideoProgress) => void

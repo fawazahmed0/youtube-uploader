@@ -335,10 +335,14 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
     // click next button
     next = await page.$x(nextBtnXPath)
     await next[0].click()
-    //  const publicXPath = `//*[normalize-space(text())='Public']`
-    //  await page.waitForXPath(publicXPath)
-    //  const publicOption = await page.$x(publicXPath)
-    //  await publicOption[0].click()
+
+    if (videoJSON.publishType) {
+        await page.waitForSelector("#privacy-radios *[name=\""+videoJSON.publishType+"\"]", { visible: true });
+        
+        await page.waitForTimeout(1000);
+
+        await page.click("#privacy-radios *[name=\""+videoJSON.publishType+"\"]");
+    }
 
     // Get publish button
     const publishXPath =
