@@ -50,26 +50,19 @@ export const upload = async (
     )
 
     await launchBrowser(puppeteerLaunch)
+    await loadAccount(credentials, messageTransport)
 
-    try {
-        await loadAccount(credentials, messageTransport)
+    const uploadedYTLink: string[] = []
 
-        const uploadedYTLink: string[] = []
+    for (const video of videos) {
+        const link = await uploadVideo(video, messageTransport)
 
-        for (const video of videos) {
-            const link = await uploadVideo(video, messageTransport)
-
-            const { onSuccess } = video
-            if (typeof onSuccess === 'function') {
-                onSuccess(link)
-            }
-
-            uploadedYTLink.push(link)
+        const { onSuccess } = video
+        if (typeof onSuccess === 'function') {
+            onSuccess(link)
         }
-    } catch (err) {
-        if (browser) await browser.close()
 
-        throw err;
+        uploadedYTLink.push(link)
     }
 
     await browser.close()
