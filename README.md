@@ -54,7 +54,7 @@ const onVideoUploadSuccess = (videoUrl) => {
     // ..do something..
 }
 // Extra options like tags, thumbnail, language, playlist etc
-const video2 = { path: 'video2.mp4', title: 'title 2', description: 'description 2', thumbnail:'thumbnail.png', language: 'english', tags: ['video', 'github'], playlist: 'playlist name', channelName: 'Channel Name', onSuccess:onVideoUploadSuccess, skipProcessingWait: true, onProgress: (progress) => { console.log('progress', progress) }, uploadAsDraft: false, isAgeRestriction: false, isNotForKid: false, publishType: 'PUBLIC' }
+const video2 = { path: 'video2.mp4', title: 'title 2', description: 'description 2', thumbnail:'thumbnail.png', language: 'english', tags: ['video', 'github'], playlist: 'playlist name', channelName: 'Channel Name', onSuccess:onVideoUploadSuccess, skipProcessingWait: true, onProgress: (progress) => { console.log('progress', progress) }, uploadAsDraft: false, isAgeRestriction: false, isNotForKid: false, publishType: 'PUBLIC', isChannelMonetized: false }
 
 
 // Returns uploaded video links in array
@@ -136,7 +136,7 @@ comment(credentials, [comment1], {headless:false}).then(console.log)
 - [Kudou Sterain](https://github.com/hotrungnhan) - For [isAgeRestriction, isNotForKid option and other fixes](https://github.com/fawazahmed0/youtube-uploader/pull/175)
 - [Andrew Glago](https://github.com/a11rew) - For [pinning option for comments](https://github.com/fawazahmed0/youtube-uploader/pull/186)
 - [nhantamz](https://github.com/nhantamz) - For [setting english as default language](https://github.com/fawazahmed0/youtube-uploader/pull/191)
-- [Damian](https://github.com/ClassAxion) - For [publish type support](https://github.com/fawazahmed0/youtube-uploader/pull/198) and [Close browser before error](https://github.com/fawazahmed0/youtube-uploader/pull/201)
+- [Damian](https://github.com/ClassAxion) - For [publish type support](https://github.com/fawazahmed0/youtube-uploader/pull/198), [Close browser before error](https://github.com/fawazahmed0/youtube-uploader/pull/201) and [isChannelMonetized](https://github.com/fawazahmed0/youtube-uploader/pull/203) option
 
 
 <br>
