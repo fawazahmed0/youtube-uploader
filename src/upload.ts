@@ -328,10 +328,44 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
         await selectGame( page, gameTitleSearch, videoJSON.gameSelector )
     }
 
-    // click next button
     const nextBtnXPath = "//*[normalize-space(text())='Next']/parent::*[not(@disabled)]"
+    let next
+
+    if (videoJSON.isChannelMonetized) { // Always enable monetization if channel is monetized
+        await page.waitForXPath(nextBtnXPath);
+        next = await page.$x(nextBtnXPath);
+        await next[0].click();
+
+        await page.waitForSelector("#child-input ytcp-video-monetization", { visible: true });
+
+        await page.waitForTimeout(1500);
+
+        await page.click("#child-input ytcp-video-monetization");
+
+        await page.waitForSelector(
+            "ytcp-video-monetization-edit-dialog.cancel-button-hidden .ytcp-video-monetization-edit-dialog #radioContainer #onRadio"
+        );
+        await page.evaluate(() =>
+            document
+                .querySelector(
+                    "ytcp-video-monetization-edit-dialog.cancel-button-hidden .ytcp-video-monetization-edit-dialog #radioContainer #onRadio"
+                )
+                .click()
+        );
+
+        await page.waitForTimeout(1500);
+
+        await page.waitForSelector(
+            "ytcp-video-monetization-edit-dialog.cancel-button-hidden .ytcp-video-monetization-edit-dialog #save-button",
+            { visible: true }
+        );
+        await page.click(
+            "ytcp-video-monetization-edit-dialog.cancel-button-hidden .ytcp-video-monetization-edit-dialog #save-button"
+        );
+    }
+
     await page.waitForXPath(nextBtnXPath)
-    let next = await page.$x(nextBtnXPath)
+    next = await page.$x(nextBtnXPath)
     await next[0].click()
     // await sleep(2000)
     await page.waitForXPath(nextBtnXPath)
@@ -379,6 +413,18 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
             await page.waitForTimeout(5000)
         }
     }
+
+    if (videoJSON.isChannelMonetized) {
+        try {
+            await page.waitForSelector(
+                "#dialog-buttons #secondary-action-button",
+                { visible: true }
+            );
+
+            await page.click("#dialog-buttons #secondary-action-button");
+        } catch {}
+    }
+
     // await page.waitForXPath('//*[contains(text(),"Finished processing")]', { timeout: 0})
 
     // no closeBtn will show up if keeps video as draft
