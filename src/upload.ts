@@ -331,11 +331,11 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
     const nextBtnXPath = "//*[normalize-space(text())='Next']/parent::*[not(@disabled)]"
     let next
 
-    if (videoJSON.isChannelMonetized) { // Always enable monetization if channel is monetized
-        await page.waitForXPath(nextBtnXPath);
-        next = await page.$x(nextBtnXPath);
-        await next[0].click();
+    await page.waitForXPath(nextBtnXPath);
+    next = await page.$x(nextBtnXPath);
+    await next[0].click();
 
+    if (videoJSON.isChannelMonetized) { // Always enable monetization if channel is monetized
         await page.waitForSelector("#child-input ytcp-video-monetization", { visible: true });
 
         await page.waitForTimeout(1500);
@@ -359,11 +359,42 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
         await page.click(
             "ytcp-video-monetization-edit-dialog.cancel-button-hidden .ytcp-video-monetization-edit-dialog #save-button"
         );
+
+        await page.waitForTimeout(1500);
+
+        await page.waitForXPath(nextBtnXPath);
+        next = await page.$x(nextBtnXPath);
+        await next[0].click();
+
+        try {
+            await page.waitForSelector(
+                ".ytpp-self-certification-questionnaire .ytpp-self-certification-questionnaire #checkbox-container",
+                { visible: true, timeout: 10000 }
+            );
+            await page.evaluate(() =>
+                //@ts-ignore
+                document.querySelector(".ytpp-self-certification-questionnaire .ytpp-self-certification-questionnaire #checkbox-container").click()
+            );
+
+            await page.waitForTimeout(1500);
+
+            await page.waitForSelector(
+                ".ytpp-self-certification-questionnaire .ytpp-self-certification-questionnaire #submit-questionnaire-button",
+                { visible: true }
+            );
+            await page.evaluate(() =>
+                //@ts-ignore
+                document.querySelector(".ytpp-self-certification-questionnaire .ytpp-self-certification-questionnaire #submit-questionnaire-button").click()
+            );
+
+            await page.waitForXPath(nextBtnXPath);
+            next = await page.$x(nextBtnXPath);
+            await next[0].click();
+
+            await page.waitForTimeout(1500);
+        } catch {}
     }
 
-    await page.waitForXPath(nextBtnXPath)
-    next = await page.$x(nextBtnXPath)
-    await next[0].click()
     // await sleep(2000)
     await page.waitForXPath(nextBtnXPath)
     // click next button
