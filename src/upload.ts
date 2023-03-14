@@ -346,11 +346,8 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
             "ytcp-video-monetization-edit-dialog.cancel-button-hidden .ytcp-video-monetization-edit-dialog #radioContainer #onRadio"
         );
         await page.evaluate(() =>
-            document
-                .querySelector(
-                    "ytcp-video-monetization-edit-dialog.cancel-button-hidden .ytcp-video-monetization-edit-dialog #radioContainer #onRadio"
-                )
-                .click()
+            //@ts-ignore
+            document.querySelector("ytcp-video-monetization-edit-dialog.cancel-button-hidden .ytcp-video-monetization-edit-dialog #radioContainer #onRadio").click()
         );
 
         await page.waitForTimeout(1500);
