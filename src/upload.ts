@@ -336,34 +336,36 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
     await next[0].click();
 
     if (videoJSON.isChannelMonetized) {
-        await page.waitForSelector("#child-input ytcp-video-monetization", { visible: true });
+        try {
+            await page.waitForSelector("#child-input ytcp-video-monetization", { visible: true, timeout: 10000 });
 
-        await page.waitForTimeout(1500);
+            await page.waitForTimeout(1500);
 
-        await page.click("#child-input ytcp-video-monetization");
+            await page.click("#child-input ytcp-video-monetization");
 
-        await page.waitForSelector(
-            "ytcp-video-monetization-edit-dialog.cancel-button-hidden .ytcp-video-monetization-edit-dialog #radioContainer #onRadio"
-        );
-        await page.evaluate(() =>
-            (document.querySelector("ytcp-video-monetization-edit-dialog.cancel-button-hidden .ytcp-video-monetization-edit-dialog #radioContainer #onRadio") as HTMLInputElement).click()
-        );
+            await page.waitForSelector(
+                "ytcp-video-monetization-edit-dialog.cancel-button-hidden .ytcp-video-monetization-edit-dialog #radioContainer #onRadio"
+            );
+            await page.evaluate(() =>
+                (document.querySelector("ytcp-video-monetization-edit-dialog.cancel-button-hidden .ytcp-video-monetization-edit-dialog #radioContainer #onRadio") as HTMLInputElement).click()
+            );
 
-        await page.waitForTimeout(1500);
+            await page.waitForTimeout(1500);
 
-        await page.waitForSelector(
-            "ytcp-video-monetization-edit-dialog.cancel-button-hidden .ytcp-video-monetization-edit-dialog #save-button",
-            { visible: true }
-        );
-        await page.click(
-            "ytcp-video-monetization-edit-dialog.cancel-button-hidden .ytcp-video-monetization-edit-dialog #save-button"
-        );
+            await page.waitForSelector(
+                "ytcp-video-monetization-edit-dialog.cancel-button-hidden .ytcp-video-monetization-edit-dialog #save-button",
+                { visible: true }
+            );
+            await page.click(
+                "ytcp-video-monetization-edit-dialog.cancel-button-hidden .ytcp-video-monetization-edit-dialog #save-button"
+            );
 
-        await page.waitForTimeout(1500);
+            await page.waitForTimeout(1500);
 
-        await page.waitForXPath(nextBtnXPath);
-        next = await page.$x(nextBtnXPath);
-        await next[0].click();
+            await page.waitForXPath(nextBtnXPath);
+            next = await page.$x(nextBtnXPath);
+            await next[0].click();
+        } catch { }
 
         try {
             await page.waitForSelector(
