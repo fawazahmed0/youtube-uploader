@@ -335,7 +335,7 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
     next = await page.$x(nextBtnXPath);
     await next[0].click();
 
-    if (videoJSON.isChannelMonetized) { // Always enable monetization if channel is monetized
+    if (videoJSON.isChannelMonetized) {
         await page.waitForSelector("#child-input ytcp-video-monetization", { visible: true });
 
         await page.waitForTimeout(1500);
@@ -346,8 +346,7 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
             "ytcp-video-monetization-edit-dialog.cancel-button-hidden .ytcp-video-monetization-edit-dialog #radioContainer #onRadio"
         );
         await page.evaluate(() =>
-            //@ts-ignore
-            document.querySelector("ytcp-video-monetization-edit-dialog.cancel-button-hidden .ytcp-video-monetization-edit-dialog #radioContainer #onRadio").click()
+            (document.querySelector("ytcp-video-monetization-edit-dialog.cancel-button-hidden .ytcp-video-monetization-edit-dialog #radioContainer #onRadio") as HTMLInputElement).click()
         );
 
         await page.waitForTimeout(1500);
@@ -372,8 +371,7 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
                 { visible: true, timeout: 10000 }
             );
             await page.evaluate(() =>
-                //@ts-ignore
-                document.querySelector(".ytpp-self-certification-questionnaire .ytpp-self-certification-questionnaire #checkbox-container").click()
+                (document.querySelector(".ytpp-self-certification-questionnaire .ytpp-self-certification-questionnaire #checkbox-container") as HTMLInputElement).click()
             );
 
             await page.waitForTimeout(1500);
@@ -383,8 +381,7 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
                 { visible: true }
             );
             await page.evaluate(() =>
-                //@ts-ignore
-                document.querySelector(".ytpp-self-certification-questionnaire .ytpp-self-certification-questionnaire #submit-questionnaire-button").click()
+                (document.querySelector(".ytpp-self-certification-questionnaire .ytpp-self-certification-questionnaire #submit-questionnaire-button") as HTMLButtonElement).click()
             );
 
             await page.waitForXPath(nextBtnXPath);
