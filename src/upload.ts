@@ -335,36 +335,37 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
     next = await page.$x(nextBtnXPath);
     await next[0].click();
 
-    if (videoJSON.isChannelMonetized) { // Always enable monetization if channel is monetized
-        await page.waitForSelector("#child-input ytcp-video-monetization", { visible: true });
+    if (videoJSON.isChannelMonetized) {
+        try {
+            await page.waitForSelector("#child-input ytcp-video-monetization", { visible: true, timeout: 10000 });
 
-        await page.waitForTimeout(1500);
+            await page.waitForTimeout(1500);
 
-        await page.click("#child-input ytcp-video-monetization");
+            await page.click("#child-input ytcp-video-monetization");
 
-        await page.waitForSelector(
-            "ytcp-video-monetization-edit-dialog.cancel-button-hidden .ytcp-video-monetization-edit-dialog #radioContainer #onRadio"
-        );
-        await page.evaluate(() =>
-            //@ts-ignore
-            document.querySelector("ytcp-video-monetization-edit-dialog.cancel-button-hidden .ytcp-video-monetization-edit-dialog #radioContainer #onRadio").click()
-        );
+            await page.waitForSelector(
+                "ytcp-video-monetization-edit-dialog.cancel-button-hidden .ytcp-video-monetization-edit-dialog #radioContainer #onRadio"
+            );
+            await page.evaluate(() =>
+                (document.querySelector("ytcp-video-monetization-edit-dialog.cancel-button-hidden .ytcp-video-monetization-edit-dialog #radioContainer #onRadio") as HTMLInputElement).click()
+            );
 
-        await page.waitForTimeout(1500);
+            await page.waitForTimeout(1500);
 
-        await page.waitForSelector(
-            "ytcp-video-monetization-edit-dialog.cancel-button-hidden .ytcp-video-monetization-edit-dialog #save-button",
-            { visible: true }
-        );
-        await page.click(
-            "ytcp-video-monetization-edit-dialog.cancel-button-hidden .ytcp-video-monetization-edit-dialog #save-button"
-        );
+            await page.waitForSelector(
+                "ytcp-video-monetization-edit-dialog.cancel-button-hidden .ytcp-video-monetization-edit-dialog #save-button",
+                { visible: true }
+            );
+            await page.click(
+                "ytcp-video-monetization-edit-dialog.cancel-button-hidden .ytcp-video-monetization-edit-dialog #save-button"
+            );
 
-        await page.waitForTimeout(1500);
+            await page.waitForTimeout(1500);
 
-        await page.waitForXPath(nextBtnXPath);
-        next = await page.$x(nextBtnXPath);
-        await next[0].click();
+            await page.waitForXPath(nextBtnXPath);
+            next = await page.$x(nextBtnXPath);
+            await next[0].click();
+        } catch { }
 
         try {
             await page.waitForSelector(
@@ -372,8 +373,7 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
                 { visible: true, timeout: 10000 }
             );
             await page.evaluate(() =>
-                //@ts-ignore
-                document.querySelector(".ytpp-self-certification-questionnaire .ytpp-self-certification-questionnaire #checkbox-container").click()
+                (document.querySelector(".ytpp-self-certification-questionnaire .ytpp-self-certification-questionnaire #checkbox-container") as HTMLInputElement).click()
             );
 
             await page.waitForTimeout(1500);
@@ -383,8 +383,7 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
                 { visible: true }
             );
             await page.evaluate(() =>
-                //@ts-ignore
-                document.querySelector(".ytpp-self-certification-questionnaire .ytpp-self-certification-questionnaire #submit-questionnaire-button").click()
+                (document.querySelector(".ytpp-self-certification-questionnaire .ytpp-self-certification-questionnaire #submit-questionnaire-button") as HTMLButtonElement).click()
             );
 
             await page.waitForXPath(nextBtnXPath);
