@@ -136,7 +136,7 @@ comment(credentials, [comment1], {headless:false}).then(console.log)
 - [Kudou Sterain](https://github.com/hotrungnhan) - For [isAgeRestriction, isNotForKid option and other fixes](https://github.com/fawazahmed0/youtube-uploader/pull/175)
 - [Andrew Glago](https://github.com/a11rew) - For [pinning option for comments](https://github.com/fawazahmed0/youtube-uploader/pull/186)
 - [nhantamz](https://github.com/nhantamz) - For [setting english as default language](https://github.com/fawazahmed0/youtube-uploader/pull/191)
-- [Damian](https://github.com/ClassAxion) - For [publish type support](https://github.com/fawazahmed0/youtube-uploader/pull/198), [Close browser before error](https://github.com/fawazahmed0/youtube-uploader/pull/201), [isChannelMonetized](https://github.com/fawazahmed0/youtube-uploader/pull/203) option, [PR build status check](https://github.com/fawazahmed0/youtube-uploader/pull/205) and [improve monetization code](https://github.com/fawazahmed0/youtube-uploader/pull/206)
+- [Damian](https://github.com/ClassAxion) - For [publish type support](https://github.com/fawazahmed0/youtube-uploader/pull/198), [Close browser before error](https://github.com/fawazahmed0/youtube-uploader/pull/201), [isChannelMonetized](https://github.com/fawazahmed0/youtube-uploader/pull/203) option, [PR build status check](https://github.com/fawazahmed0/youtube-uploader/pull/205), [improve monetization code](https://github.com/fawazahmed0/youtube-uploader/pull/206) and [userDataDir option](https://github.com/fawazahmed0/youtube-uploader/pull/213)
 
 
 <br>
