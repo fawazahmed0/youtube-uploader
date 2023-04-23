@@ -49,10 +49,16 @@ export const upload = async (
             .replace(/\./g, '_')}.json`
     )
 
-    await launchBrowser(puppeteerLaunch)
+    const useCookieStore = !puppeteerLaunch?.userDataDir
+
+    if (!useCookieStore) {
+        messageTransport.log(`UserDataDir detected in options. Disabling cookie store.`)
+    }
+
+    await launchBrowser(puppeteerLaunch, useCookieStore)
 
     try {
-        await loadAccount(credentials, messageTransport)
+        await loadAccount(credentials, messageTransport, useCookieStore)
 
         const uploadedYTLink: string[] = []
 
@@ -874,9 +880,9 @@ const updateVideoInfo = async (videoJSON: VideoToEdit, messageTransport: Message
     return messageTransport.log('successfully edited')
 }
 
-async function loadAccount(credentials: Credentials, messageTransport: MessageTransport) {
+async function loadAccount(credentials: Credentials, messageTransport: MessageTransport, useCookieStore: boolean = true) {
     try {
-        if (!fs.existsSync(cookiesFilePath)) await login(page, credentials, messageTransport)
+        if (!fs.existsSync(cookiesFilePath) || !useCookieStore) await login(page, credentials, messageTransport, useCookieStore)
     } catch (error: any) {
         if (error.message === 'Recapcha found') {
             if (browser) {
@@ -887,7 +893,7 @@ async function loadAccount(credentials: Credentials, messageTransport: MessageTr
 
         // Login failed trying again to login
         try {
-            await login(page, credentials, messageTransport)
+            await login(page, credentials, messageTransport, useCookieStore)
         } catch (error) {
             if (browser) {
                 await browser.close()
@@ -899,7 +905,7 @@ async function loadAccount(credentials: Credentials, messageTransport: MessageTr
         await changeHomePageLangIfNeeded(page)
     } catch (error) {
         messageTransport.log(error)
-        await login(page, credentials, messageTransport)
+        await login(page, credentials, messageTransport, useCookieStore)
     }
 }
 
@@ -1003,28 +1009,45 @@ async function changeHomePageLangIfNeeded(localPage: Page) {
     await changeHomePageLangIfNeeded(localPage);
 }
 
-async function launchBrowser(puppeteerLaunch?: PuppeteerNodeLaunchOptions) {
-    const previousSession = fs.existsSync(cookiesFilePath)
-
+async function launchBrowser(puppeteerLaunch?: PuppeteerNodeLaunchOptions, loadCookies: boolean = true) {
     browser = await puppeteer.launch(puppeteerLaunch)
     page = await browser.newPage()
     await page.setDefaultTimeout(timeout)
-    if (previousSession) {
-        // If file exist load the cookies
-        const cookiesString = fs.readFileSync(cookiesFilePath, { encoding: 'utf-8' })
-        const parsedCookies = JSON.parse(cookiesString)
-        if (parsedCookies.length !== 0) {
-            for (let cookie of parsedCookies) {
-                await page.setCookie(cookie)
+
+    if (loadCookies) {
+        const previousSession = fs.existsSync(cookiesFilePath)
+
+        if (previousSession) {
+            // If file exist load the cookies
+            const cookiesString = fs.readFileSync(cookiesFilePath, { encoding: 'utf-8' })
+            const parsedCookies = JSON.parse(cookiesString)
+            if (parsedCookies.length !== 0) {
+                for (let cookie of parsedCookies) {
+                    await page.setCookie(cookie)
+                }
             }
         }
     }
+
     await page.setViewport({ width: width, height: height })
     await page.setBypassCSP(true)
 }
 
-async function login(localPage: Page, credentials: Credentials, messageTransport: MessageTransport) {
+async function login(localPage: Page, credentials: Credentials, messageTransport: MessageTransport, useCookieStore: boolean = true) {
     await localPage.goto(uploadURL)
+
+    if (!useCookieStore) {
+        try {
+            // Check if already logged in if we don't use normal cookie store
+            await localPage.waitForSelector('button#avatar-btn', {
+                timeout: 15 * 1000
+            })
+
+            messageTransport.log(`Account already logged in`)
+
+            return
+        } catch {}
+    }
 
     await changeLoginPageLangIfNeeded(localPage)
 
@@ -1112,15 +1135,19 @@ async function login(localPage: Page, credentials: Credentials, messageTransport
         if (credentials.recoveryemail) await securityBypass(localPage, credentials.recoveryemail, messageTransport)
     }
 
-    const cookiesObject = await localPage.cookies()
-    await fs.mkdirSync(cookiesDirPath, { recursive: true })
-    // Write cookies to temp file to be used in other profile pages
-    await fs.writeFile(cookiesFilePath, JSON.stringify(cookiesObject), function (err) {
-        if (err) {
-            messageTransport.log('The file could not be written. ' + err.message)
-        }
-        messageTransport.log('Session has been successfully saved')
-    })
+    if (useCookieStore) {
+        const cookiesObject = await localPage.cookies()
+        await fs.mkdirSync(cookiesDirPath, { recursive: true })
+        // Write cookies to temp file to be used in other profile pages
+        await fs.writeFile(cookiesFilePath, JSON.stringify(cookiesObject), function (err) {
+            if (err) {
+                messageTransport.log('The file could not be written. ' + err.message)
+            }
+            messageTransport.log('Session has been successfully saved')
+        })
+    } else {
+        messageTransport.log('Account logged in successfully')
+    }
 }
 
 // Login bypass with recovery email
