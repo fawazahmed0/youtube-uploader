@@ -192,9 +192,9 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
         throw new Error('Youtube returned an error : ' + errorMessage)
     }
 
-    // Wait for upload to complete
+    // Wait for upload to complete, but not checks
     const uploadCompletePromise = page
-        .waitForXPath('//tp-yt-paper-progress[contains(@class,"ytcp-video-upload-progress-hover") and @value="100"]', {
+        .waitForXPath('//ytcp-video-upload-progress/span[contains(@class,"progress-label") and contains(text(),"Upload complete")]', {
             timeout: 0
         })
         .then(() => 'uploadComplete')
@@ -211,6 +211,7 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
 
     // Wait for upload to go away and processing to start, skip the wait if the user doesn't want it.
     if (!videoJSON.skipProcessingWait) {
+        // waits for checks to be complete (upload should be complete already)
         await page.waitForXPath('//*[contains(text(),"Video upload complete")]', { hidden: true, timeout: 0 })
     } else {
         await sleep(5000)
