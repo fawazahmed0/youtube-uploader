@@ -1089,7 +1089,6 @@ async function launchBrowser(puppeteerLaunch?: PuppeteerNodeLaunchOptions, loadC
     }
 
     await page.setViewport({ width: width, height: height })
-    await page.setBypassCSP(true)
 }
 
 async function login(
