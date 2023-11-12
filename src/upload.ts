@@ -332,6 +332,11 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
         } catch (err) {}
     }
 
+    // Set pusblish to subscription feed and notify subscribers to false
+    if(videoJSON.publishToSubscriptionFeedAndNotifySubscribers === false) {
+        await page.waitForSelector("#notify-subscribers > div:nth-child(1) > div:nth-child(1)")
+        await page.click("#notify-subscribers > div:nth-child(1) > div:nth-child(1)")
+    }
     // Selecting video language
     if (videoLang) {
         const langHandler = await page.$x("//*[normalize-space(text())='Video language']")
