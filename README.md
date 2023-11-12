@@ -89,7 +89,7 @@ const onVideoUpdateSuccess = (videoUrl) => {
     // ..do something..
 }
 // Extra options like tags, thumbnail, language, playlist etc
-const videoUpdate2 = { link: 'https://www.youtube.com/watch?v=w3jLJU7DT5E', title: 'title 2', description: 'description 2', thumbnail: 'thumbnail.png', language: 'english', tags: ['video', 'github'], replaceTags: ['mytag'], playlist: 'playlist name', channelName: 'Channel Name', publishType: 'unlisted', onSuccess: onVideoUpdateSuccess }
+const videoUpdate2 = { link: 'https://www.youtube.com/watch?v=w3jLJU7DT5E', title: 'title 2', description: 'description 2', thumbnail: 'thumbnail.png', language: 'english', tags: ['video', 'github'], replaceTags: ['mytag'], playlist: 'playlist name', channelName: 'Channel Name', publishType: 'unlisted', publishToSubscriptionFeedAndNotifySubscribers: false , onSuccess: onVideoUpdateSuccess }
 
 update(credentials, [videoUpdate1, videoUpdate2]).then(console.log)
 // OR
