@@ -42,6 +42,8 @@ const defaultMessageTransport: MessageTransport = {
     warn: console.warn
 }
 
+let lastSelectedChannel = "";
+
 /**
  * import { upload } from 'youtube-videos-uploader'
  * or
@@ -75,7 +77,8 @@ export const upload = async (
         await loadAccount(credentials, messageTransport, useCookieStore)
         messageTransport.debug("Account loaded");
 
-        const uploadedYTLink: string[] = []
+        const uploadedYTLink: string[] = [];
+        lastSelectedChannel = "";
 
         for (const video of videos) {
             try {
@@ -125,9 +128,10 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
                 `"${videoJSON.title}" includes a character not allowed in youtube titles (${invalidCharacters[i]})`
             )
 
-    if (videoJSON.channelName) {
+    if (videoJSON.channelName && videoJSON.channelName !== lastSelectedChannel) {
         await changeChannel(videoJSON.channelName);
         messageTransport.debug(`Channel set to ${videoJSON.channelName}`);
+        lastSelectedChannel = videoJSON.channelName;
     }
 
     const title = videoJSON.title
