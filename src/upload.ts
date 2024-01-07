@@ -9,7 +9,7 @@ import {
     GameData
 } from './types'
 import puppeteer from 'puppeteer-extra'
-import { PuppeteerNodeLaunchOptions, Browser, Page, ElementHandle } from 'puppeteer'
+import { PuppeteerNodeLaunchOptions, Browser, Page } from 'puppeteer'
 import fs from 'fs-extra'
 import path from 'path'
 
