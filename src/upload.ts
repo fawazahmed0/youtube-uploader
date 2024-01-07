@@ -486,13 +486,15 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
         messageTransport.debug(`  >> ${videoJSON.title} - Channel monetization set`);
     }
 
-    // await sleep(2000)
+    await sleep(100);
     await page.waitForXPath(nextBtnXPath)
     // click next button
+    await sleep(100);
     next = await page.$x(nextBtnXPath)
     await next[0].click()
     await page.waitForXPath(nextBtnXPath)
     // click next button
+    await sleep(100);
     next = await page.$x(nextBtnXPath)
     await next[0].click()
 
