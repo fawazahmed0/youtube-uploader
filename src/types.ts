@@ -8,7 +8,7 @@ export interface Video {
     function?: any
     thumbnail?: string
     publishType?: 'PRIVATE' | 'UNLISTED' | 'PUBLIC'
-    onSuccess?: (url: string) => void
+    onSuccess?: (url: string, video: Video) => void
     skipProcessingWait?: boolean
     onProgress?: (arg0: VideoProgress) => void
     channelName?: string
@@ -22,8 +22,11 @@ export interface Video {
 }
 
 export interface MessageTransport {
-    log: (message: any) => void
-    userAction: (message: string) => void
+    error: (message: any) => void,
+    warn: (message: any) => void,
+    log: (message: any) => void,
+    debug: (message: any) => void,
+    userAction: (message: string) => void,
     onSmsVerificationCodeSent?: () => Promise<string | undefined>
 }
 

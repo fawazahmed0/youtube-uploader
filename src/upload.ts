@@ -9,7 +9,7 @@ import {
     GameData
 } from './types'
 import puppeteer from 'puppeteer-extra'
-import { PuppeteerNodeLaunchOptions, Browser, Page, ElementHandle } from 'puppeteer'
+import { PuppeteerNodeLaunchOptions, Browser, Page } from 'puppeteer'
 import fs from 'fs-extra'
 import path from 'path'
 
@@ -36,8 +36,13 @@ const homePageURL = 'https://www.youtube.com/?persist_gl=1&gl=US&persist_hl=1&hl
 
 const defaultMessageTransport: MessageTransport = {
     log: console.log,
-    userAction: console.log
+    userAction: console.log,
+    debug: console.debug,
+    error: console.error,
+    warn: console.warn
 }
+
+let lastSelectedChannel = "";
 
 /**
  * import { upload } from 'youtube-videos-uploader'
@@ -64,28 +69,47 @@ export const upload = async (
         messageTransport.log(`UserDataDir detected in options. Disabling cookie store.`)
     }
 
+    messageTransport.debug("Launching browser...");
     await launchBrowser(puppeteerLaunch, useCookieStore)
+    messageTransport.debug("Browser successfully launched");
 
     try {
         await loadAccount(credentials, messageTransport, useCookieStore)
+        messageTransport.debug("Account loaded");
 
-        const uploadedYTLink: string[] = []
+        const uploadedYTLink: string[] = [];
+        lastSelectedChannel = "";
 
         for (const video of videos) {
-            const link = await uploadVideo(video, messageTransport)
+            try {
+                messageTransport.log(`Uploading video ${video.title} [${video.path}]`);
+                const link = await uploadVideo(video, messageTransport)
+                messageTransport.log(`Video ${video.title} [${video.path}] successfully uploaded`);
 
-            const { onSuccess } = video
-            if (typeof onSuccess === 'function') {
-                onSuccess(link)
+                const { onSuccess } = video
+                if (typeof onSuccess === 'function') {
+                    try {
+                        onSuccess(link, video)
+                    }
+                    catch (err) {
+                        messageTransport.warn(`Error calling onSuccess function. Will proceed with other videos. Error: ${err}`);
+                    }                    
+                }
+
+                uploadedYTLink.push(link)
             }
-
-            uploadedYTLink.push(link)
+            catch (err) {
+                messageTransport.error(`Error uploading video ${video.title} [${video.path}]: ${err}`);
+                throw err;
+            }
+            
         }
 
         await browser.close()
 
         return uploadedYTLink
     } catch (err) {
+        messageTransport.error(err);
         if (browser) await browser.close()
 
         throw err
@@ -104,8 +128,10 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
                 `"${videoJSON.title}" includes a character not allowed in youtube titles (${invalidCharacters[i]})`
             )
 
-    if (videoJSON.channelName) {
-        await changeChannel(videoJSON.channelName)
+    if (videoJSON.channelName && videoJSON.channelName !== lastSelectedChannel) {
+        await changeChannel(videoJSON.channelName);
+        messageTransport.debug(`Channel set to ${videoJSON.channelName}`);
+        lastSelectedChannel = videoJSON.channelName;
     }
 
     const title = videoJSON.title
@@ -121,6 +147,8 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
         window.onbeforeunload = null
     })
     await page.goto(uploadURL)
+
+    messageTransport.debug(`  >> ${videoJSON.title} - Upload URL opened`);
 
     const closeBtnXPath = "//*[normalize-space(text())='Close']"
     const selectBtnXPath = "//*[normalize-space(text())='Select files']"
@@ -161,7 +189,9 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
         page.waitForFileChooser(),
         selectBtn[0].click() // button that triggers file selection
     ])
-    await fileChooser.accept([pathToFile])
+    await fileChooser.accept([pathToFile]);
+    messageTransport.debug(`  >> ${videoJSON.title} - File chooser accepted`);
+
     // Setup onProgress
     let progressChecker: any
     let progress: VideoProgress = { progress: 0, stage: ProgressEnum.Uploading }
@@ -190,14 +220,14 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
     if (errorMessage) {
         await browser.close()
         throw new Error('Youtube returned an error : ' + errorMessage)
-    }
+    }    
 
     // Wait for upload to complete, but not checks
     const uploadCompletePromise = page
         .waitForXPath('//ytcp-video-upload-progress/span[contains(@class,"progress-label") and contains(text(),"Upload complete")]', {
             timeout: 0
         })
-        .then(() => 'uploadComplete')
+        .then(() => 'uploadComplete');
 
     // Check if daily upload limit is reached
     const dailyUploadPromise = page
@@ -212,7 +242,8 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
     // Wait for upload to go away and processing to start, skip the wait if the user doesn't want it.
     if (!videoJSON.skipProcessingWait) {
         // waits for checks to be complete (upload should be complete already)
-        await page.waitForXPath('//*[contains(text(),"Video upload complete")]', { hidden: true, timeout: 0 })
+        await page.waitForXPath('//*[contains(text(),"Video upload complete")]', { hidden: true, timeout: 0 });
+        messageTransport.debug(`  >> ${videoJSON.title} - Video upload finished`);    
     } else {
         await sleep(5000)
     }
@@ -249,7 +280,9 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
     await textBoxes[0].type(title.substring(0, maxTitleLen))
     // Add the Description content
     await textBoxes[0].evaluate((e) => ((e as any).__shady_native_textContent = ''))
-    await textBoxes[1].type(description.substring(0, maxDescLen))
+    await textBoxes[1].type(description.substring(0, maxDescLen));
+
+    messageTransport.debug(`  >> ${videoJSON.title} - Title and description set`);
 
     const childOption = await page.$x('//*[contains(text(),"No, it\'s")]')
     await childOption[0].click()
@@ -261,6 +294,7 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
     const playlist = await page.$x("//*[normalize-space(text())='Select']")
     let createplaylistdone
     if (playlistName) {
+        let playlistSet = false;
         // Selecting playlist
         for (let i = 0; i < 2; i++) {
             try {
@@ -276,9 +310,11 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
                 const playlistNameSelector = await page.$x(playlistToSelectXPath)
                 await page.evaluate((el) => el.click(), playlistNameSelector[0])
                 createplaylistdone = await page.$x("//*[normalize-space(text())='Done']")
-                await page.evaluate((el) => el.click(), createplaylistdone[0])
+                await page.evaluate((el) => el.click(), createplaylistdone[0]);
+                playlistSet = true;
                 break
             } catch (error) {
+                messageTransport.log(`  >> ${videoJSON.title} - ${playlistName} not found. Creating...`);
                 // Creating new playlist
                 // click on playlist dropdown
                 await page.evaluate((el) => el.click(), playlist[0])
@@ -294,9 +330,16 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
                 const createplaylistbtn = await page.$x("//*[normalize-space(text())='Create']")
                 await page.evaluate((el) => el.click(), createplaylistbtn[1])
                 createplaylistdone = await page.$x("//*[normalize-space(text())='Done']")
-                await page.evaluate((el) => el.click(), createplaylistdone[0])
+                await page.evaluate((el) => el.click(), createplaylistdone[0]);
+                playlistSet = true;
             }
         }
+        if (playlistSet) {
+            messageTransport.debug(`  >> ${videoJSON.title} - Playlist set to ${playlistName}`);
+        } else {
+            messageTransport.warn(`  >> ${videoJSON.title} - Failed setting playlist`);
+        }
+        
     }
 
     if (!videoJSON.isNotForKid) {
@@ -306,6 +349,7 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
     } else {
         await page.click("tp-yt-paper-radio-button[name='VIDEO_MADE_FOR_KIDS_NOT_MFK']").catch(() => {})
     }
+    messageTransport.debug(`  >> ${videoJSON.title} - Kid restriction set`);
     // await page.waitForXPath('//ytcp-badge[contains(@class,"draft-badge")]//div[contains(text(),"Saved as private")]', { timeout: 0})
 
     // await page.click("#toggle-button")
@@ -330,12 +374,13 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
             await page.focus(`[aria-label="Tags"]`)
             await page.type(`[aria-label="Tags"]`, tags.join(', ').substring(0, 495) + ', ')
         } catch (err) {}
+        messageTransport.debug(`  >> ${videoJSON.title} - Tags set to ${tags.join(', ')}`);
     }
 
     // Set pusblish to subscription feed and notify subscribers to false
     if(videoJSON.publishToSubscriptionFeedAndNotifySubscribers === false) {
         await page.waitForSelector("#notify-subscribers > div:nth-child(1) > div:nth-child(1)")
-        await page.click("#notify-subscribers > div:nth-child(1) > div:nth-child(1)")
+        await page.click("#notify-subscribers > div:nth-child(1) > div:nth-child(1)");
     }
     // Selecting video language
     if (videoLang) {
@@ -347,12 +392,19 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
                 videoLang.toLowerCase() +
                 "']"
         )
-        await page.evaluate((el) => el.click(), langName[langName.length - 1])
+        await page.evaluate((el) => el.click(), langName[langName.length - 1]);
+        messageTransport.debug(`  >> ${videoJSON.title} - Video language set to ${videoLang}`);
     }
 
     // Setting Game Title ( Will also set Category to gaming )
     if (gameTitleSearch) {
-        await selectGame(page, gameTitleSearch, videoJSON.gameSelector)
+        const resultSelectGame = await selectGame(page, gameTitleSearch, messageTransport, videoJSON.gameSelector);
+        if (resultSelectGame) {
+            messageTransport.debug(`  >> ${videoJSON.title} - Game title set to ${gameTitleSearch}`);
+        } else {
+            messageTransport.warn(`  >> ${videoJSON.title} - Failed setting game title`);
+        }
+        
     }
 
     const nextBtnXPath = "//*[normalize-space(text())='Next']/parent::*[not(@disabled)]"
@@ -431,15 +483,18 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
 
             await page.waitForTimeout(1500)
         } catch {}
+        messageTransport.debug(`  >> ${videoJSON.title} - Channel monetization set`);
     }
 
-    // await sleep(2000)
+    await sleep(100);
     await page.waitForXPath(nextBtnXPath)
     // click next button
+    await sleep(100);
     next = await page.$x(nextBtnXPath)
     await next[0].click()
     await page.waitForXPath(nextBtnXPath)
     // click next button
+    await sleep(100);
     next = await page.$x(nextBtnXPath)
     await next[0].click()
 
@@ -448,7 +503,8 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
 
         await page.waitForTimeout(1000)
 
-        await page.click('#privacy-radios *[name="' + videoJSON.publishType + '"]')
+        await page.click('#privacy-radios *[name="' + videoJSON.publishType + '"]');
+        messageTransport.debug(`  >> ${videoJSON.title} - Publish type set`);
     }
 
     // Get publish button
@@ -874,7 +930,7 @@ const updateVideoInfo = async (videoJSON: VideoToEdit, messageTransport: Message
     }
     // Setting Game Title ( Will also set Category to gaming )
     if (gameTitleSearch) {
-        await selectGame(page, gameTitleSearch, videoJSON.gameSelector)
+        await selectGame(page, gameTitleSearch, messageTransport, videoJSON.gameSelector)
     }
 
     await page.focus(`#content`)
@@ -1341,11 +1397,11 @@ function xpathTextSelector(text: string, caseSensitive?: boolean, nthElement?: n
     return xpathSelector
 }
 
-async function selectGame(page: Page, gameTitle: string, gameSelector?: (arg0: GameData) => Promise<boolean> | null) {
+async function selectGame(page: Page, gameTitle: string, messageTransport: MessageTransport, gameSelector?: (arg0: GameData) => Promise<boolean> | null): Promise<boolean> {
     const categoryDiv = await page.$('#category-container')
     if (categoryDiv == null) {
-        console.error(`selectGame: categoryDiv is null.`)
-        return
+        messageTransport.warn(`selectGame: categoryDiv is null.`)
+        return false;
     }
 
     // Press drop down to populate choices.
@@ -1354,7 +1410,10 @@ async function selectGame(page: Page, gameTitle: string, gameSelector?: (arg0: G
     await sleep(1000)
 
     const gamingCategoryButton = await page.$("[test-id='CREATOR_VIDEO_CATEGORY_GADGETS']")
-    if (!gamingCategoryButton) return
+    if (!gamingCategoryButton) {
+        messageTransport.warn(`selectGame: Gaming category button not found.`)
+        return false;
+    }
 
     await gamingCategoryButton.click()
     await sleep(500)
@@ -1362,8 +1421,8 @@ async function selectGame(page: Page, gameTitle: string, gameSelector?: (arg0: G
     // Wait for input.
     const gameTitleBox = await categoryDiv.$('.ytcp-form-gaming input')
     if (gameTitleBox == null) {
-        console.error(`selectGame: gameTitleBox is null.`)
-        return
+        messageTransport.warn(`selectGame: gameTitleBox is null.`)
+        return false;
     }
 
     // Type and call the game selector delegate.
@@ -1374,8 +1433,8 @@ async function selectGame(page: Page, gameTitle: string, gameSelector?: (arg0: G
     const optionsSelectorHost = "#search-results > tp-yt-paper-dialog:not([aria-hidden='true'])"
     const optionsPopupHost = await page.waitForSelector(optionsSelectorHost)
     if (optionsPopupHost == null) {
-        console.error(`selectGame: optionsPopupHost is null.`)
-        return
+        messageTransport.warn(`selectGame: optionsPopupHost is null.`);
+        return false;
     }
 
     const buttonOptions = await optionsPopupHost.$$('.selectable-item')
@@ -1388,20 +1447,18 @@ async function selectGame(page: Page, gameTitle: string, gameSelector?: (arg0: G
         let testId = await button.evaluate((el: Element) => el.getAttribute('test-id'))
         if (testId == null || !testId.startsWith(`{"title"`)) continue
 
-        // Parse the JSON.
-        // console.log( `Game option: ${gameData.title}, ${gameData.year}` )
         let gameData = JSON.parse(testId) as GameData
         if (gameSelector !== undefined && gameSelector !== null && !(await gameSelector(gameData))) continue
 
-        // console.log( `Selected ${gameData.title}, ${gameData.year}` )
         await button.click()
-        pressed = true
+        pressed = true;
         break
     }
 
     if (!pressed && buttonOptions.length != 0) {
         // Just select none.
-        // console.log( `Defaulted to selecting none` )
-        await buttonOptions[0].click()
+        await buttonOptions[0].click();
+        return false;
     }
+    return true;
 }
