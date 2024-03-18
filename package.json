@@ -22,7 +22,6 @@
     "type": "git",
     "url": "git+https://github.com/fawazahmed0/youtube-uploader.git"
   },
-  "funding": "https://github.com/sponsors/fawazahmed0",
   "scripts": {
     "build": "tsc -p .",
     "prepare": "npm run build",
