@@ -9,9 +9,7 @@
 
 **In the name of God, who has guided me to do this work**
 
-**Note1:** In case you find any issue, please raise an [issue](https://github.com/fawazahmed0/youtube-uploader/issues/new/choose), So that I can fix it.<br>
-  
-Please star this repo by clicking on [:star: button](#) above [:arrow_upper_right:](#)
+**Note1:** In case you find any issue, please consider creating a PR to fix the issue.<br>
 
 ### Features:
 - No upload Limits (50+ videos/day limit set by youtube for every channel)
