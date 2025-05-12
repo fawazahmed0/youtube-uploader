@@ -18,6 +18,7 @@ export interface Video {
     isChannelMonetized?: boolean
     gameTitleSearch?: string
     publishToSubscriptionFeedAndNotifySubscribers?: boolean
+    alteredContent?: boolean
     gameSelector?: ( arg0: GameData ) => Promise<boolean> | null
 }
 
