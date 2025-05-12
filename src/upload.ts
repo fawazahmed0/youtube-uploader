@@ -376,7 +376,11 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
         } catch (err) {}
         messageTransport.debug(`  >> ${videoJSON.title} - Tags set to ${tags.join(', ')}`);
     }
-
+    // Set automatic locations to false
+    if(videoJSON.automaticPlaces === false) {
+        await page.waitForSelector("#has-autoplaces-mentioned-checkbox > div:nth-child(1) > div:nth-child(1)")
+        await page.click("#has-autoplaces-mentioned-checkbox > div:nth-child(1) > div:nth-child(1)");
+    }
     // Set pusblish to subscription feed and notify subscribers to false
     if(videoJSON.publishToSubscriptionFeedAndNotifySubscribers === false) {
         await page.waitForSelector("#notify-subscribers > div:nth-child(1) > div:nth-child(1)")
