@@ -377,6 +377,12 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
         messageTransport.debug(`  >> ${videoJSON.title} - Tags set to ${tags.join(', ')}`);
     }
 
+    if (!videoJSON.alteredContent) {
+        await page.click("tp-yt-paper-radio-button[name='VIDEO_HAS_ALTERED_CONTENT_NO']").catch(() => {})
+    } else if (videoJSON.alteredContent) {
+        await page.click("tp-yt-paper-radio-button[name='VIDEO_HAS_ALTERED_CONTENT_YES']").catch(() => {})
+    }
+
     // Set pusblish to subscription feed and notify subscribers to false
     if(videoJSON.publishToSubscriptionFeedAndNotifySubscribers === false) {
         await page.waitForSelector("#notify-subscribers > div:nth-child(1) > div:nth-child(1)")
