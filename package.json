@@ -1,6 +1,6 @@
 {
   "name": "youtube-videos-uploader",
-  "version": "2.0.26",
+  "version": "2.0.27",
   "description": "Uploads videos to youtube without any limits",
   "main": "dist/index.js",
   "types": "dist",
