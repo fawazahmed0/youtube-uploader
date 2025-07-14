@@ -381,6 +381,13 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
         await page.waitForSelector("#has-autoplaces-mentioned-checkbox > div:nth-child(1) > div:nth-child(1)")
         await page.click("#has-autoplaces-mentioned-checkbox > div:nth-child(1) > div:nth-child(1)");
     }
+
+    if (!videoJSON.alteredContent) {
+        await page.click("tp-yt-paper-radio-button[name='VIDEO_HAS_ALTERED_CONTENT_NO']").catch(() => {})
+    } else if (videoJSON.alteredContent) {
+        await page.click("tp-yt-paper-radio-button[name='VIDEO_HAS_ALTERED_CONTENT_YES']").catch(() => {})
+    }
+
     // Set pusblish to subscription feed and notify subscribers to false
     if(videoJSON.publishToSubscriptionFeedAndNotifySubscribers === false) {
         await page.waitForSelector("#notify-subscribers > div:nth-child(1) > div:nth-child(1)")
