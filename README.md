@@ -138,6 +138,7 @@ comment(credentials, [comment1], {headless:false}).then(console.log)
 - [Soubhik Biswas](https://github.com/s0ubhik) - For [fixing home page selector](https://github.com/fawazahmed0/youtube-uploader/pull/229)
 - [pm96](https://github.com/pm96) - For [publishToSubscriptionFeedAndNotifySubscribers](https://github.com/fawazahmed0/youtube-uploader/pull/232) option
 - [bmarotta](https://github.com/bmarotta) - For [Enhanced logs and workarounds](https://github.com/fawazahmed0/youtube-uploader/pull/236)
+- [nielsverheggen](https://github.com/nielsverheggen) - For [alteredContent](https://github.com/fawazahmed0/youtube-uploader/pull/265) and [automaticPlaces](https://github.com/fawazahmed0/youtube-uploader/pull/264) option
 
 
 <br>
