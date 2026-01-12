@@ -1005,7 +1005,7 @@ const updateVideoInfo = async (videoJSON: VideoToEdit, messageTransport: Message
         await page.focus(`#save > div`)
 
         await page.waitForSelector('#save > div')
-        await page.click(`#save > div`) 
+        await page.click(`#save > div`)
         await page.waitForXPath("//*[normalize-space(text())='Save']/parent::*[@disabled]")
     } catch (err) {
         messageTransport.log(err)
