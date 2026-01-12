@@ -547,6 +547,15 @@ async function uploadVideo(videoJSON: Video, messageTransport: MessageTransport)
         }
     }
 
+    // Prechecks Dialog
+    try {
+        await page.waitForSelector('#dialog-buttons #secondary-action-button', { visible: true })
+
+        await page.click('#dialog-buttons #secondary-action-button')
+        messageTransport.debug(`  >> ${videoJSON.title} - Precheck dialog skipped`);
+    } catch { }
+
+
     if (videoJSON.isChannelMonetized) {
         try {
             await page.waitForSelector('#dialog-buttons #secondary-action-button', { visible: true })
@@ -996,7 +1005,7 @@ const updateVideoInfo = async (videoJSON: VideoToEdit, messageTransport: Message
         await page.focus(`#save > div`)
 
         await page.waitForSelector('#save > div')
-        await page.click(`#save > div`)
+        await page.click(`#save > div`) 
         await page.waitForXPath("//*[normalize-space(text())='Save']/parent::*[@disabled]")
     } catch (err) {
         messageTransport.log(err)
